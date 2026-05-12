@@ -1,0 +1,9 @@
+Blak includes generated ASCII frame data and the source GIF asset for the black-hole splash.
+
+Source artwork:
+- Project: milli.nvim
+- Repository: https://github.com/Amansingh-afk/milli.nvim
+- Asset used: media/previews/blackhole.gif
+- License: MIT, as stated by the milli.nvim repository.
+
+The generated Lua frame table in lua/blak/splash/frames/blackhole.lua was produced from assets/blackhole.gif by scripts/generate_blackhole_frames.py. Blak does not vendor the milli.nvim plugin runtime.
