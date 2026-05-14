@@ -1,0 +1,44 @@
+*blak-extras.txt*  Blak extras
+
+BLAK EXTRAS                                             *blak-extras*
+
+Extras are optional modules. They can add Treesitter parsers, LSP servers,
+Mason tools, formatters, linters, keymaps, Snacks modules, or plugin specs.
+
+Commands: >
+  :BlakExtras list
+  :BlakExtras enable lang.typescript
+  :BlakExtras disable lang.typescript
+  :BlakExtras sync
+<
+
+State is stored outside the repository in:
+  stdpath('state')/blak/extras.json
+
+Restart Blak after enabling or disabling extras. Then run :BlakExtras sync or
+:Lazy sync if the enabled set added or removed plugin specs.
+
+AVAILABLE GROUPS
+
+lang.lua
+lang.typescript
+lang.python
+lang.rust
+lang.go
+lang.markdown
+
+ui.animations
+ui.image-preview
+ui.zen
+
+git.lazygit
+git.diffview
+
+editor.neotree
+editor.telescope
+editor.fzf-lua
+
+ai.copilot
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:

@@ -1,0 +1,56 @@
+*blak-keymaps.txt*  Blak keymaps
+
+BLAK KEYMAPS                                            *blak-keymaps*
+
+The rule: common operations get memorable mappings; uncommon operations get
+commands and pickers.
+
+FIND
+  <Space><Space>   Smart find
+  <Space>ff        Find files
+  <Space>fg        Grep
+  <Space>fb        Buffers
+  <Space>fr        Recent files
+  <Space>fc        Commands
+  <Space>fk        Keymaps
+  <Space>fh        Help
+
+EXPLORER
+  <Space>e         Oil explorer
+
+GIT
+  [h               Previous git hunk
+  ]h               Next git hunk
+  <Space>gs        Stage hunk
+  <Space>gr        Reset hunk
+  <Space>gS        Stage buffer
+  <Space>gR        Reset buffer
+  <Space>gp        Preview hunk
+  <Space>gb        Blame line
+  <Space>gd        Diff this
+
+CODE
+  gd               Definition
+  gD               Declaration
+  gr               References
+  K                Hover
+  <Space>ca        Code action
+  <Space>cr        Rename
+  <Space>cf        Format
+
+DIAGNOSTICS
+  [d               Previous diagnostic
+  ]d               Next diagnostic
+  <Space>xx        Diagnostics picker
+  <Space>xd        Line diagnostic
+
+BLAK
+  <Space>?         Show Blak keymaps
+  <Space>ll        Lazy
+  <Space>lu        Blak update
+  <Space>lr        Blak rollback
+  <Space>ld        Blak doctor
+  <Space>le        Blak extras
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:

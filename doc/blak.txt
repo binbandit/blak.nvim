@@ -1,0 +1,50 @@
+*blak.txt*  Blak Neovim distribution
+
+BLAK                                                     *blak*
+
+Blak is a native-first Neovim distribution built around a black-hole
+identity and a low-bloat contract.
+
+COMMANDS                                                 *blak-commands*
+
+:Blak
+    Open a short overview.
+
+:BlakDoctor
+    Run |:checkhealth| for Blak.
+
+:BlakKeys
+    Show keymaps registered by Blak core and enabled extras.
+
+:BlakPick {kind}
+    Run a picker. Kinds include: files, grep, buffers, recent, commands,
+    keymaps, help, diagnostics, lsp_symbols, workspace_symbols.
+
+:BlakExtras [list|enable|disable|sync] [id]
+    Manage optional extras. See |blak-extras|.
+
+:BlakUpdate
+    Create a lazy-lock rollback point and run |:Lazy update|.
+
+:BlakRollback
+    Restore the latest lockfile backup and run |:Lazy restore|.
+
+:BlakToolsInstall
+    Install Mason tools required by enabled extras.
+
+:BlakTreesitterInstall
+    Install configured Treesitter parsers.
+
+:BlakSplash
+    Preview the black-hole splash animation.
+
+CONFIGURATION                                            *blak-config*
+
+Copy >
+  lua/blak/user.example.lua
+< to >
+  lua/blak/user.lua
+< and return a table of overrides.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
