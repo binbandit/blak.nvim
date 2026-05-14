@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from statistics import median
 
 from PIL import Image, ImageSequence
 
@@ -55,21 +56,35 @@ def image_to_lines(image: Image.Image, height: int) -> list[str]:
     return lines
 
 
+def visible_cells(lines: list[str]) -> int:
+    return sum(ch != " " for line in lines for ch in line)
+
+
+def sample_indices(count: int, wanted: int) -> list[int]:
+    return sorted(set(round(i * (count - 1) / max(1, wanted - 1)) for i in range(wanted)))
+
+
 def main() -> None:
     im = Image.open(SRC)
     height = frame_height()
-    frame_count = getattr(im, "n_frames", 1)
-    indices = sorted(
-        set(round(i * (frame_count - 1) / max(1, WANTED - 1)) for i in range(WANTED))
-    )
+    source_frames: list[tuple[list[str], int, int]] = []
+    for frame in ImageSequence.Iterator(im):
+        lines = image_to_lines(frame, height)
+        duration = int(frame.info.get("duration", 40) or 40)
+        source_frames.append((lines, duration, visible_cells(lines)))
 
-    frames: list[list[str]] = []
-    delays: list[int] = []
-    for idx, frame in enumerate(ImageSequence.Iterator(im)):
-        if idx not in indices:
-            continue
-        delays.append(int(frame.info.get("duration", 40) or 40))
-        frames.append(image_to_lines(frame, height))
+    counts = [count for _, _, count in source_frames if count > 0]
+    if not counts:
+        raise RuntimeError(f"{SRC} did not produce any visible ASCII frames")
+
+    # The upstream GIF starts with a few tiny terminal-cursor delta frames. If
+    # sampled, they make the loop visibly flash when the animation wraps.
+    min_visible_cells = round(median(counts) * 0.60)
+    visible_frames = [frame for frame in source_frames if frame[2] >= min_visible_cells]
+    indices = sample_indices(len(visible_frames), WANTED)
+
+    frames = [visible_frames[idx][0] for idx in indices]
+    delays = [visible_frames[idx][1] for idx in indices]
 
     out = [
         "-- Generated from assets/blackhole.gif, sourced from the milli.nvim media preview for blackhole.",
