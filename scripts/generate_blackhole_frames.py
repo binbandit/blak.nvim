@@ -13,6 +13,8 @@ OUT = ROOT / "lua" / "blak" / "splash" / "frames" / "blackhole.lua"
 CHARS = " .:-=+*#%@"
 WIDTH = 62
 WANTED = 32
+CELL_WIDTH_TO_HEIGHT = 0.60
+ART_WIDTH = 34
 
 # The upstream GIF is a full terminal preview. This crop removes terminal chrome
 # and keeps the black-hole art itself.
@@ -25,7 +27,7 @@ def lua_string(value: str) -> str:
 
 def frame_height() -> int:
     crop_w, crop_h = CROP[2] - CROP[0], CROP[3] - CROP[1]
-    return max(18, round(crop_h / crop_w * WIDTH * 0.50))
+    return max(18, round(crop_h / crop_w * WIDTH * CELL_WIDTH_TO_HEIGHT))
 
 
 def pixel_to_char(r: int, g: int, b: int) -> str:
@@ -43,9 +45,9 @@ def pixel_to_char(r: int, g: int, b: int) -> str:
 
 def image_to_lines(image: Image.Image, height: int) -> list[str]:
     rgb = image.convert("RGB").crop(CROP)
-    rgb.thumbnail((WIDTH, height), Image.Resampling.LANCZOS)
+    rgb = rgb.resize((ART_WIDTH, height), Image.Resampling.LANCZOS)
     canvas = Image.new("RGB", (WIDTH, height), (0, 0, 0))
-    canvas.paste(rgb, ((WIDTH - rgb.width) // 2, (height - rgb.height) // 2))
+    canvas.paste(rgb, ((WIDTH - rgb.width) // 2, 0))
 
     lines: list[str] = []
     for py in range(height):
