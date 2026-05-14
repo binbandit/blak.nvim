@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
+from statistics import median
 
 ROOT = Path(__file__).resolve().parents[1]
 LUA = sorted(ROOT.rglob("*.lua"))
@@ -127,6 +128,68 @@ def check_keyword_balance(path: Path, text: str) -> list[str]:
     return errors
 
 
+def check_blackhole_frames() -> list[str]:
+    path = ROOT / "lua" / "blak" / "splash" / "frames" / "blackhole.lua"
+    text = path.read_text(encoding="utf-8")
+    rel = path.relative_to(ROOT)
+    errors: list[str] = []
+
+    cols_match = re.search(r"\bcols\s*=\s*(\d+)", text)
+    rows_match = re.search(r"\brows\s*=\s*(\d+)", text)
+    if not cols_match or not rows_match:
+        return [f"{rel}: missing cols/rows metadata"]
+
+    cols = int(cols_match.group(1))
+    rows = int(rows_match.group(1))
+    frame_blocks = re.findall(r"    \{\n(.*?)\n    \},", text, re.S)
+    frames = [re.findall(r"\[=\[(.*?)\]=\]", block) for block in frame_blocks]
+    delay_match = re.search(r"\bdelays\s*=\s*\{([^}]*)\}", text)
+    delays = [int(value) for value in re.findall(r"\d+", delay_match.group(1))] if delay_match else []
+
+    if not frames:
+        errors.append(f"{rel}: no frames found")
+        return errors
+    if len(delays) != len(frames):
+        errors.append(f"{rel}: {len(delays)} delays for {len(frames)} frames")
+
+    counts: list[int] = []
+    centers: list[tuple[int, float]] = []
+    for frame_index, frame in enumerate(frames, start=1):
+        if len(frame) != rows:
+            errors.append(f"{rel}: frame {frame_index} has {len(frame)} rows, expected {rows}")
+        for line_index, line in enumerate(frame, start=1):
+            if len(line) > cols:
+                errors.append(f"{rel}: frame {frame_index} line {line_index} is wider than {cols}")
+
+        coords = [
+            (x, y)
+            for y, line in enumerate(frame)
+            for x, ch in enumerate(line)
+            if ch != " "
+        ]
+        counts.append(len(coords))
+        if coords:
+            xs = [x for x, _ in coords]
+            centers.append((frame_index, (min(xs) + max(xs)) / 2))
+
+    visible_counts = [count for count in counts if count > 0]
+    if not visible_counts:
+        errors.append(f"{rel}: frames contain no visible cells")
+        return errors
+
+    minimum_visible = median(visible_counts) * 0.60
+    for frame_index, count in enumerate(counts, start=1):
+        if count < minimum_visible:
+            errors.append(f"{rel}: frame {frame_index} is sparse enough to flash on loop")
+
+    expected_center = (cols - 1) / 2
+    for frame_index, center in centers:
+        if abs(center - expected_center) > 2:
+            errors.append(f"{rel}: frame {frame_index} is horizontally off-center")
+
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -155,6 +218,8 @@ def main() -> int:
         if extra_id in seen:
             errors.append(f"duplicate extra id {extra_id}: {seen[extra_id]} and {path}")
         seen[extra_id] = path
+
+    errors.extend(check_blackhole_frames())
 
     for rel in [
         "README.md",
