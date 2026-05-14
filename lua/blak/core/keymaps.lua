@@ -3,6 +3,27 @@ local M = {}
 local registered = {}
 local registered_lookup = {}
 
+-- Built-in commands do not appear in maparg(), so optional keys need a small
+-- reserved list when Blak would otherwise shadow native editing behavior.
+local nvim_builtin_keys = {
+  n = {
+    ["-"] = true,
+  },
+}
+
+local function mode_list(mode)
+  return type(mode) == "table" and mode or { mode }
+end
+
+local function has_keymap(mode, lhs)
+  local keymap = vim.fn.maparg(lhs, mode, false, true)
+  return type(keymap) == "table" and next(keymap) ~= nil
+end
+
+local function is_nvim_builtin_key(mode, lhs)
+  return nvim_builtin_keys[mode] and nvim_builtin_keys[mode][lhs]
+end
+
 local function map(mode, lhs, rhs, desc, opts)
   opts = vim.tbl_extend("force", { silent = true, desc = desc }, opts or {})
   vim.keymap.set(mode, lhs, rhs, opts)
@@ -15,10 +36,22 @@ local function map(mode, lhs, rhs, desc, opts)
   end
 end
 
+local function map_if_available(mode, lhs, rhs, desc, opts)
+  for _, item in ipairs(mode_list(mode)) do
+    if not has_keymap(item, lhs) and not is_nvim_builtin_key(item, lhs) then
+      map(item, lhs, rhs, desc, opts)
+    end
+  end
+end
+
 local function picker(kind)
   return function()
     require("blak.providers.picker").pick(kind)
   end
+end
+
+local function save_buffer()
+  vim.cmd("silent update")
 end
 
 local function delete_buffer()
@@ -27,6 +60,13 @@ local function delete_buffer()
     snacks.bufdelete()
   else
     vim.cmd("bdelete")
+  end
+end
+
+local function open_explorer()
+  local oil = require("blak.util").load_plugin("oil.nvim", "oil")
+  if oil then
+    oil.open()
   end
 end
 
@@ -84,12 +124,11 @@ function M.setup(config)
   map("n", "<leader>bn", "<cmd>bnext<cr>", "Next buffer")
   map("n", "<leader>bp", "<cmd>bprevious<cr>", "Previous buffer")
 
-  map("n", "<leader>e", function()
-    local oil = require("blak.util").load_plugin("oil.nvim", "oil")
-    if oil then
-      oil.open()
-    end
-  end, "Explorer")
+  map("n", "<leader>e", open_explorer, "Explorer")
+  map_if_available("n", "-", open_explorer, "Explorer")
+
+  map_if_available({ "n", "i", "x", "s" }, "<C-s>", save_buffer, "Save")
+  map_if_available({ "n", "i", "x", "s" }, "<D-s>", save_buffer, "Save")
 
   map("n", "]h", git_nav("next"), "Next git hunk")
   map("n", "[h", git_nav("prev"), "Previous git hunk")

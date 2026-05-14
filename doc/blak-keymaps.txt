@@ -15,8 +15,13 @@ FIND
   <Space>fk        Keymaps
   <Space>fh        Help
 
+SAVE
+  <C-s>            Save, in modes where Neovim leaves it free
+  <D-s>            Save, where Command-s is forwarded by the UI
+
 EXPLORER
   <Space>e         Oil explorer
+  -                Oil explorer, only when not reserved by Neovim
 
 GIT
   [h               Previous git hunk
