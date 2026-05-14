@@ -6,23 +6,47 @@ local function data()
   return require("blak.splash.frames.blackhole")
 end
 
-local function first_nonblank(lines)
+local function frame_anchor(lines)
+  local best_index, best_anchor, best_column = 1, "", 1
   for index, line in ipairs(lines) do
-    if line:find("%S") then
-      return index, vim.trim(line)
+    local anchor = vim.trim(line)
+    if #anchor > #best_anchor then
+      best_index, best_anchor, best_column = index, anchor, line:find("%S") or 1
     end
   end
-  return 1, lines[1] or ""
+  return best_index, best_anchor, best_column
 end
 
-local function set_lines(buf, start, frame)
+local function pad_line(line, width)
+  local padding = width - vim.api.nvim_strwidth(line)
+  return padding > 0 and (line .. string.rep(" ", padding)) or line
+end
+
+local function center_line(line, width)
+  local padding = width - vim.api.nvim_strwidth(line)
+  if padding <= 0 then
+    return line
+  end
+  local before = math.floor(padding / 2)
+  return string.rep(" ", before) .. line .. string.rep(" ", padding - before)
+end
+
+local function normalize_frame(frame, width, indent)
+  local prefix = string.rep(" ", indent or 0)
+  return vim.tbl_map(function(line)
+    return prefix .. pad_line(line, width)
+  end, frame)
+end
+
+local function set_lines(buf, start, frame, width, indent)
   if not vim.api.nvim_buf_is_valid(buf) then
     return false
   end
+  local lines = normalize_frame(frame, width, indent)
   local old_modifiable = vim.bo[buf].modifiable
   pcall(function()
     vim.bo[buf].modifiable = true
-    vim.api.nvim_buf_set_lines(buf, start, start + #frame, false, frame)
+    vim.api.nvim_buf_set_lines(buf, start, start + #lines, false, lines)
     vim.bo[buf].modifiable = old_modifiable
   end)
   return true
@@ -30,13 +54,14 @@ end
 
 local function find_region(buf, frame)
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-  local anchor_index, anchor = first_nonblank(frame)
+  local anchor_index, anchor, anchor_column = frame_anchor(frame)
   if anchor == "" then
     return nil
   end
   for index, line in ipairs(lines) do
-    if vim.trim(line) == anchor then
-      return index - anchor_index
+    local match_column = line:find(anchor, 1, true)
+    if match_column and vim.trim(line) == anchor then
+      return index - anchor_index, math.max(0, match_column - anchor_column)
     end
   end
   return nil
@@ -44,11 +69,12 @@ end
 
 function M.header()
   local splash = data()
-  local header = vim.deepcopy(splash.frames[1])
+  local width = splash.cols or 0
+  local header = normalize_frame(splash.frames[1], width)
   vim.list_extend(header, {
-    "",
-    "                         BLAK",
-    "              where bloat goes to die",
+    pad_line("", width),
+    center_line("BLAK", width),
+    center_line("where bloat goes to die", width),
   })
   return header
 end
@@ -60,7 +86,8 @@ function M.play(buf, opts)
     return
   end
 
-  local start = find_region(buf, splash.frames[1])
+  local width = splash.cols or 0
+  local start, indent = find_region(buf, normalize_frame(splash.frames[1], width))
   if not start then
     return
   end
@@ -93,7 +120,7 @@ function M.play(buf, opts)
       stop()
       return
     end
-    set_lines(buf, start, splash.frames[index])
+    set_lines(buf, start, splash.frames[index], width, indent)
     index = index + 1
     if index > #splash.frames then
       if opts.loop == false then
