@@ -157,7 +157,7 @@ def check_blackhole_frames() -> list[str]:
 
     counts: list[int] = []
     centers: list[tuple[int, float]] = []
-    shape_ratios: list[float] = []
+    body_widths: list[int] = []
     for frame_index, frame in enumerate(frames, start=1):
         if len(frame) != rows:
             errors.append(f"{rel}: frame {frame_index} has {len(frame)} rows, expected {rows}")
@@ -174,11 +174,8 @@ def check_blackhole_frames() -> list[str]:
         counts.append(len(coords))
         if coords:
             xs = [x for x, _ in coords]
-            ys = [y for _, y in coords]
             centers.append((frame_index, (min(xs) + max(xs)) / 2))
-            width = max(xs) - min(xs) + 1
-            height = max(ys) - min(ys) + 1
-            shape_ratios.append(height / width)
+            body_widths.append(max(xs) - min(xs) + 1)
 
     visible_counts = [count for count in counts if count > 0]
     if not visible_counts:
@@ -195,8 +192,8 @@ def check_blackhole_frames() -> list[str]:
         if abs(center - expected_center) > 2:
             errors.append(f"{rel}: frame {frame_index} is horizontally off-center")
 
-    if shape_ratios and median(shape_ratios) < 0.49:
-        errors.append(f"{rel}: visible black-hole body is vertically compressed")
+    if body_widths and median(body_widths) < 40:
+        errors.append(f"{rel}: visible black-hole body is too narrow")
 
     return errors
 

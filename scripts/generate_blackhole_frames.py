@@ -14,7 +14,7 @@ CHARS = " .:-=+*#%@"
 WIDTH = 62
 WANTED = 32
 CELL_WIDTH_TO_HEIGHT = 0.60
-ART_WIDTH = 34
+ART_WIDTH = 44
 
 # The upstream GIF is a full terminal preview. This crop removes terminal chrome
 # and keeps the black-hole art itself.
