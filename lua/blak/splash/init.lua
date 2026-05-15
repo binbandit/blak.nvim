@@ -1,6 +1,7 @@
 local M = {}
 
 local ns = vim.api.nvim_create_namespace("blak.splash")
+local highlights = {}
 
 local function data()
   return require("blak.splash.frames.blackhole")
@@ -38,18 +39,61 @@ local function normalize_frame(frame, width, indent)
   end, frame)
 end
 
-local function set_lines(buf, start, frame, width, indent)
+local function get_hl(fg, bg)
+  fg = fg ~= "NONE" and fg or nil
+  bg = bg ~= "NONE" and bg or nil
+  if not fg and not bg then
+    return nil
+  end
+
+  local key = (fg or "none") .. "_" .. (bg or "none")
+  if not highlights[key] then
+    local name = "BlakSplash_" .. key:gsub("[^%w]", "_")
+    vim.api.nvim_set_hl(0, name, { fg = fg, bg = bg })
+    highlights[key] = name
+  end
+  return highlights[key]
+end
+
+local function paint_colors(buf, start, line_count, colors, indent)
+  vim.api.nvim_buf_clear_namespace(buf, ns, start, start + line_count)
+  if not colors then
+    return
+  end
+
+  local col_offset = indent or 0
+  for row_index, row_runs in ipairs(colors) do
+    if row_index <= line_count then
+      local row = start + row_index - 1
+      for _, run in ipairs(row_runs) do
+        local hl = get_hl(run[3], run[4])
+        if hl then
+          pcall(vim.api.nvim_buf_set_extmark, buf, ns, row, col_offset + run[1], {
+            end_col = col_offset + run[2],
+            hl_group = hl,
+            priority = 200,
+          })
+        end
+      end
+    end
+  end
+end
+
+local function set_lines(buf, start, frame, width, indent, colors)
   if not vim.api.nvim_buf_is_valid(buf) then
     return false
   end
   local lines = normalize_frame(frame, width, indent)
   local old_modifiable = vim.bo[buf].modifiable
-  pcall(function()
+  local ok = pcall(function()
     vim.bo[buf].modifiable = true
     vim.api.nvim_buf_set_lines(buf, start, start + #lines, false, lines)
+    paint_colors(buf, start, #lines, colors, indent)
+  end)
+  pcall(function()
     vim.bo[buf].modifiable = old_modifiable
   end)
-  return true
+  return ok
 end
 
 local function find_region(buf, frame)
@@ -120,7 +164,7 @@ function M.play(buf, opts)
       stop()
       return
     end
-    set_lines(buf, start, splash.frames[index], width, indent)
+    set_lines(buf, start, splash.frames[index], width, indent, splash.colors and splash.colors[index])
     index = index + 1
     if index > #splash.frames then
       if opts.loop == false then

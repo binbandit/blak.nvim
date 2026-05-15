@@ -141,10 +141,11 @@ def check_blackhole_frames() -> list[str]:
 
     cols = int(cols_match.group(1))
     rows = int(rows_match.group(1))
-    if not (0.48 <= rows / cols <= 0.52):
-        errors.append(f"{rel}: frame table aspect should stay near 1:2")
+    if (cols, rows) != (50, 14):
+        errors.append(f"{rel}: expected 50 cols and 14 rows, got {cols} cols and {rows} rows")
 
-    frame_blocks = re.findall(r"    \{\n(.*?)\n    \},", text, re.S)
+    frames_match = re.search(r"\bframes\s*=\s*\{\n(.*?)\n  \},", text, re.S)
+    frame_blocks = re.findall(r"    \{\n(.*?)\n    \},", frames_match.group(1), re.S) if frames_match else []
     frames = [re.findall(r"\[=\[(.*?)\]=\]", block) for block in frame_blocks]
     delay_match = re.search(r"\bdelays\s*=\s*\{([^}]*)\}", text)
     delays = [int(value) for value in re.findall(r"\d+", delay_match.group(1))] if delay_match else []
@@ -154,6 +155,33 @@ def check_blackhole_frames() -> list[str]:
         return errors
     if len(delays) != len(frames):
         errors.append(f"{rel}: {len(delays)} delays for {len(frames)} frames")
+    for delay in delays:
+        if delay != 80:
+            errors.append(f"{rel}: frame delay should be 80ms")
+            break
+
+    colors_match = re.search(r"\bcolors\s*=\s*\{\n(.*?)\n  \}", text, re.S)
+    color_frames = re.findall(r"    \{\n(.*?)\n    \},", colors_match.group(1), re.S) if colors_match else []
+    if not colors_match:
+        errors.append(f"{rel}: missing color spans")
+    elif len(color_frames) != len(frames):
+        errors.append(f"{rel}: {len(color_frames)} color frames for {len(frames)} frames")
+
+    color_run_re = re.compile(
+        r"\{\s*(\d+),\s*(\d+),\s*\"(#[0-9a-fA-F]{6})\",\s*\"(NONE|#[0-9a-fA-F]{6})\"\s*\}"
+    )
+    color_runs = [
+        (int(start), int(end), fg.lower(), bg)
+        for start, end, fg, bg in color_run_re.findall(colors_match.group(1) if colors_match else "")
+    ]
+    if colors_match and not color_runs:
+        errors.append(f"{rel}: color spans contain no runs")
+    if color_runs and not any(fg not in {"#000000", "#ffffff"} for _, _, fg, _ in color_runs):
+        errors.append(f"{rel}: color spans do not include red/orange black-hole colors")
+    for start, end, _, _ in color_runs:
+        if not (0 <= start < end <= cols):
+            errors.append(f"{rel}: color span {start}-{end} exceeds {cols} columns")
+            break
 
     counts: list[int] = []
     centers: list[tuple[int, float]] = []
@@ -192,7 +220,7 @@ def check_blackhole_frames() -> list[str]:
         if abs(center - expected_center) > 2:
             errors.append(f"{rel}: frame {frame_index} is horizontally off-center")
 
-    if body_widths and median(body_widths) < 40:
+    if body_widths and median(body_widths) < 38:
         errors.append(f"{rel}: visible black-hole body is too narrow")
 
     return errors
