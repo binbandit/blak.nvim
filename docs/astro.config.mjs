@@ -55,6 +55,65 @@ export default defineConfig({
   document.documentElement.dataset.theme = 'dark';
 })();`,
         },
+        // Enhance the Pagefind search dialog: better placeholder, an
+        // empty-state hint with clickable quick links to popular pages.
+        // Pagefind builds its UI lazily on first dialog open; we run on
+        // DOMContentLoaded then observe the document for form insertion.
+        {
+          tag: "script",
+          content: `(() => {
+  const POPULAR = [
+    { label: 'Install',     href: '/blak.nvim/start/install/' },
+    { label: 'Why Blak',    href: '/blak.nvim/start/why/' },
+    { label: 'Commands',    href: '/blak.nvim/guide/commands/' },
+    { label: 'Keymaps',     href: '/blak.nvim/guide/keymaps/' },
+    { label: 'Extras',      href: '/blak.nvim/guide/extras/' },
+    { label: 'LSP',         href: '/blak.nvim/guide/lsp/' },
+  ];
+  const PLACEHOLDER = 'Search docs — install, extras, lsp, keymaps, schema…';
+
+  function buildEmptyState() {
+    const el = document.createElement('div');
+    el.className = 'blak-search-empty';
+    el.innerHTML = [
+      '<div class="blak-search-empty-eyebrow">Tip</div>',
+      '<p class="blak-search-empty-hint">Search runs across every guide and reference page. Start typing, or jump in:</p>',
+      '<div class="blak-search-empty-grid">',
+      ...POPULAR.map(function (p) {
+        return '<a class="blak-search-empty-chip" href="' + p.href + '"><span class="blak-search-empty-chip-mark" aria-hidden="true">&#9656;</span>' + p.label + '</a>';
+      }),
+      '</div>',
+    ].join('');
+    return el;
+  }
+
+  function enhance(form) {
+    if (!form || form.dataset.blakEnhanced) return;
+    form.dataset.blakEnhanced = '1';
+    var input = form.querySelector('.pagefind-ui__search-input');
+    if (input) input.placeholder = PLACEHOLDER;
+    form.appendChild(buildEmptyState());
+  }
+
+  function scan() {
+    document.querySelectorAll('.pagefind-ui__form').forEach(enhance);
+  }
+
+  function setup() {
+    scan();
+    new MutationObserver(scan).observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
+  }
+})();`,
+        },
       ],
       editLink: {
         baseUrl:

@@ -355,11 +355,12 @@ button[data-open-modal] kbd kbd + kbd {
   margin-left: 0.05em;
 }
 
-/* The modal Pagefind search dialog */
+/* The modal Pagefind search dialog ----------------------------------------- */
 dialog[aria-label="Search"] {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  color-scheme: dark;
 }
 
 dialog[aria-label="Search"] > div {
@@ -369,6 +370,239 @@ dialog[aria-label="Search"] > div {
   box-shadow:
     0 30px 80px -30px rgba(0, 0, 0, 0.7),
     0 0 0 1px rgba(204, 51, 0, 0.06);
+}
+
+/* Pagefind UI overrides — input, drawer, results --------------------------- */
+.pagefind-ui {
+  --pagefind-ui-primary: var(--ember);
+  --pagefind-ui-text: var(--paper);
+  --pagefind-ui-background: transparent;
+  --pagefind-ui-border: var(--line-bright);
+  --pagefind-ui-tag: var(--ink-3);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 0.5rem;
+  --pagefind-ui-image-border-radius: 0.5rem;
+  --pagefind-ui-image-box-ratio: 3 / 2;
+  --pagefind-ui-font: var(--sl-font);
+}
+
+.pagefind-ui__form {
+  position: relative;
+}
+
+.pagefind-ui__search-input {
+  background: var(--ink-3) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--paper-strong) !important;
+  font-family: var(--sl-font) !important;
+  font-size: 0.95rem !important;
+  letter-spacing: -0.01em;
+  padding: 0.85rem 2.75rem 0.85rem 2.6rem !important;
+  border-radius: 0.5rem !important;
+  transition: border-color 0.15s ease;
+}
+
+.pagefind-ui__search-input::placeholder {
+  color: var(--paper-muted) !important;
+}
+
+.pagefind-ui__search-input:focus {
+  outline: none !important;
+  border-color: var(--ember) !important;
+  box-shadow: 0 0 0 3px rgba(204, 51, 0, 0.12) !important;
+}
+
+.pagefind-ui__search-clear {
+  background: transparent !important;
+  color: var(--paper-dim) !important;
+  border: none !important;
+}
+
+.pagefind-ui__search-clear:hover {
+  color: var(--paper-strong) !important;
+}
+
+.pagefind-ui__drawer {
+  margin-top: 1rem;
+}
+
+.pagefind-ui__message {
+  font-family: var(--sl-font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--paper-muted);
+  padding: 0 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.pagefind-ui__results {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pagefind-ui__result {
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.pagefind-ui__result:hover {
+  border-color: var(--line-bright);
+  background: var(--ink-4, #0e0e0e);
+}
+
+.pagefind-ui__result-link,
+.pagefind-ui__result-title a {
+  color: var(--paper-strong) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  font-family: var(--sl-font) !important;
+  font-size: 0.95rem !important;
+  letter-spacing: -0.012em;
+}
+
+.pagefind-ui__result-title a:hover {
+  color: var(--ember-bright) !important;
+}
+
+.pagefind-ui__result-excerpt {
+  color: var(--paper-dim) !important;
+  font-size: 0.85rem !important;
+  line-height: 1.55 !important;
+  margin-top: 0.3rem !important;
+  font-family: var(--sl-font);
+}
+
+.pagefind-ui__result-excerpt mark {
+  background: rgba(204, 51, 0, 0.22) !important;
+  color: var(--paper-strong) !important;
+  font-weight: 600;
+  padding: 0.05em 0.2em;
+  border-radius: 0.2rem;
+}
+
+.pagefind-ui__result-nested {
+  margin-top: 0.55rem !important;
+  padding-left: 0.85rem !important;
+  border-left: 1px solid var(--line) !important;
+}
+
+.pagefind-ui__result-nested .pagefind-ui__result-title a {
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+}
+
+.pagefind-ui__button {
+  background: transparent !important;
+  border: 1px solid var(--line-bright) !important;
+  color: var(--paper-dim) !important;
+  border-radius: 0.4rem !important;
+  font-family: var(--sl-font) !important;
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+  padding: 0.6rem 1rem !important;
+  margin-top: 0.5rem !important;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.pagefind-ui__button:hover {
+  border-color: var(--ember) !important;
+  color: var(--paper-strong) !important;
+}
+
+/* Search empty state — injected by head script, shown when drawer is hidden */
+.blak-search-empty {
+  display: none;
+  margin-top: 1.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.pagefind-ui__form:has(.pagefind-ui__drawer.pagefind-ui__hidden)
+  .blak-search-empty,
+.pagefind-ui__form:not(:has(.pagefind-ui__drawer:not(.pagefind-ui__hidden)))
+  .blak-search-empty {
+  display: block;
+}
+
+/* Hide once the user has typed and results are showing. */
+.pagefind-ui__form:has(.pagefind-ui__drawer:not(.pagefind-ui__hidden))
+  .blak-search-empty {
+  display: none !important;
+}
+
+.blak-search-empty-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--sl-font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+  margin-bottom: 0.6rem;
+}
+
+.blak-search-empty-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 6px var(--ember);
+}
+
+.blak-search-empty-hint {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--paper-dim);
+}
+
+.blak-search-empty-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem;
+}
+
+@media (min-width: 32rem) {
+  .blak-search-empty-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.blak-search-empty-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  color: var(--paper) !important;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none !important;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.blak-search-empty-chip:hover {
+  border-color: var(--ember);
+  color: var(--paper-strong) !important;
+  background: rgba(204, 51, 0, 0.04);
+}
+
+.blak-search-empty-chip-mark {
+  color: var(--ember);
+  font-size: 0.7rem;
 }
 
 /* ============================================================================
