@@ -21,7 +21,7 @@ return function(config)
     },
     {
       "stevearc/oil.nvim",
-      cmd = "Oil",
+      lazy = false,
       opts = {
         default_file_explorer = true,
         columns = { "icon" },
@@ -52,6 +52,7 @@ return function(config)
           { "<leader>g", group = "git" },
           { "<leader>l", group = "lazy/blak" },
           { "<leader>q", group = "quit/session" },
+          { "<leader>t", group = "terminal" },
           { "<leader>u", group = "toggle/update" },
           { "<leader>x", group = "diagnostics" },
         },

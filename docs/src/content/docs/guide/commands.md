@@ -101,6 +101,14 @@ Installs every parser in `treesitter.ensure_installed` using the nvim-treesitter
 
 Blak can install `tree-sitter-cli` through Mason on first launch (it's in the default Mason set), then this command compiles parsers.
 
+## Terminal
+
+### `:BlakTerminal [cmd]`
+
+Toggles a bottom split backed by Neovim's native terminal. Without an argument it opens your shell; with an argument it runs that command.
+
+The keymap `<leader>tt` calls the no-argument form.
+
 ## Formatting
 
 ### `:BlakFormat`
@@ -139,6 +147,7 @@ Plays the black-hole animation in a scratch buffer. Useful for tweaking your ter
 :BlakUpgrade               explicit bigger moves
 :BlakToolsInstall          install Mason tools
 :BlakTreesitterInstall     install parsers
+:BlakTerminal [cmd]        native terminal split
 :BlakFormat                format current buffer
 :BlakFormatToggle[!]       toggle format-on-save
 :BlakSplash                preview splash animation

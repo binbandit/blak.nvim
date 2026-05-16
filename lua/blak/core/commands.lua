@@ -33,6 +33,7 @@ function M.setup(config)
       "  :BlakUpdate        update plugins with lockfile backup",
       "  :BlakRollback      restore last lockfile backup",
       "  :BlakTreesitterInstall install configured parsers",
+      "  :BlakTerminal      toggle a native terminal split",
     })
   end, { desc = "Open Blak overview" })
 
@@ -77,6 +78,10 @@ function M.setup(config)
   vim.api.nvim_create_user_command("BlakTreesitterInstall", function()
     require("blak.core.treesitter").install(config, { notify = true })
   end, { desc = "Install configured Treesitter parsers" })
+
+  vim.api.nvim_create_user_command("BlakTerminal", function(opts)
+    require("blak.core.terminal").toggle({ cmd = opts.args ~= "" and opts.args or nil })
+  end, { nargs = "*", desc = "Toggle a native terminal split" })
 
   vim.api.nvim_create_user_command("BlakFormat", function()
     local conform = require("blak.util").load_plugin("conform.nvim", "conform")

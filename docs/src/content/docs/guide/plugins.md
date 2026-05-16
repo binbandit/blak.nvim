@@ -27,7 +27,7 @@ Loaded with `priority = 1000` so its UI hooks beat other plugins. Spec: [`lua/bl
 
 ### which-key (`folke/which-key.nvim`)
 
-Pops up after the leader (or any prefix) showing the registered keymap groups. Blak pre-registers groups for `b` (buffers), `c` (code), `f` (find), `g` (git), `l` (lazy/blak), `q` (quit), `u` (toggles), `x` (diagnostics). Loaded on `VeryLazy`.
+Pops up after the leader (or any prefix) showing the registered keymap groups. Blak pre-registers groups for `b` (buffers), `c` (code), `f` (find), `g` (git), `l` (lazy/blak), `q` (quit), `t` (terminal), `u` (toggles), `x` (diagnostics). Loaded on `VeryLazy`.
 
 ## Editor
 
@@ -41,7 +41,7 @@ Parser-based syntax, indent, and queries. Configured via [`lua/blak/core/treesit
 
 ### oil.nvim (`stevearc/oil.nvim`)
 
-The default file explorer. Treats directories as buffers you edit. Loaded on `:Oil` (lazy). Float style: 90 × 90 with rounded border.
+The default file explorer. Treats directories as buffers you edit. Loaded eagerly so `blak .`, `:edit <directory>`, and Oil's directory takeover behave consistently. Float style: 90 × 90 with rounded border.
 
 ## Picker
 

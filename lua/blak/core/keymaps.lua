@@ -66,7 +66,7 @@ end
 local function open_explorer()
   local oil = require("blak.util").load_plugin("oil.nvim", "oil")
   if oil then
-    oil.open()
+    oil.open(require("blak.util").git_root())
   end
 end
 
@@ -117,6 +117,7 @@ function M.setup(config)
   map("n", "<Esc>", "<cmd>nohlsearch<cr>", "Clear search")
 
   map("n", "<leader><space>", picker("smart"), "Smart find")
+  map("n", "<leader>/", picker("grep"), "Grep")
   map("n", "<leader>ff", picker("files"), "Find files")
   map("n", "<leader>fg", picker("grep"), "Grep")
   map("n", "<leader>fb", picker("buffers"), "Buffers")
@@ -130,7 +131,6 @@ function M.setup(config)
   map("n", "<leader>bp", "<cmd>bprevious<cr>", "Previous buffer")
 
   map("n", "<leader>e", open_explorer, "Explorer")
-  map_if_available("n", "-", open_explorer, "Explorer")
 
   map_if_available({ "n", "i", "x", "s" }, "<C-s>", save_buffer, "Save")
   map_if_available({ "n", "i", "x", "s" }, "<D-s>", save_buffer, "Save")
@@ -158,6 +158,7 @@ function M.setup(config)
   map("n", "<leader>ld", "<cmd>BlakDoctor<cr>", "Doctor")
   map("n", "<leader>le", "<cmd>BlakExtras<cr>", "Extras")
 
+  map("n", "<leader>tt", "<cmd>BlakTerminal<cr>", "Terminal")
   map("n", "<leader>uf", "<cmd>BlakFormatToggle<cr>", "Toggle format on save")
   map("n", "<leader>?", "<cmd>BlakKeys<cr>", "Blak keymaps")
 

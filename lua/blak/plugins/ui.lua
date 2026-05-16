@@ -20,7 +20,12 @@ return function(config)
                 { icon = " ", key = "r", desc = "Recent files", action = ":BlakPick recent" },
                 { icon = "󰱼 ", key = "g", desc = "Grep", action = ":BlakPick grep" },
                 { icon = "󰈔 ", key = "n", desc = "New file", action = ":ene | startinsert" },
-                { icon = "󰙅 ", key = "e", desc = "Explorer", action = ":Oil" },
+                {
+                  icon = "󰙅 ",
+                  key = "e",
+                  desc = "Explorer",
+                  action = ":lua require('oil').open(require('blak.util').git_root())",
+                },
                 { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
                 { icon = "󰊳 ", key = "d", desc = "Doctor", action = ":BlakDoctor" },
                 { icon = "󰗼 ", key = "q", desc = "Quit", action = ":qa" },

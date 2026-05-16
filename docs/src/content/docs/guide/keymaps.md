@@ -25,6 +25,7 @@ All core keymaps are defined in [`lua/blak/core/keymaps.lua`](https://github.com
 | Mapping | Action |
 | --- | --- |
 | `<leader><space>` | Smart file find |
+| `<leader>/` | Grep |
 | `<leader>ff` | Find files |
 | `<leader>fg` | Grep |
 | `<leader>fb` | Buffers |
@@ -50,6 +51,12 @@ All dispatch through the picker provider — see [Pickers](/blak.nvim/guide/pick
 | `<leader>e` | Oil explorer |
 
 Blak leaves Neovim's native `-` motion alone.
+
+## Terminal
+
+| Mapping | Action |
+| --- | --- |
+| `<leader>tt` | Toggle a native terminal split |
 
 ## Git (gitsigns)
 
@@ -127,6 +134,6 @@ See the [LSP guide](/blak.nvim/guide/lsp/).
 ## Design notes
 
 - **No hidden chords.** If a mapping isn't in this page or in `:BlakKeys`, it doesn't exist in Blak core.
-- **Mnemonic grouping.** `<leader>f*` find, `<leader>b*` buffers, `<leader>g*` git, `<leader>c*` code, `<leader>x*` diagnostics, `<leader>l*` Lazy/Blak, `<leader>u*` UI toggles, `<leader>q*` quit.
+- **Mnemonic grouping.** `<leader>f*` find, `<leader>b*` buffers, `<leader>g*` git, `<leader>c*` code, `<leader>x*` diagnostics, `<leader>l*` Lazy/Blak, `<leader>t*` terminal, `<leader>u*` UI toggles, `<leader>q*` quit.
 - **`map_if_available`.** Keys like `<C-s>` and `<D-s>` are only set when not already mapped — they yield to native bindings or another plugin's claim.
 - **Extras add to this list.** Run `:BlakKeys` to see what your enabled extras have registered.

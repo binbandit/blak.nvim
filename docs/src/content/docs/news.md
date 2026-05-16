@@ -16,7 +16,7 @@ Initial implementation. Complete enough to install, use, and share — young eno
 - Snacks dashboard, input, notifier, picker, quickfile, bigfile modules.
 - Animated black-hole splash extracted from milli.nvim's blackhole GIF preview.
 - Conform formatting, nvim-lint linting, native Treesitter.
-- Oil as the default file explorer; Gitsigns; Which-key.
+- Oil as the default file explorer; native terminal split; Gitsigns; Which-key.
 - A monochrome `blak` colorscheme.
 
 **Extras (reversible)**

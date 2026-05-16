@@ -92,10 +92,19 @@ util.tbl_keys(tbl)                             -- sorted key list
 ### Git
 
 ```lua
-local root = require("blak.util").git_root()   -- nil if not in a git repo
+local root = require("blak.util").git_root()   -- git root, falling back to cwd
 ```
 
-Uses `vim.fs.root` when available, falls back to `git rev-parse --show-toplevel`.
+Uses `vim.fs.root` when available, falls back to `git rev-parse --show-toplevel`, then to the current working directory.
+
+## `require("blak.core.terminal")`
+
+```lua
+require("blak.core.terminal").toggle()
+require("blak.core.terminal").toggle({ cmd = "lazygit" })
+```
+
+Opens or closes Blak's native terminal split. This is what `:BlakTerminal` and `<leader>tt` call.
 
 ### UI
 

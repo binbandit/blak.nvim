@@ -51,6 +51,7 @@ lua/blak/
 │   ├── autocmds.lua        Yank highlight, cursor restore, FT close-on-q, …
 │   ├── commands.lua        Every :Blak* user command
 │   ├── keymaps.lua         All keymaps + :BlakKeys
+│   ├── terminal.lua        Native terminal split used by :BlakTerminal
 │   ├── treesitter.lua      Parser install, FileType activation
 │   ├── tools.lua           Mason install orchestration
 │   ├── update.lua          :BlakUpdate / :BlakRollback / :BlakNews

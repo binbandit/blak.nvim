@@ -27,7 +27,7 @@ Runs [`scripts/validate.py`](https://github.com/binbandit/blak.nvim/blob/main/sc
 ### Output
 
 ```
-Validation passed: 51 Lua files, 15 extras
+Validation passed: 53 Lua files, 15 extras
 ```
 
 On failure, every problem is reported in one pass — fix them in a batch rather than running validate → fix → run → fix.
@@ -40,10 +40,11 @@ On failure, every problem is reported in one pass — fix them in a batch rather
 
 ## `make smoke`
 
-Runs Neovim headless against this checkout twice:
+Runs Neovim headless against this checkout three times:
 
 1. First invocation: sets the runtime path, runs `:Lazy! sync` to install plugins, then quits.
 2. Second invocation: cold-boot test — sets the runtime path, executes [`scripts/smoke.lua`](https://github.com/binbandit/blak.nvim/blob/main/scripts/smoke.lua), then quits.
+3. Third invocation: starts with `.` as the directory argument and checks [`scripts/smoke-directory.lua`](https://github.com/binbandit/blak.nvim/blob/main/scripts/smoke-directory.lua), so `blak .` cannot regress to an empty buffer.
 
 ### What smoke.lua does
 
@@ -55,6 +56,13 @@ vim.g.blak_config = {
 require("blak").setup()
 assert(require("blak.config").get() ~= nil, "config missing")
 assert(vim.fn.exists(":Lazy") == 2, ":Lazy missing")
+assert(vim.fn.exists(":BlakTerminal") == 2, ":BlakTerminal missing")
+assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep")
+assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal")
+assert(vim.fn.maparg("-", "n") == "")
+local lazy_plugins = require("lazy.core.config").plugins
+assert(lazy_plugins["oil.nvim"].lazy == false)
+assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true)
 vim.cmd("checkhealth blak")
 ```
 
@@ -64,6 +72,8 @@ Translation:
 - Run setup. Any validation error or runtime error fails the test.
 - Confirm the merged config exists.
 - Confirm lazy.nvim's `:Lazy` command is registered.
+- Confirm Blak's terminal command and core keymaps are registered.
+- Confirm Oil is eager and owns directory buffers.
 - Run `:checkhealth blak` — any error or warning in the health module shows up in output.
 
 ### Smoke needs Neovim 0.12+

@@ -53,7 +53,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 - Completion: `blink.cmp` on the stable `1.*` line
 - LSP: native `vim.lsp.config()` with `mason-lspconfig` handling Mason-backed `vim.lsp.enable()`
 - Tools: Mason, Conform, nvim-lint, nvim-treesitter
-- Editing: Oil file explorer, Gitsigns, which-key, `mini.icons`
+- Editing: Oil file explorer, native terminal split, Gitsigns, which-key, `mini.icons`
 - Theme: the small monochrome `blak` colorscheme
 
 ## Core commands
@@ -70,6 +70,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 :BlakRollback      restore last lockfile backup and run Lazy restore
 :BlakToolsInstall  install Mason tools required by enabled extras
 :BlakTreesitterInstall install configured Treesitter parsers
+:BlakTerminal [cmd] toggle a native terminal split
 :BlakFormat        format current buffer
 :BlakFormatToggle  toggle format-on-save
 :BlakSplash        preview the black-hole animation

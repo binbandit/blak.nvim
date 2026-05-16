@@ -7,6 +7,7 @@ commands and pickers.
 
 FIND
   <Space><Space>   Smart file find
+  <Space>/         Grep
   <Space>ff        Find files
   <Space>fg        Grep
   <Space>fb        Buffers
@@ -22,6 +23,9 @@ SAVE
 EXPLORER
   <Space>e         Oil explorer
   Blak leaves Neovim's native - motion alone.
+
+TERMINAL
+  <Space>tt        Native terminal split
 
 GIT
   [h               Previous git hunk
