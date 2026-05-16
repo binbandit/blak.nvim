@@ -27,7 +27,7 @@ Runs [`scripts/validate.py`](https://github.com/binbandit/blak.nvim/blob/main/sc
 ### Output
 
 ```
-Validation passed: 53 Lua files, 15 extras
+Validation passed: 54 Lua files, 15 extras
 ```
 
 On failure, every problem is reported in one pass — fix them in a batch rather than running validate → fix → run → fix.
@@ -40,11 +40,12 @@ On failure, every problem is reported in one pass — fix them in a batch rather
 
 ## `make smoke`
 
-Runs Neovim headless against this checkout three times:
+Runs Neovim headless against this checkout four times:
 
 1. First invocation: sets the runtime path, runs `:Lazy! sync` to install plugins, then quits.
 2. Second invocation: cold-boot test — sets the runtime path, executes [`scripts/smoke.lua`](https://github.com/binbandit/blak.nvim/blob/main/scripts/smoke.lua), then quits.
-3. Third invocation: starts with `.` as the directory argument and checks [`scripts/smoke-directory.lua`](https://github.com/binbandit/blak.nvim/blob/main/scripts/smoke-directory.lua), so `blak .` cannot regress to an empty buffer.
+3. Third invocation: command-contract test — executes [`scripts/commands.lua`](https://github.com/binbandit/blak.nvim/blob/main/scripts/commands.lua), exercises every public `:Blak` command, stubs destructive Lazy actions, verifies extras state changes, and confirms command completion.
+4. Fourth invocation: starts with `.` as the directory argument and checks [`scripts/smoke-directory.lua`](https://github.com/binbandit/blak.nvim/blob/main/scripts/smoke-directory.lua), so `blak .` cannot regress to an empty buffer.
 
 ### What smoke.lua does
 
@@ -75,6 +76,12 @@ Translation:
 - Confirm Blak's terminal command and core keymaps are registered.
 - Confirm Oil is eager and owns directory buffers.
 - Run `:checkhealth blak` — any error or warning in the health module shows up in output.
+
+### What commands.lua does
+
+The command-contract smoke test asserts every documented `:Blak*` command exists and can be invoked. It exercises overview, health, keys, news, picker dispatch, extras list/enable/disable/sync, update/upgrade/rollback backup wiring, tool/parser install no-op paths, formatting, format toggles, terminal, and splash preview.
+
+It stubs Lazy's update/sync/restore commands so CI checks Blak's command behavior without doing network updates in the middle of the test.
 
 ### Smoke needs Neovim 0.12+
 

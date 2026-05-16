@@ -12,6 +12,26 @@ local function timestamp()
   return os.date("%Y%m%d-%H%M%S")
 end
 
+local function next_backup_path()
+  local util = require("blak.util")
+  local dir = backup_dir()
+  local stamp = timestamp()
+  local path = util.join(dir, "lazy-lock-" .. stamp .. ".json")
+  if not util.file_exists(path) then
+    return path
+  end
+
+  for index = 1, 999 do
+    path = util.join(dir, string.format("lazy-lock-%s-%03d.json", stamp, index))
+    if not util.file_exists(path) then
+      return path
+    end
+  end
+
+  local uv = vim.uv or vim.loop
+  return util.join(dir, string.format("lazy-lock-%s-%s.json", stamp, uv.hrtime()))
+end
+
 function M.backup()
   local util = require("blak.util")
   local lock = lockfile()
@@ -19,7 +39,7 @@ function M.backup()
     return nil
   end
   util.mkdir(backup_dir())
-  local dest = util.join(backup_dir(), "lazy-lock-" .. timestamp() .. ".json")
+  local dest = next_backup_path()
   if util.copy_file(lock, dest) then
     return dest
   end

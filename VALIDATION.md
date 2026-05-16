@@ -11,7 +11,7 @@ grep -RIn '<legacy Black identifiers>' .
 Result:
 
 ```text
-Validation passed: 51 Lua files, 15 extras
+Validation passed: 54 Lua files, 15 extras
 install.sh syntax OK
 stale name grep OK
 ```
@@ -32,6 +32,6 @@ Runtime validation is included:
 make smoke
 ```
 
-The smoke test starts Neovim headless with `NVIM_APPNAME=blak-test`, disables the splash and automatic Mason installation, loads `require("blak").setup()`, verifies config is present, runs `:checkhealth blak`, syncs plugins, then runs the smoke script a second time against the synced install.
+The smoke test starts Neovim headless with `NVIM_APPNAME=blak-test`, disables the splash and automatic Mason installation, loads `require("blak").setup()`, verifies config is present, runs `:checkhealth blak`, syncs plugins, runs the smoke script a second time against the synced install, exercises every public `:Blak` command, and checks directory startup.
 
 The included GitHub Actions workflow runs static validation and a Neovim smoke test using the official stable Neovim Linux tarball.

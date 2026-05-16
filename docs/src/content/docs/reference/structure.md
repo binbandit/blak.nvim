@@ -26,7 +26,7 @@ blak.nvim/
 ├── doc/                    Vim helpfiles (:help blak)
 ├── assets/                 GIF + braille source for the splash
 ├── lua/blak/               The runtime — everything else
-├── scripts/                Python validator + Lua smoke test
+├── scripts/                Python validator + Lua smoke tests
 ├── docs/                   This documentation site (Astro Starlight)
 └── .github/workflows/      CI: validate, smoke, docs deploy
 ```
@@ -112,7 +112,9 @@ scripts/
 ├── validate.py             Static checks: Lua syntax, require paths,
 │                           extra ids, splash frame structure,
 │                           required docs, legacy-identifier cleanup
-└── smoke.lua               Runtime smoke test: setup + checkhealth
+├── smoke.lua               Runtime smoke test: setup + checkhealth
+├── commands.lua            Command-contract smoke test for every :Blak command
+└── smoke-directory.lua     Directory argument smoke test for `blak .`
 ```
 
 ## `docs/`

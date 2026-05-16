@@ -156,13 +156,32 @@ function M.command(opts)
   util.warn("Unknown BlakExtras action: " .. action)
 end
 
-function M.complete(line)
-  local args = vim.split(line, "%s+", { trimempty = true })
-  if #args <= 1 then
-    return { "list", "enable", "disable", "sync" }
+local function complete_filter(values, prefix)
+  prefix = prefix or ""
+  local out = {}
+  for _, value in ipairs(values) do
+    if prefix == "" or value:sub(1, #prefix) == prefix then
+      table.insert(out, value)
+    end
   end
-  if args[2] == "enable" or args[2] == "disable" then
-    return require("blak.util").tbl_keys(registry())
+  return out
+end
+
+function M.complete(arglead, line)
+  line = line or ""
+  local args = vim.split(line, "%s+", { trimempty = true })
+  if args[1] and args[1]:gsub("^:", "") == "BlakExtras" then
+    table.remove(args, 1)
+  end
+
+  local actions = { "list", "enable", "disable", "sync" }
+  local completing_action = #args == 0 or (#args == 1 and not line:match("%s$"))
+  if completing_action then
+    return complete_filter(actions, arglead)
+  end
+
+  if args[1] == "enable" or args[1] == "disable" then
+    return complete_filter(require("blak.util").tbl_keys(registry()), arglead)
   end
   return {}
 end

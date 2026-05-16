@@ -26,14 +26,21 @@ function M.setup(config)
       "Everything useful. Nothing escapes.",
       "",
       "Commands:",
-      "  :BlakDoctor        health checks",
-      "  :BlakExtras        list/enable/disable extras",
-      "  :BlakKeys          show keymaps",
-      "  :BlakPick files    picker entrypoint",
-      "  :BlakUpdate        update plugins with lockfile backup",
-      "  :BlakRollback      restore last lockfile backup",
-      "  :BlakTreesitterInstall install configured parsers",
-      "  :BlakTerminal      toggle a native terminal split",
+      "  :Blak                      overview",
+      "  :BlakDoctor                health checks",
+      "  :BlakKeys                  show keymaps",
+      "  :BlakNews                  release notes",
+      "  :BlakPick {kind}           picker entrypoint",
+      "  :BlakExtras                list/enable/disable extras",
+      "  :BlakUpdate                update plugins with lockfile backup",
+      "  :BlakUpgrade               intentional bigger moves",
+      "  :BlakRollback              restore last lockfile backup",
+      "  :BlakToolsInstall          install Mason tools",
+      "  :BlakTreesitterInstall     install configured parsers",
+      "  :BlakTerminal [cmd]        toggle a native terminal split",
+      "  :BlakFormat                format current buffer",
+      "  :BlakFormatToggle[!]       toggle format-on-save",
+      "  :BlakSplash                preview the splash animation",
     })
   end, { desc = "Open Blak overview" })
 
@@ -51,8 +58,8 @@ function M.setup(config)
 
   vim.api.nvim_create_user_command("BlakExtras", function(opts)
     require("blak.extras").command(opts)
-  end, { nargs = "*", complete = function(_, line)
-    return require("blak.extras").complete(line)
+  end, { nargs = "*", complete = function(arglead, line)
+    return require("blak.extras").complete(arglead, line)
   end, desc = "Manage Blak extras" })
 
   vim.api.nvim_create_user_command("BlakUpdate", function()

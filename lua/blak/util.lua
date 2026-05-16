@@ -62,7 +62,7 @@ function M.join(...)
   local out = {}
   for _, part in ipairs({ ... }) do
     if part and part ~= "" then
-      table.insert(out, tostring(part):gsub("[/\\]+$", ""))
+      table.insert(out, (tostring(part):gsub("[/\\]+$", "")))
     end
   end
   return table.concat(out, sep)
