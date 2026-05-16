@@ -10,7 +10,7 @@ return {
   },
 
   ui = {
-    colorscheme = "blak",
+    colorscheme = "tokyonight-night",
     icons = true,
     notify = true,
     winborder = "rounded",

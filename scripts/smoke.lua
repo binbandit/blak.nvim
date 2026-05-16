@@ -31,6 +31,9 @@ assert(
   lazy_plugins["tokyonight.nvim"].priority > lazy_plugins["snacks.nvim"].priority,
   "tokyonight.nvim must load before UI plugins"
 )
+if lazy_plugins["tokyonight.nvim"]._.loaded then
+  assert(vim.g.colors_name == "tokyonight-night", "TokyoNight Night should be the default colorscheme")
+end
 assert(lazy_plugins["oil.nvim"], "oil.nvim spec missing")
 assert(lazy_plugins["oil.nvim"].lazy == false, "oil.nvim must load eagerly for directory args")
 assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true, "oil.nvim must take directory buffers")

@@ -22,7 +22,6 @@ blak.nvim/
 ├── lazy-lock.json          Committed lockfile (what the world gets on first run)
 ├── .stylua.toml            Lua formatter config
 ├── .editorconfig
-├── colors/blak.lua         The blak colorscheme
 ├── doc/                    Vim helpfiles (:help blak)
 ├── assets/                 GIF + braille source for the splash
 ├── lua/blak/               The runtime — everything else

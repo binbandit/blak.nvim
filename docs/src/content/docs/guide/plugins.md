@@ -11,7 +11,7 @@ All base specs live under [`lua/blak/plugins/`](https://github.com/binbandit/bla
 
 ### TokyoNight (`folke/tokyonight.nvim`)
 
-Palette engine for the default `blak` colorscheme. Blak owns the black monochrome palette and brand highlight groups, while TokyoNight derives broad plugin highlight coverage from those colors. Loaded eagerly with higher priority than other UI plugins so startup surfaces inherit the final theme.
+Default colorscheme. Blak loads TokyoNight Night without a custom palette or highlight overlay. Loaded eagerly with higher priority than other UI plugins so startup surfaces inherit the final theme.
 
 ### Snacks (`folke/snacks.nvim`)
 

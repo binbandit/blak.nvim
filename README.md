@@ -54,7 +54,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 - LSP: native `vim.lsp.config()` with `mason-lspconfig` handling Mason-backed `vim.lsp.enable()`
 - Tools: Mason, Conform, nvim-lint, nvim-treesitter
 - Editing: Oil file explorer, native terminal split, Gitsigns, which-key, `mini.icons`
-- Theme: the monochrome `blak` colorscheme, backed by TokyoNight plugin highlights
+- Theme: TokyoNight Night (`tokyonight-night`)
 
 ## Core commands
 
