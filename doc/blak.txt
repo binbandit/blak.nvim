@@ -16,6 +16,9 @@ COMMANDS                                                 *blak-commands*
 :BlakKeys
     Show keymaps registered by Blak core and enabled extras.
 
+:BlakNews
+    Open the Blak release notes.
+
 :BlakPick {kind}
     Run a picker. Kinds include: files, grep, buffers, recent, commands,
     keymaps, help, diagnostics, lsp_symbols, workspace_symbols.
@@ -26,6 +29,9 @@ COMMANDS                                                 *blak-commands*
 :BlakUpdate
     Create a lazy-lock rollback point and run |:Lazy update|.
 
+:BlakUpgrade
+    Run an intentional bigger update after creating a rollback point.
+
 :BlakRollback
     Restore the latest lockfile backup and run |:Lazy restore|.
 
@@ -34,6 +40,12 @@ COMMANDS                                                 *blak-commands*
 
 :BlakTreesitterInstall
     Install configured Treesitter parsers.
+
+:BlakFormat
+    Format the current buffer with Conform and the configured LSP fallback.
+
+:BlakFormatToggle[!]
+    Toggle format-on-save for the current buffer. Use bang for global.
 
 :BlakSplash
     Preview the black-hole splash animation.

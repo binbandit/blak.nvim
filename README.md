@@ -6,6 +6,14 @@
 
 It is designed to be installable in one command, useful out of the box, easy to understand, and safe to extend through reversible extras.
 
+The longer promise lives in [MANIFESTO.md](MANIFESTO.md):
+
+> We use native Neovim first.
+> We ship only what earns its gravity.
+> We do not hide configuration behind magic.
+> We do not break your muscle memory on update.
+> We make extras easy, reversible, and documented.
+
 ## Status
 
 Blak is launching as a **v0.1 public preview**: complete enough to install, use, and share, while still young enough that issues and contributor feedback are expected.
@@ -21,8 +29,6 @@ Blak is launching as a **v0.1 public preview**: complete enough to install, use,
 
 ## Install
 
-After the repository is pushed to `binbandit/blak.nvim`:
-
 ```sh
 curl -fsSL https://raw.githubusercontent.com/binbandit/blak.nvim/main/install.sh | sh
 blak
@@ -37,22 +43,18 @@ git clone https://github.com/binbandit/blak.nvim ~/.config/blak
 NVIM_APPNAME=blak nvim
 ```
 
-## What ships by default
+## Default Kit
 
-- `lazy.nvim` backend with a lockfile and rollback support
-- `fff.nvim` as the primary file picker, using the canonical `dmtrKovalenko/fff` repository
-- Snacks dashboard/input/notifier/picker/quickfile/bigfile modules
-- Animated black-hole splash extracted from the milli.nvim blackhole GIF preview
-- `blink.cmp` completion
-- Native Neovim LSP setup using `vim.lsp.config()` and `vim.lsp.enable()` via `mason-lspconfig`
-- Mason for external tools
-- Conform for formatting
-- nvim-lint for standalone linters
-- nvim-treesitter
-- Oil as the default file explorer
-- Gitsigns
-- Which-key for discoverability
-- A small monochrome `blak` colorscheme
+Blak's defaults are intentionally small. They cover the editing floor and leave preference-heavy features as extras.
+
+- Package backend: `lazy.nvim`, committed lockfile, rollback snapshots
+- Picker: `fff.nvim` for files and grep, with Snacks fallback for broader picker actions
+- UI: Snacks dashboard/input/notifier/picker/quickfile/bigfile/words, plus the animated black-hole splash
+- Completion: `blink.cmp` on the stable `1.*` line
+- LSP: native `vim.lsp.config()` with `mason-lspconfig` handling Mason-backed `vim.lsp.enable()`
+- Tools: Mason, Conform, nvim-lint, nvim-treesitter
+- Editing: Oil file explorer, Gitsigns, which-key, `mini.icons`
+- Theme: the small monochrome `blak` colorscheme
 
 ## Core commands
 
@@ -60,12 +62,16 @@ NVIM_APPNAME=blak nvim
 :Blak              overview
 :BlakDoctor        health checks
 :BlakKeys          keymaps registered by Blak
+:BlakNews          release notes
 :BlakPick files    picker entrypoint
 :BlakExtras        list optional extras
 :BlakUpdate        update plugins with lockfile backup
+:BlakUpgrade       intentional bigger moves
 :BlakRollback      restore last lockfile backup and run Lazy restore
 :BlakToolsInstall  install Mason tools required by enabled extras
 :BlakTreesitterInstall install configured Treesitter parsers
+:BlakFormat        format current buffer
+:BlakFormatToggle  toggle format-on-save
 :BlakSplash        preview the black-hole animation
 ```
 
@@ -82,6 +88,12 @@ Extras are opt-in and reversible:
 ```
 
 State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Restart Blak after changing extras, then run `:Lazy sync` if the enabled set added or removed plugins.
+
+Default vs. optional is deliberate:
+
+- Language stacks are extras because most users do not need every server, formatter, linter, and parser.
+- Alternative pickers and explorers are extras because they replace muscle-memory surfaces.
+- LazyGit, Diffview, Copilot, image preview, zen mode, and animations are extras because they are valuable but preference-heavy.
 
 ## Customization
 
@@ -116,3 +128,25 @@ make smoke
 ```
 
 `make validate` is static and works without Neovim. `make smoke` runs Neovim headless and should be run locally on a machine with Neovim 0.12+. GitHub Actions runs static validation and a Neovim smoke test on every push and pull request.
+
+## Documentation
+
+The full documentation site lives at [binbandit.github.io/blak.nvim](https://binbandit.github.io/blak.nvim/) and is built from `docs/` with [Astro Starlight](https://starlight.astro.build/).
+
+To run it locally:
+
+```sh
+cd docs
+npm install
+npm run dev      # http://localhost:4321/blak.nvim/
+```
+
+Or via the Makefile from the repo root:
+
+```sh
+make docs-install
+make docs-dev
+make docs-build
+```
+
+The site auto-deploys to GitHub Pages on every push to `main` via `.github/workflows/docs.yml`.

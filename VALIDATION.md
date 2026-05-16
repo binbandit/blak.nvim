@@ -23,6 +23,7 @@ The static validator checks:
 - Blak-local `require()` module paths
 - duplicate or missing extra IDs
 - required README/help/notice/CI files
+- docs-site internal `/blak.nvim/...` links
 - stale `black` module, command, config, and path identifiers after the `blak.nvim` rename
 
 Runtime validation is included:
@@ -33,4 +34,4 @@ make smoke
 
 The smoke test starts Neovim headless with `NVIM_APPNAME=blak-test`, disables the splash and automatic Mason installation, loads `require("blak").setup()`, verifies config is present, runs `:checkhealth blak`, syncs plugins, then runs the smoke script a second time against the synced install.
 
-I could not execute the runtime smoke test in this container because `nvim`, `lua`, `luajit`, and `stylua` are not installed here. The included GitHub Actions workflow runs static validation and a Neovim smoke test using the official stable Neovim Linux tarball.
+The included GitHub Actions workflow runs static validation and a Neovim smoke test using the official stable Neovim Linux tarball.

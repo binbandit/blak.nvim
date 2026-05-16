@@ -6,7 +6,7 @@ The rule: common operations get memorable mappings; uncommon operations get
 commands and pickers.
 
 FIND
-  <Space><Space>   Smart find
+  <Space><Space>   Smart file find
   <Space>ff        Find files
   <Space>fg        Grep
   <Space>fb        Buffers
@@ -21,7 +21,7 @@ SAVE
 
 EXPLORER
   <Space>e         Oil explorer
-  -                Oil explorer, only when not reserved by Neovim
+  Blak leaves Neovim's native - motion alone.
 
 GIT
   [h               Previous git hunk
