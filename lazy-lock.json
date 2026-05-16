@@ -1,0 +1,16 @@
+{
+  "blink.cmp": { "branch": "main", "commit": "78336bc89ee5365633bcf754d93df01678b5c08f" },
+  "conform.nvim": { "branch": "master", "commit": "18aeab3d63d350dcf44d64c462cc489a3412af40" },
+  "fff": { "branch": "main", "commit": "6645a68ebc1f1a0dc98c1669a7e3f6d91625f79f" },
+  "gitsigns.nvim": { "branch": "main", "commit": "dd3f588bacbeb041be6facf1742e42097f62165d" },
+  "lazy.nvim": { "branch": "main", "commit": "85c7ff3711b730b4030d03144f6db6375044ae82" },
+  "mason-lspconfig.nvim": { "branch": "main", "commit": "7b01e2974a47d489bb92f47a41e4c0088ea8f86e" },
+  "mason.nvim": { "branch": "main", "commit": "8e921c2b68571e978db5d4d3fef9c9a7f8755473" },
+  "mini.icons": { "branch": "main", "commit": "9c7b1b90b15bdd69c52f6e31889dbc9987c30ec4" },
+  "nvim-lint": { "branch": "master", "commit": "665525810630701b84181e4d9eefd24b49845b29" },
+  "nvim-lspconfig": { "branch": "master", "commit": "8f7e64066e2641d5e7d494962a9c7051e3d38dd5" },
+  "nvim-treesitter": { "branch": "main", "commit": "4916d6592ede8c07973490d9322f187e07dfefac" },
+  "oil.nvim": { "branch": "master", "commit": "0fcc83805ad11cf714a949c98c605ed717e0b83e" },
+  "snacks.nvim": { "branch": "main", "commit": "ad9ede6a9cddf16cedbd31b8932d6dcdee9b716e" },
+  "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" }
+}
