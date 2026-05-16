@@ -7,10 +7,18 @@ The Lua file's color spans use byte offsets (each braille character is 3 bytes
 UTF-8). We convert those to character offsets so the web renderer can slice
 strings without worrying about encoding.
 
-We also drop spans whose foreground is white (#ffffff) — in the Neovim splash
-those are background paint over blank braille cells that never show color in
-the editor. On a pure-black web page, painting them white would surround the
-disc with a glowing square. Dropping them lets the disc float in the void.
+We drop two classes of color span:
+
+* White (#ffffff) — in the Neovim splash those paint the background over
+  blank braille cells that never show color in the editor. On a pure-black
+  web page, painting them white would surround the disc with a glowing
+  square.
+
+* Dark/ambient (max channel < DARK_THRESHOLD) — the original splash
+  surrounds the bright accretion disc with a halo of very dim red/black
+  glyphs (#110000, #220000, #330000, …) that simulate the surrounding gas.
+  On the web hero those just read as visible noise around the logo, so we
+  strip them and let the page background show through.
 """
 
 from __future__ import annotations
@@ -22,6 +30,12 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 LUA = REPO / "lua" / "blak" / "splash" / "frames" / "blackhole.lua"
 OUT = REPO / "docs" / "src" / "data" / "splash.json"
+
+# Any color whose brightest channel falls below this is treated as ambient
+# noise and dropped. 0x55 keeps the bright disc + photon ring; 0x33–0x55
+# (the dim red halo) and below get stripped so the splash floats in pure
+# black instead of a visible cloud.
+DARK_THRESHOLD = 0x55
 
 
 def find_int(pattern: str, text: str, label: str) -> int:
@@ -107,6 +121,18 @@ def parse_colors(text: str) -> list[list[list[list]]]:
     return out
 
 
+def color_is_dark(fg: str) -> bool:
+    if not fg.startswith("#") or len(fg) != 7:
+        return False
+    try:
+        r = int(fg[1:3], 16)
+        g = int(fg[3:5], 16)
+        b = int(fg[5:7], 16)
+    except ValueError:
+        return False
+    return max(r, g, b) < DARK_THRESHOLD
+
+
 def parse_row_spans(row_text: str) -> list[list]:
     """Inside one row, extract every `{start,end,"#xxx","NONE"}` tuple."""
     spans: list[list] = []
@@ -119,7 +145,7 @@ def parse_row_spans(row_text: str) -> list[list]:
             int(match.group(2)),
             match.group(3),
         )
-        if fg.lower() == "#ffffff":
+        if fg.lower() == "#ffffff" or color_is_dark(fg):
             continue
         # Byte → character offset (each braille char is 3 bytes UTF-8).
         spans.append([start_byte // 3, end_byte // 3, fg])

@@ -1085,7 +1085,13 @@ starlight-toc a:hover {
 
 /* The splash is 50 cols of braille. In JetBrains Mono ~0.6em per char, so
    the row needs ~30em of width. We scale the font so the splash reads as
-   a logo on phones (≈55% viewport width) and grows to a hero on desktop. */
+   a logo on phones (≈55% viewport width) and grows to a hero on desktop.
+
+   The default color is transparent so only the bright accretion disc (which
+   has explicit color spans on each glyph) shows — the dim ambient halo gets
+   stripped server-side, and any remaining un-spanned glyphs render
+   invisible. Margin:auto centers the pre as a block since white-space:pre
+   sizes it to its content. */
 .splash-grid {
   font-family:
     "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -1093,14 +1099,16 @@ starlight-toc a:hover {
   font-size: clamp(0.42rem, 1.85vw, 1.4rem);
   line-height: 0.92;
   letter-spacing: 0;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   background: transparent;
-  color: var(--ember);
+  color: transparent;
   white-space: pre;
-  text-align: left;
+  text-align: center;
   overflow: visible;
   max-width: 100%;
+  width: fit-content;
+  display: block;
   font-variant-emoji: text;
   font-variant-ligatures: none;
   font-feature-settings: "calt" off, "liga" off;
