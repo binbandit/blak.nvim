@@ -38,6 +38,15 @@ local function merge_formatters(target, source)
   end
 end
 
+local function contains(list, needle)
+  for _, value in ipairs(list or {}) do
+    if value == needle then
+      return true
+    end
+  end
+  return false
+end
+
 function M.enabled(config)
   local util = require("blak.util")
   local state = require("blak.extras.state").read()
@@ -131,6 +140,10 @@ function M.command(opts)
       table.insert(next_ids, id)
     end
     require("blak.extras.state").write(next_ids)
+    if action == "disable" and contains(config.extras.enabled, id) then
+      util.warn(id .. " is still enabled in lua/blak/user.lua. Remove it there to disable it.")
+      return
+    end
     util.notify((action == "enable" and "Enabled " or "Disabled ") .. id .. ". Restart Blak, then run :Lazy sync if plugins changed.")
     return
   end
