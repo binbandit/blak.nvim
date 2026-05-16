@@ -24,7 +24,7 @@ return function(config)
                   icon = "󰙅 ",
                   key = "e",
                   desc = "Explorer",
-                  action = ":lua require('oil').open(require('blak.util').git_root())",
+                  action = ":lua require('oil').open()",
                 },
                 { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
                 { icon = "󰊳 ", key = "d", desc = "Doctor", action = ":BlakDoctor" },

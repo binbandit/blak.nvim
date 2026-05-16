@@ -41,7 +41,7 @@ Parser-based syntax, indent, and queries. Configured via [`lua/blak/core/treesit
 
 ### oil.nvim (`stevearc/oil.nvim`)
 
-The default file explorer. Treats directories as buffers you edit. Loaded eagerly so `blak .`, `:edit <directory>`, and Oil's directory takeover behave consistently. Float style: 90 × 90 with rounded border.
+The default file explorer. Treats directories as buffers you edit. `<leader>e` opens at the current buffer's directory, falling back to the cwd when there is no file. Loaded eagerly so `blak .`, `:edit <directory>`, and Oil's directory takeover behave consistently. Float style: 90 × 90 with rounded border.
 
 ## Picker
 

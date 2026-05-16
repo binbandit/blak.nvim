@@ -66,7 +66,7 @@ end
 local function open_explorer()
   local oil = require("blak.util").load_plugin("oil.nvim", "oil")
   if oil then
-    oil.open(require("blak.util").git_root())
+    oil.open()
   end
 end
 

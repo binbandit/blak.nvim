@@ -48,7 +48,7 @@ All dispatch through the picker provider — see [Pickers](/guide/pickers/).
 
 | Mapping | Action |
 | --- | --- |
-| `<leader>e` | Oil explorer |
+| `<leader>e` | Oil explorer at the current buffer's directory |
 
 Blak leaves Neovim's native `-` motion alone.
 

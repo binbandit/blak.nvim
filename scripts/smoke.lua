@@ -11,6 +11,19 @@ assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not regist
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "<leader>/ grep mapping missing")
 assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal", "<leader>tt terminal mapping missing")
 assert(vim.fn.maparg("-", "n") == "", "Blak should leave native - unmapped")
+local previous_oil = package.loaded.oil
+local called_oil = false
+local opened_dir = "unset"
+package.loaded.oil = {
+  open = function(dir)
+    called_oil = true
+    opened_dir = dir
+  end,
+}
+vim.fn.maparg("<leader>e", "n", false, true).callback()
+package.loaded.oil = previous_oil
+assert(called_oil, "<leader>e did not call Oil")
+assert(opened_dir == nil, "<leader>e should let Oil choose the current buffer directory")
 local lazy_plugins = require("lazy.core.config").plugins
 assert(lazy_plugins["oil.nvim"], "oil.nvim spec missing")
 assert(lazy_plugins["oil.nvim"].lazy == false, "oil.nvim must load eagerly for directory args")
