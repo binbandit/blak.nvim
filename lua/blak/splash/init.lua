@@ -118,9 +118,9 @@ function M.header()
   local width = splash.cols or 0
   local header = normalize_frame(splash.frames[1], width)
   vim.list_extend(header, {
-    pad_line("", width),
     center_line("BLAK", width),
     center_line("where bloat goes to die", width),
+    pad_line("", width),
   })
   return header
 end
@@ -171,21 +171,32 @@ function M.play(buf, opts)
     callback = stop,
   })
 
-  timer:start(splash.delays[1] or 40, splash.delays[1] or 40, vim.schedule_wrap(function()
-    if not vim.api.nvim_buf_is_valid(buf) then
-      stop()
-      return
-    end
-    set_lines(buf, start, splash.frames[index], width, indent, splash.colors and splash.colors[index])
-    index = index + 1
-    if index > #splash.frames then
-      if opts.loop == false then
+  timer:start(
+    splash.delays[1] or 40,
+    splash.delays[1] or 40,
+    vim.schedule_wrap(function()
+      if not vim.api.nvim_buf_is_valid(buf) then
         stop()
         return
       end
-      index = 1
-    end
-  end))
+      set_lines(
+        buf,
+        start,
+        splash.frames[index],
+        width,
+        indent,
+        splash.colors and splash.colors[index]
+      )
+      index = index + 1
+      if index > #splash.frames then
+        if opts.loop == false then
+          stop()
+          return
+        end
+        index = 1
+      end
+    end)
+  )
 end
 
 function M.attach_to_snacks(config)
@@ -199,8 +210,12 @@ function M.attach_to_snacks(config)
   local group = vim.api.nvim_create_augroup("BlakSplash", { clear = true })
 
   local function start(buf)
-    if not buf or not vim.api.nvim_buf_is_valid(buf) then return end
-    if vim.bo[buf].filetype ~= "snacks_dashboard" then return end
+    if not buf or not vim.api.nvim_buf_is_valid(buf) then
+      return
+    end
+    if vim.bo[buf].filetype ~= "snacks_dashboard" then
+      return
+    end
     M.play(buf, { loop = loop, animate = animate })
   end
 
@@ -211,7 +226,9 @@ function M.attach_to_snacks(config)
     group = group,
     pattern = { "SnacksDashboardOpened", "SnacksDashboardUpdatePost" },
     callback = function()
-      vim.schedule(function() start(vim.api.nvim_get_current_buf()) end)
+      vim.schedule(function()
+        start(vim.api.nvim_get_current_buf())
+      end)
     end,
   })
 
