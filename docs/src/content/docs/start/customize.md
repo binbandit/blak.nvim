@@ -79,7 +79,7 @@ return {
 }
 ```
 
-See the [config schema](/blak.nvim/reference/schema/) for the full list of valid keys and the [defaults reference](/blak.nvim/reference/defaults/) for what you're overriding.
+See the [config schema](/reference/schema/) for the full list of valid keys and the [defaults reference](/reference/defaults/) for what you're overriding.
 
 ## Extras over config
 
@@ -93,7 +93,7 @@ If you find yourself adding plugins inside `user.lua`, consider whether it shoul
 
 State is stored in `stdpath('state')/blak/extras.json`, not in the repo — so multiple machines, multiple checkouts, or a fresh clone all start from the same defaults.
 
-Need an extra that doesn't exist yet? See the [Contributing guide](/blak.nvim/contributing/#adding-an-extra) — they're small and self-contained.
+Need an extra that doesn't exist yet? See the [Contributing guide](/contributing/#adding-an-extra) — they're small and self-contained.
 
 ## When to fork
 

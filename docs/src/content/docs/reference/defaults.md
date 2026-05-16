@@ -124,4 +124,4 @@ If this drifts from what's in the repo, **the repo is the source of truth.** Ope
 $EDITOR ~/.config/blak/lua/blak/config/defaults.lua
 ```
 
-See [Customize](/blak.nvim/start/customize/) for override patterns and the [schema](/blak.nvim/reference/schema/) for the rules.
+See [Customize](/start/customize/) for override patterns and the [schema](/reference/schema/) for the rules.

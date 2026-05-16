@@ -7,7 +7,7 @@ Extras are the right place for any capability that doesn't belong in core — la
 
 ## When something should be an extra
 
-Use the [philosophy](/blak.nvim/guide/philosophy/) rules:
+Use the [philosophy](/guide/philosophy/) rules:
 
 - **Most users benefit?** → core (`lua/blak/plugins/` or `lua/blak/core/`).
 - **Some users benefit, and the cost of carrying it is non-zero?** → extra.
@@ -110,8 +110,8 @@ Boots Neovim headless, calls `require("blak").setup()`, and runs `:checkhealth b
 
 Two places, both in this repo:
 
-1. Add a row to the [Extras guide](/blak.nvim/guide/extras/) (`docs/src/content/docs/guide/extras.md`).
-2. If the extra adds a keymap, mention it in the [Keymaps page](/blak.nvim/guide/keymaps/) under "Keymaps added by extras."
+1. Add a row to the [Extras guide](/guide/extras/) (`docs/src/content/docs/guide/extras.md`).
+2. If the extra adds a keymap, mention it in the [Keymaps page](/guide/keymaps/) under "Keymaps added by extras."
 
 ## Open a PR
 

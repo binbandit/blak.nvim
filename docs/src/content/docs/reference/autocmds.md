@@ -37,7 +37,7 @@ For `help`, `qf`, `man`, `checkhealth`, `lspinfo`, `notify`: unlist the buffer a
 
 ### `User SnacksDashboardOpened` / `SnacksDashboardUpdatePost`
 
-Starts (or repaints) the black-hole animation on the dashboard buffer. See [Splash](/blak.nvim/guide/splash/).
+Starts (or repaints) the black-hole animation on the dashboard buffer. See [Splash](/guide/splash/).
 
 Registered in [`lua/blak/splash/init.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/splash/init.lua).
 
@@ -71,7 +71,7 @@ Registered in [`lua/blak/core/treesitter.lua`](https://github.com/binbandit/blak
 | --- | --- | --- |
 | `User BlakReady` | After Blak's setup completes (all subsystems wired). | [`lua/blak/init.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/init.lua) |
 
-See [User events](/blak.nvim/reference/events/) for how to hook them.
+See [User events](/reference/events/) for how to hook them.
 
 ## Augroup discipline
 

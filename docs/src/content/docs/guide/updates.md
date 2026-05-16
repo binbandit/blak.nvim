@@ -32,7 +32,7 @@ Stable updates are conservative. They do not:
 - Swap your LSP wiring strategy.
 - Change `<leader>` or `<localleader>`.
 
-If a change requires any of those, it lands on the **edge** channel (or behind an extra) until enough adopters have validated it. See `package.channel` in [the schema](/blak.nvim/reference/schema/).
+If a change requires any of those, it lands on the **edge** channel (or behind an extra) until enough adopters have validated it. See `package.channel` in [the schema](/reference/schema/).
 
 For intentional bigger moves there's a separate command:
 

@@ -74,4 +74,4 @@ return {
 }
 ```
 
-Snacks dashboard still shows; only the animated header is removed. To disable Snacks dashboard entirely, override the Snacks spec — see the [Plugins guide](/blak.nvim/guide/plugins/).
+Snacks dashboard still shows; only the animated header is removed. To disable Snacks dashboard entirely, override the Snacks spec — see the [Plugins guide](/guide/plugins/).

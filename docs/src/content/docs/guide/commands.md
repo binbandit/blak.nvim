@@ -21,7 +21,7 @@ Shorthand for `:checkhealth blak`. Use this when:
 - An extra reports missing tools.
 - You're about to file an issue — paste the output.
 
-The health checks live in [`lua/blak/core/health.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/health.lua) — see the [Health checks guide](/blak.nvim/guide/health/).
+The health checks live in [`lua/blak/core/health.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/health.lua) — see the [Health checks guide](/guide/health/).
 
 ### `:BlakKeys`
 
@@ -51,7 +51,7 @@ Entry point for every picker action. The `{kind}` is one of:
 | `lsp_symbols` | Document symbols |
 | `workspace_symbols` | Workspace symbols |
 
-These dispatch through [`lua/blak/providers/picker/`](https://github.com/binbandit/blak.nvim/tree/main/lua/blak/providers/picker), so changing `picker.provider` in your `user.lua` swaps the implementation without changing the keymaps. See the [Pickers guide](/blak.nvim/guide/pickers/).
+These dispatch through [`lua/blak/providers/picker/`](https://github.com/binbandit/blak.nvim/tree/main/lua/blak/providers/picker), so changing `picker.provider` in your `user.lua` swaps the implementation without changing the keymaps. See the [Pickers guide](/guide/pickers/).
 
 ## Extras
 
@@ -64,7 +64,7 @@ These dispatch through [`lua/blak/providers/picker/`](https://github.com/binband
 :BlakExtras sync                  " run :Lazy sync to install/uninstall plugins
 ```
 
-State lives in `stdpath('state')/blak/extras.json`. Restart Blak after enable/disable to pick up plugin changes. See the [Extras guide](/blak.nvim/guide/extras/) for the full list.
+State lives in `stdpath('state')/blak/extras.json`. Restart Blak after enable/disable to pick up plugin changes. See the [Extras guide](/guide/extras/) for the full list.
 
 ## Update & rollback
 
@@ -87,7 +87,7 @@ For intentional bigger moves — channel changes, major-version bumps. Exists se
 
 Result: every plugin returns to the exact commit it was at before the last `:BlakUpdate`. Works offline.
 
-See the [Updates & rollback guide](/blak.nvim/guide/updates/) for the full machinery.
+See the [Updates & rollback guide](/guide/updates/) for the full machinery.
 
 ## Tools & parsers
 
@@ -122,13 +122,13 @@ Toggles format-on-save.
 - `:BlakFormatToggle` toggles for the current buffer (`vim.b.blak_disable_autoformat`).
 - `:BlakFormatToggle!` toggles globally (`vim.g.blak_disable_autoformat`).
 
-The keymap `<leader>uf` calls the buffer version. See the [Formatting guide](/blak.nvim/guide/formatting/).
+The keymap `<leader>uf` calls the buffer version. See the [Formatting guide](/guide/formatting/).
 
 ## Splash
 
 ### `:BlakSplash`
 
-Plays the black-hole animation in a scratch buffer. Useful for tweaking your terminal's color rendering — and a fun cold open. See the [Splash guide](/blak.nvim/guide/splash/).
+Plays the black-hole animation in a scratch buffer. Useful for tweaking your terminal's color rendering — and a fun cold open. See the [Splash guide](/guide/splash/).
 
 ## Cheat sheet
 

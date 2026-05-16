@@ -42,7 +42,7 @@ vim.api.nvim_create_autocmd("User", {
 })
 ```
 
-Or in an `apply` hook on an [extra](/blak.nvim/project/writing-extras/), which runs at config-merge time.
+Or in an `apply` hook on an [extra](/project/writing-extras/), which runs at config-merge time.
 
 ## Snacks events Blak reacts to
 

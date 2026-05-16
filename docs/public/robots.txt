@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://getblak.dev/sitemap-index.xml

@@ -58,7 +58,7 @@ The runtime warning gives you a chance to keep using your config after renaming 
 - Tables are merged key by key.
 - **Lists are replaced wholesale.** If you write `treesitter = { ensure_installed = { "rust" } }`, you lose the entire default list.
 
-To extend the default list instead, copy it from [the defaults page](/blak.nvim/reference/defaults/) and add your entries — or use an extra, which is designed exactly for this use case.
+To extend the default list instead, copy it from [the defaults page](/reference/defaults/) and add your entries — or use an extra, which is designed exactly for this use case.
 
 ## Error handling
 

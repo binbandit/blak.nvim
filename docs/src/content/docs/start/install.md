@@ -60,7 +60,7 @@ cd ~/Developer/blak.nvim
 blak-dev
 ```
 
-This symlinks the checkout to `~/.config/blak-dev`. Edits in the checkout are live on next launch, with plugin state fully isolated from a production `blak` install. See [Contributing](/blak.nvim/contributing/) for the full dev loop.
+This symlinks the checkout to `~/.config/blak-dev`. Edits in the checkout are live on next launch, with plugin state fully isolated from a production `blak` install. See [Contributing](/contributing/) for the full dev loop.
 
 ## Uninstalling
 

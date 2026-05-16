@@ -4,8 +4,7 @@ import starlight from "@astrojs/starlight";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://binbandit.github.io",
-  base: "/blak.nvim",
+  site: "https://getblak.dev",
   trailingSlash: "ignore",
   integrations: [
     starlight({
@@ -63,12 +62,12 @@ export default defineConfig({
           tag: "script",
           content: `(() => {
   const POPULAR = [
-    { label: 'Install',     href: '/blak.nvim/start/install/' },
-    { label: 'Why Blak',    href: '/blak.nvim/start/why/' },
-    { label: 'Commands',    href: '/blak.nvim/guide/commands/' },
-    { label: 'Keymaps',     href: '/blak.nvim/guide/keymaps/' },
-    { label: 'Extras',      href: '/blak.nvim/guide/extras/' },
-    { label: 'LSP',         href: '/blak.nvim/guide/lsp/' },
+    { label: 'Install',     href: '/start/install/' },
+    { label: 'Why Blak',    href: '/start/why/' },
+    { label: 'Commands',    href: '/guide/commands/' },
+    { label: 'Keymaps',     href: '/guide/keymaps/' },
+    { label: 'Extras',      href: '/guide/extras/' },
+    { label: 'LSP',         href: '/guide/lsp/' },
   ];
   const PLACEHOLDER = 'Search docs — install, extras, lsp, keymaps, schema…';
 
@@ -116,8 +115,7 @@ export default defineConfig({
         },
       ],
       editLink: {
-        baseUrl:
-          "https://github.com/binbandit/blak.nvim/edit/main/docs/src/content/docs/",
+        baseUrl: "https://github.com/binbandit/blak.nvim/edit/main/docs/",
       },
       lastUpdated: true,
       pagination: true,

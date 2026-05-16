@@ -14,14 +14,14 @@ Blak is optimized for **maintainability first**. A feature belongs in core only 
 5. Extras must be reversible.
 6. If a smart simple solution solves the problem without compromise, use it.
 
-See [Philosophy](/blak.nvim/guide/philosophy/) for the reasoning behind these.
+See [Philosophy](/guide/philosophy/) for the reasoning behind these.
 
 ## Pick the right track
 
 | Track | When |
 | --- | --- |
 | **Core change** | Affects most users (defaults, commands, keymaps, options). |
-| **New extra** | Optional capability for some users → see [Writing an extra](/blak.nvim/project/writing-extras/). |
+| **New extra** | Optional capability for some users → see [Writing an extra](/project/writing-extras/). |
 | **Bug fix** | Open a PR directly with a reproduction. |
 | **Docs only** | Open a PR directly. |
 | **New provider** (picker, package backend) | Open an issue first to align on the interface. |
@@ -37,7 +37,7 @@ cd ~/Developer/blak.nvim
 blak-dev                                          # launches NVIM_APPNAME=blak-dev
 ```
 
-Edits in the checkout are live on next launch. Plugin state and lockfile backups live under `~/.local/{share,state}/blak-dev/` — fully isolated from any production `blak` install. Full options in [Dev install](/blak.nvim/project/dev-install/).
+Edits in the checkout are live on next launch. Plugin state and lockfile backups live under `~/.local/{share,state}/blak-dev/` — fully isolated from any production `blak` install. Full options in [Dev install](/project/dev-install/).
 
 ## Validate before you push
 
@@ -46,7 +46,7 @@ make validate            # static checks, no Neovim required (< 100 ms)
 make smoke               # headless Neovim + Lazy sync + checkhealth
 ```
 
-Both run in CI on every push and pull request. Details in [Validation & CI](/blak.nvim/project/validation/).
+Both run in CI on every push and pull request. Details in [Validation & CI](/project/validation/).
 
 Run `stylua --check .` locally once Stylua is installed — CI will gate on it soon.
 
@@ -64,11 +64,11 @@ The site you're reading lives under `docs/` and is built with Astro Starlight.
 
 ```sh
 make docs-install        # cd docs && npm install
-make docs-dev            # http://localhost:4321/blak.nvim/
+make docs-dev            # http://localhost:4321/
 make docs-build          # produces docs/dist/ for GitHub Pages
 ```
 
-Auto-deploys on every push to `main` via [`.github/workflows/docs.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/docs.yml).
+Auto-deploys to [getblak.dev](https://getblak.dev/) on every push to `main` via [`.github/workflows/docs.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/docs.yml).
 
 When you add a feature, update the relevant page so the site stays the source of truth. New file? Add it to the sidebar in `docs/astro.config.mjs`.
 

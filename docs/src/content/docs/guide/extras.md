@@ -245,4 +245,4 @@ return {
 }
 ```
 
-That's the entire surface. See [Writing an extra](/blak.nvim/project/writing-extras/) for the full guide.
+That's the entire surface. See [Writing an extra](/project/writing-extras/) for the full guide.

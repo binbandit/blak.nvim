@@ -93,7 +93,7 @@ Uses `NVIM_APPNAME=blak-test` (configurable: `SMOKE_NVIM_APPNAME=foo make smoke`
 | `validate` | `ubuntu-latest` | Run `python3 scripts/validate.py` |
 | `smoke` | `ubuntu-latest` | Install Neovim stable, run `make smoke` |
 
-[`.github/workflows/docs.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/docs.yml) builds and deploys this documentation site to GitHub Pages on every push to `main`.
+[`.github/workflows/docs.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/docs.yml) builds and deploys this documentation site to [getblak.dev](https://getblak.dev/) via GitHub Pages on every push to `main`.
 
 ## Makefile reference
 
@@ -102,7 +102,7 @@ make validate              # python3 scripts/validate.py
 make smoke                 # headless Neovim + Lazy sync + checkhealth
 make docs                  # alias for docs-dev
 make docs-install          # cd docs && npm install
-make docs-dev              # cd docs && npm run dev (http://localhost:4321/blak.nvim/)
+make docs-dev              # cd docs && npm run dev (http://localhost:4321/)
 make docs-build            # cd docs && npm run build
 make zip                   # zip the repo for distribution (excludes git, node_modules, dist)
 ```

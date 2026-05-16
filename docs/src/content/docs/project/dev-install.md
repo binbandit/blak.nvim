@@ -98,6 +98,6 @@ Prints whether the symlink exists, where it points, whether the launcher exists,
 
 | Use | Script |
 | --- | --- |
-| Trying Blak from the public repo | [`install.sh`](/blak.nvim/start/install/) |
+| Trying Blak from the public repo | [`install.sh`](/start/install/) |
 | Hacking on Blak locally | `dev-install.sh` |
 | Running CI / smoke tests | `make smoke` (or no install at all, the script sets the runtime path) |

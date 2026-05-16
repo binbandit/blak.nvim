@@ -16,7 +16,7 @@ lint = {
 }
 ```
 
-No linters are configured in core. Linters arrive via [language extras](/blak.nvim/guide/extras/#languages):
+No linters are configured in core. Linters arrive via [language extras](/guide/extras/#languages):
 
 | Extra | Adds |
 | --- | --- |

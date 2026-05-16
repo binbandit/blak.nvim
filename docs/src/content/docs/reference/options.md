@@ -104,4 +104,4 @@ vim.api.nvim_create_autocmd("User", {
 })
 ```
 
-See [User events](/blak.nvim/reference/events/).
+See [User events](/reference/events/).

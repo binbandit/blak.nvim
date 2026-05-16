@@ -76,7 +76,7 @@ return {
 }
 ```
 
-Or as part of an extra so it's reversible — see [Writing an extra](/blak.nvim/project/writing-extras/).
+Or as part of an extra so it's reversible — see [Writing an extra](/project/writing-extras/).
 
 ## Customizing a formatter
 

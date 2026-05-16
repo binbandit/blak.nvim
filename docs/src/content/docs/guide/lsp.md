@@ -40,7 +40,7 @@ lsp = {
 }
 ```
 
-Other servers ship via [language extras](/blak.nvim/guide/extras/#languages): `ts_ls`, `eslint`, `pyright`, `ruff`, `rust_analyzer`, `taplo`, `gopls`, `marksman`.
+Other servers ship via [language extras](/guide/extras/#languages): `ts_ls`, `eslint`, `pyright`, `ruff`, `rust_analyzer`, `taplo`, `gopls`, `marksman`.
 
 ## Adding a server
 
@@ -61,7 +61,7 @@ return {
 }
 ```
 
-Or as an extra — see [Writing an extra](/blak.nvim/project/writing-extras/).
+Or as an extra — see [Writing an extra](/project/writing-extras/).
 
 If a server is installed outside Mason and you still want it enabled automatically, register it in `user.lua` and call `vim.lsp.enable("server_name")` from a `User BlakReady` autocmd.
 

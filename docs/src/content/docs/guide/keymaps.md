@@ -34,7 +34,7 @@ All core keymaps are defined in [`lua/blak/core/keymaps.lua`](https://github.com
 | `<leader>fk` | Keymaps |
 | `<leader>fh` | Help |
 
-All dispatch through the picker provider — see [Pickers](/blak.nvim/guide/pickers/).
+All dispatch through the picker provider — see [Pickers](/guide/pickers/).
 
 ## Buffers
 
@@ -91,7 +91,7 @@ These map only when an LSP server attaches to the current buffer.
 | `<leader>cs` | Document symbols (picker) |
 | `<leader>cS` | Workspace symbols (picker) |
 
-See the [LSP guide](/blak.nvim/guide/lsp/).
+See the [LSP guide](/guide/lsp/).
 
 ## Diagnostics
 
@@ -119,7 +119,7 @@ See the [LSP guide](/blak.nvim/guide/lsp/).
 | --- | --- |
 | `<leader>uf` | Toggle format-on-save (buffer) |
 
-`:BlakFormatToggle!` toggles it globally. See [Formatting](/blak.nvim/guide/formatting/).
+`:BlakFormatToggle!` toggles it globally. See [Formatting](/guide/formatting/).
 
 ## Keymaps added by extras
 

@@ -132,14 +132,14 @@ make smoke
 
 ## Documentation
 
-The full documentation site lives at [binbandit.github.io/blak.nvim](https://binbandit.github.io/blak.nvim/) and is built from `docs/` with [Astro Starlight](https://starlight.astro.build/).
+The full documentation site lives at [getblak.dev](https://getblak.dev/) and is built from `docs/` with [Astro Starlight](https://starlight.astro.build/).
 
 To run it locally:
 
 ```sh
 cd docs
 npm install
-npm run dev      # http://localhost:4321/blak.nvim/
+npm run dev      # http://localhost:4321/
 ```
 
 Or via the Makefile from the repo root:
@@ -150,4 +150,4 @@ make docs-dev
 make docs-build
 ```
 
-The site auto-deploys to GitHub Pages on every push to `main` via `.github/workflows/docs.yml`.
+The site auto-deploys to [getblak.dev](https://getblak.dev/) via GitHub Pages on every push to `main` via `.github/workflows/docs.yml`.

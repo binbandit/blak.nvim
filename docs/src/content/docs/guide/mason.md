@@ -22,7 +22,7 @@ mason = {
 
 Just enough to make first-launch useful: a Lua formatter (for the config files Blak ships), a shell formatter, and the CLI for compiling Treesitter parsers.
 
-Language extras add to this list automatically — see each extra's "Mason" row in [Extras](/blak.nvim/guide/extras/).
+Language extras add to this list automatically — see each extra's "Mason" row in [Extras](/guide/extras/).
 
 ## Automatic install
 
