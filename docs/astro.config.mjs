@@ -12,9 +12,6 @@ export default defineConfig({
       description:
         "A native-first Neovim distribution. Everything useful. Nothing escapes.",
       favicon: "/favicon.svg",
-      social: {
-        github: "https://github.com/binbandit/blak.nvim",
-      },
       customCss: ["./src/styles/custom.css"],
       components: {
         Hero: "./src/components/Hero.astro",
