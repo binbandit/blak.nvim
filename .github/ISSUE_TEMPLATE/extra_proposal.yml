@@ -1,0 +1,97 @@
+name: Extra proposal
+description: Propose a reversible optional extra for a language, tool, UI feature, Git workflow, or AI integration.
+title: "extra: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Extras are for preference, specialization, and weight. They should be easy to enable, easy to disable, and documented.
+
+        If the feature should become a default for most users, use the change proposal template instead.
+  - type: input
+    id: extra_id
+    attributes:
+      label: Proposed extra ID
+      description: Use the existing `<group>.<name>` shape.
+      placeholder: "lang.example"
+    validations:
+      required: true
+  - type: dropdown
+    id: group
+    attributes:
+      label: Extra group
+      options:
+        - lang
+        - git
+        - editor
+        - ui
+        - ai
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: user_story
+    attributes:
+      label: User story
+      description: Who benefits from this extra, and what workflow does it unlock?
+      placeholder: "As a ... user, I want ... so that ..."
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What should this extra configure? Include plugins, language servers, Mason tools, formatters, linters, Treesitter parsers, keymaps, or Snacks options.
+      placeholder: |
+        plugins:
+        mason:
+        lsp:
+        format:
+        lint:
+        treesitter:
+        keys:
+    validations:
+      required: true
+  - type: textarea
+    id: reversibility
+    attributes:
+      label: Reversibility
+      description: What happens when the user runs `:BlakExtras disable <id>` and restarts? Note any state, global variables, keymaps, commands, or files left behind.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: External requirements
+      description: List CLIs, language runtimes, services, fonts, OS assumptions, or plugin caveats.
+  - type: textarea
+    id: docs
+    attributes:
+      label: Documentation plan
+      description: Which README, help, or docs site pages need updates?
+      placeholder: |
+        - docs/src/content/docs/guide/extras.md
+        - docs/src/content/docs/project/writing-extras.md
+        - doc/blak-extras.txt
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Extra contract
+      options:
+        - label: This is preference-heavy or specialized enough to stay out of core defaults.
+        - label: The extra can be enabled and disabled through `:BlakExtras`.
+        - label: Any keymap has a description and will appear in `:BlakKeys`.
+        - label: Mason, LSP, formatting, linting, and Treesitter setup is declared through the extra table where possible.
+        - label: The implementation would update `lua/blak/extras/init.lua`.
+        - label: The implementation would include docs for setup, requirements, and behavior.
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation plan
+      options:
+        - label: "`make validate`"
+        - label: "`make smoke`"
+        - label: Manual test with `./dev-install.sh` and `blak-dev`
+        - label: Manual enable and disable cycle with `:BlakExtras`

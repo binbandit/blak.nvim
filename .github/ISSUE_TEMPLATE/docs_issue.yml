@@ -1,0 +1,57 @@
+name: Documentation issue
+description: Report unclear, stale, missing, or incorrect docs.
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Blak's docs site, README, help files, and contributor docs should stay aligned. Use this template for stale instructions, missing pages, broken links, or confusing explanations.
+  - type: textarea
+    id: location
+    attributes:
+      label: Location
+      description: Link or name the page, help file, README section, command output, or install step.
+      placeholder: "docs/src/content/docs/guide/extras.md, :help blak-extras, README.md#Extras"
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is wrong or missing?
+      description: Describe the mismatch, stale detail, missing explanation, or broken link.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it say instead?
+      description: A rough suggested wording is welcome, but not required.
+  - type: dropdown
+    id: docs_area
+    attributes:
+      label: Documentation area
+      options:
+        - Install or requirements
+        - Customization
+        - Commands
+        - Keymaps
+        - Extras
+        - LSP, Mason, formatting, linting, or Treesitter
+        - Pickers or providers
+        - Updates or rollback
+        - Contributing or validation
+        - Help docs under doc/
+        - Docs site build or navigation
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Checks
+      options:
+        - label: I checked the current docs site or latest `main`.
+        - label: I checked for an existing issue.
+        - label: I can open a pull request for this.

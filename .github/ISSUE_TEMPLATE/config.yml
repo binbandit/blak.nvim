@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Read the Blak docs
+    url: https://getblak.dev/
+    about: Install, customize, troubleshoot, and understand Blak's design.
+  - name: Contributor guide
+    url: https://github.com/binbandit/blak.nvim/blob/main/CONTRIBUTING.md
+    about: Design rules, dev install, validation, style, and docs workflow.
+  - name: Validation and CI
+    url: https://github.com/binbandit/blak.nvim/blob/main/VALIDATION.md
+    about: What `make validate`, `make smoke`, and CI check.

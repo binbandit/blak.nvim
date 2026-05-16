@@ -1,0 +1,114 @@
+name: Bug report
+description: Report something broken, surprising, or regressed in Blak.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make Blak sturdier.
+
+        A good bug report includes a small reproduction, the affected workflow, and the validation you were able to run. If the issue is about a new default, provider, or large behavior change, use the change proposal template instead.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What broke?
+      description: Describe the visible behavior and why it is a problem.
+      placeholder: "Example: :BlakPick files opens the wrong picker after enabling picker.telescope."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should Blak have done instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Start from a clean or minimal setup whenever possible.
+      placeholder: |
+        1. Install Blak with ...
+        2. Enable extra ...
+        3. Run command ...
+        4. See ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Install or launcher
+        - Startup or setup
+        - Core command
+        - Keymaps
+        - Picker
+        - Completion
+        - LSP
+        - Formatting or linting
+        - Treesitter
+        - Mason tools
+        - Git integration
+        - Colorscheme or UI
+        - Splash or dashboard
+        - Extra
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: extra
+    attributes:
+      label: Extra ID, if relevant
+      description: Use the Blak extra ID, such as lang.typescript or git.lazygit.
+      placeholder: "lang.typescript"
+  - type: textarea
+    id: config
+    attributes:
+      label: Minimal config or local changes
+      description: Include the smallest `lua/blak/user.lua` or relevant patch needed to reproduce. Leave empty if stock Blak reproduces it.
+      render: lua
+  - type: input
+    id: nvim_version
+    attributes:
+      label: Neovim version
+      description: Paste the first line from `nvim --version`.
+      placeholder: "NVIM v0.12.0"
+    validations:
+      required: true
+  - type: input
+    id: blak_ref
+    attributes:
+      label: Blak version or commit
+      description: Paste the branch, tag, or commit SHA you tested.
+      placeholder: "main at abc1234"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS and terminal
+      placeholder: "macOS 15.5, Ghostty"
+    validations:
+      required: true
+  - type: textarea
+    id: health
+    attributes:
+      label: Health, logs, or command output
+      description: Include relevant `:BlakDoctor`, `:checkhealth blak`, `:messages`, or terminal output.
+      render: text
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation
+      description: Check what you were able to run locally.
+      options:
+        - label: I reproduced this with the latest `main`.
+        - label: I reproduced this with a minimal `lua/blak/user.lua`.
+        - label: I ran `make validate`.
+        - label: I ran `make smoke`.
+        - label: I checked existing issues for a duplicate.

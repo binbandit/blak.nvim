@@ -1,0 +1,93 @@
+name: Change proposal
+description: Propose a core change, provider, default, command, keymap, or behavior shift.
+title: "proposal: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Blak keeps core small and predictable. Open an issue before non-trivial changes, especially anything that affects defaults, providers, keymaps, commands, install behavior, or update behavior.
+
+        A strong proposal explains the user problem first, then why the change belongs in core instead of an extra.
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: What real workflow is hard, broken, confusing, or missing today?
+      placeholder: "Users who ... currently have to ..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the behavior, API, command, keymap, provider, or default you want to add or change.
+    validations:
+      required: true
+  - type: dropdown
+    id: track
+    attributes:
+      label: Track
+      description: Pick the closest contribution track.
+      options:
+        - Core change
+        - New provider
+        - Existing provider change
+        - Default plugin or lockfile change
+        - Command
+        - Keymap
+        - Config option or schema
+        - Install or update flow
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: core_fit
+    attributes:
+      label: Why does this belong in core?
+      description: Core is for the editing floor. Explain why most users benefit, or say why this should be an extra instead.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include native Neovim APIs, existing plugins, extras, user config, or documentation-only options you considered.
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Product contract
+      description: Confirm the design rules you have considered.
+      options:
+        - label: This prefers native Neovim APIs where they are enough.
+        - label: This does not silently change a default picker, completion engine, explorer, LSP strategy, leader key, or core workflow.
+        - label: No new keymaps are proposed, or every new keymap has a description and will appear in `:BlakKeys`.
+        - label: Any preference-heavy behavior can be disabled, configured, or moved to an extra.
+        - label: The relevant documentation would be updated with the change.
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility and migration
+      description: Describe user-visible breakage, changed muscle memory, option/schema changes, or upgrade path.
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation notes
+      description: Optional notes about files, APIs, provider interfaces, docs pages, or tests.
+      placeholder: |
+        Likely files:
+        - lua/blak/config/defaults.lua
+        - lua/blak/core/commands.lua
+        - docs/src/content/docs/guide/...
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation plan
+      options:
+        - label: "`make validate`"
+        - label: "`make smoke`"
+        - label: "`stylua --check .` or `stylua .`"
+        - label: "`make docs-build`, if docs are touched"
+        - label: Manual test with `./dev-install.sh` and `blak-dev`
