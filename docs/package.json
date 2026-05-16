@@ -4,9 +4,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/sync-install-script.mjs",
     "dev": "astro dev",
+    "prestart": "node scripts/sync-install-script.mjs",
     "start": "astro dev",
+    "prebuild": "node scripts/sync-install-script.mjs",
     "build": "astro build",
+    "prepreview": "node scripts/sync-install-script.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

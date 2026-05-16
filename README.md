@@ -30,7 +30,7 @@ Blak is launching as a **v0.1 public preview**: complete enough to install, use,
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/binbandit/blak.nvim/main/install.sh | sh
+curl -fsSL https://getblak.dev/install.sh | sh
 blak
 ```
 

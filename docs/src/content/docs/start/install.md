@@ -8,7 +8,7 @@ Blak installs under its own [`NVIM_APPNAME`](https://neovim.io/doc/user/starting
 ## One command
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/binbandit/blak.nvim/main/install.sh | sh
+curl -fsSL https://getblak.dev/install.sh | sh
 blak
 ```
 
@@ -42,11 +42,11 @@ The installer respects environment variables when you want isolation for testing
 
 ```sh
 # Install under a different app name (e.g. blak-dev)
-BLAK_APPNAME=blak-dev curl -fsSL https://raw.githubusercontent.com/binbandit/blak.nvim/main/install.sh | sh
+curl -fsSL https://getblak.dev/install.sh | BLAK_APPNAME=blak-dev sh
 
 # Install from a fork or a branch
-BLAK_REPO_URL=https://github.com/your-fork/blak.nvim.git \
-  curl -fsSL https://raw.githubusercontent.com/binbandit/blak.nvim/main/install.sh | sh
+curl -fsSL https://getblak.dev/install.sh | \
+  BLAK_REPO_URL=https://github.com/your-fork/blak.nvim.git sh
 ```
 
 ## From a clone (developers)

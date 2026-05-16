@@ -5,10 +5,12 @@ on:
     branches: [main]
     paths:
       - "docs/**"
+      - "install.sh"
       - ".github/workflows/docs.yml"
   pull_request:
     paths:
       - "docs/**"
+      - "install.sh"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
