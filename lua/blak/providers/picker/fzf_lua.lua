@@ -12,7 +12,7 @@ function M.recent(opts) return fzf().oldfiles(opts) end
 function M.commands(opts) return fzf().commands(opts) end
 function M.keymaps(opts) return fzf().keymaps(opts) end
 function M.help(opts) return fzf().help_tags(opts) end
-function M.diagnostics(opts) return fzf().diagnostics_document(opts) end
+function M.diagnostics(opts) return fzf().diagnostics_workspace(opts) end
 function M.lsp_symbols(opts) return fzf().lsp_document_symbols(opts) end
 function M.workspace_symbols(opts) return fzf().lsp_workspace_symbols(opts) end
 
