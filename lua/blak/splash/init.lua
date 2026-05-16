@@ -71,7 +71,9 @@ local function paint_colors(buf, start, line_count, colors, indent)
           pcall(vim.api.nvim_buf_set_extmark, buf, ns, row, col_offset + run[1], {
             end_col = col_offset + run[2],
             hl_group = hl,
-            priority = 200,
+            -- Outrank Snacks's own dashboard header highlight, which sits in the
+            -- low hundreds, so the milli palette wins on every cell.
+            priority = 1000,
           })
         end
       end
@@ -139,9 +141,19 @@ function M.play(buf, opts)
   vim.b[buf].blak_splash_playing = true
   vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
 
+  -- Paint frame 1 with its color spans synchronously so the splash is never
+  -- visible as uncolored braille, even before the first timer tick fires or
+  -- when animation is disabled entirely.
+  set_lines(buf, start, splash.frames[1], width, indent, splash.colors and splash.colors[1])
+
+  if opts.animate == false then
+    vim.b[buf].blak_splash_playing = false
+    return
+  end
+
   local uv = vim.uv or vim.loop
   local timer = uv.new_timer()
-  local index = 1
+  local index = 2
 
   local function stop()
     if timer and not timer:is_closing() then
@@ -159,7 +171,7 @@ function M.play(buf, opts)
     callback = stop,
   })
 
-  timer:start(0, splash.delays[1] or 40, vim.schedule_wrap(function()
+  timer:start(splash.delays[1] or 40, splash.delays[1] or 40, vim.schedule_wrap(function()
     if not vim.api.nvim_buf_is_valid(buf) then
       stop()
       return
@@ -177,28 +189,41 @@ function M.play(buf, opts)
 end
 
 function M.attach_to_snacks(config)
-  if not (config.ui.splash.enabled and config.ui.splash.animate) then
+  if not config.ui.splash.enabled then
     return
   end
 
+  local animate = config.ui.splash.animate ~= false
+  local loop = animate and config.ui.splash.loop ~= false
+
   local group = vim.api.nvim_create_augroup("BlakSplash", { clear = true })
-  vim.api.nvim_create_autocmd("FileType", {
+
+  local function start(buf)
+    if not buf or not vim.api.nvim_buf_is_valid(buf) then return end
+    if vim.bo[buf].filetype ~= "snacks_dashboard" then return end
+    M.play(buf, { loop = loop, animate = animate })
+  end
+
+  -- Snacks fires these once the dashboard buffer is fully rendered, so the
+  -- anchor search reliably finds frame 1 and the post-update event lets us
+  -- re-paint after resizes/refreshes that would otherwise clear our marks.
+  vim.api.nvim_create_autocmd("User", {
     group = group,
-    pattern = { "snacks_dashboard", "dashboard" },
-    callback = function(event)
-      vim.defer_fn(function()
-        M.play(event.buf, { loop = config.ui.splash.loop })
-      end, 80)
+    pattern = { "SnacksDashboardOpened", "SnacksDashboardUpdatePost" },
+    callback = function()
+      vim.schedule(function() start(vim.api.nvim_get_current_buf()) end)
     end,
   })
 
-  vim.defer_fn(function()
+  -- Fallback for the cold-start case where the dashboard buffer already
+  -- exists by the time this autocmd group is created.
+  vim.schedule(function()
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
       if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == "snacks_dashboard" then
-        M.play(buf, { loop = config.ui.splash.loop })
+        start(buf)
       end
     end
-  end, 250)
+  end)
 end
 
 function M.setup(_)
