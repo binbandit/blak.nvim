@@ -889,11 +889,13 @@ starlight-toc a:hover {
   }
 }
 
+/* No max-width: the splash's own font-size already caps the disc, and a
+   narrower wrapper would force the oversized pre to overflow rightward,
+   which reads as "off to the right" on desktop. */
 .hero-splash {
   width: 100%;
-  max-width: 44rem;
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: center;
   padding: 0 2rem;
 }
 
