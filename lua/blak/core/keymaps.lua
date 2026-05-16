@@ -87,7 +87,12 @@ local function git_range_action(action)
   return function()
     local gs = gitsigns()
     if gs and gs[action] then
-      return gs[action]({ vim.fn.line("."), vim.fn.line("v") })
+      local first = vim.fn.line("v")
+      local last = vim.fn.line(".")
+      if first > last then
+        first, last = last, first
+      end
+      return gs[action]({ first, last })
     end
   end
 end
