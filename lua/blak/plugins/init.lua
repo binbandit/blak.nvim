@@ -1,6 +1,7 @@
 local M = {}
 
 local modules = {
+  "blak.plugins.theme",
   "blak.plugins.ui",
   "blak.plugins.editor",
   "blak.plugins.picker",

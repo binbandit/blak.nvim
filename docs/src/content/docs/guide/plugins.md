@@ -1,13 +1,17 @@
 ---
 title: Plugins
-description: The thirteen plugin specs that ship by default — what they do and why each one is core.
+description: The fourteen plugin specs that ship by default — what they do and why each one is core.
 ---
 
-Blak ships with thirteen default plugin specs out of the box, plus `lazy.nvim` as the package backend. Anything beyond this list is an [extra](/guide/extras/).
+Blak ships with fourteen default plugin specs out of the box, plus `lazy.nvim` as the package backend. Anything beyond this list is an [extra](/guide/extras/).
 
 All base specs live under [`lua/blak/plugins/`](https://github.com/binbandit/blak.nvim/tree/main/lua/blak/plugins).
 
 ## UI
+
+### TokyoNight (`folke/tokyonight.nvim`)
+
+Palette engine for the default `blak` colorscheme. Blak owns the black monochrome palette and brand highlight groups, while TokyoNight derives broad plugin highlight coverage from those colors. Loaded eagerly with higher priority than other UI plugins so startup surfaces inherit the final theme.
 
 ### Snacks (`folke/snacks.nvim`)
 
@@ -87,10 +91,10 @@ Standalone linter runner. Loads on the events in `lint.events` (default: `BufWri
 
 Sign-column git status, hunk navigation, stage / reset / blame. Loaded on `BufReadPre` and `BufNewFile`. Staged signs enabled. Preview border honors `ui.winborder`. See [the git keymaps](/guide/keymaps/#git-gitsigns).
 
-## Why these thirteen
+## Why these fourteen
 
 Every plugin here meets one rule from the [philosophy](/guide/philosophy/):
 
 > A feature belongs in core only if most users benefit from it.
 
-A picker, completion, LSP, formatting, linting, treesitter, git status, an icon provider, a discoverable keymap menu — that's the floor for "a Neovim editing experience that doesn't feel raw." Everything else lives in an extra.
+A picker, completion, LSP, formatting, linting, treesitter, git status, an icon provider, a discoverable keymap menu, and broad highlight coverage for the default theme — that's the floor for "a Neovim editing experience that doesn't feel raw." Everything else lives in an extra.

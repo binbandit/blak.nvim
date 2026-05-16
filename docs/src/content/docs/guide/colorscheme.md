@@ -3,61 +3,59 @@ title: Colorscheme
 description: The blak colorscheme — pure black surfaces with a small accent palette.
 ---
 
-The `blak` colorscheme is a small, hand-written colorscheme defined in [`colors/blak.lua`](https://github.com/binbandit/blak.nvim/blob/main/colors/blak.lua). It's set as the default via `ui.colorscheme = "blak"`.
+The `blak` colorscheme is a black monochrome theme defined in [`lua/blak/theme.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/theme.lua) and exposed through [`colors/blak.lua`](https://github.com/binbandit/blak.nvim/blob/main/colors/blak.lua). It's set as the default via `ui.colorscheme = "blak"`.
+
+Blak uses `folke/tokyonight.nvim` as the palette engine when plugins are available, then preserves the public colorscheme name as `blak`. If TokyoNight is not installed yet, the colorscheme falls back to a small built-in highlight set until `:Lazy sync` installs the full theme adapter.
 
 ## Palette
 
 | Token | Hex | Use |
 | --- | --- | --- |
 | `bg` | `#000000` | Editor background |
-| `bg2` | `#090909` | Floats, NormalFloat, CursorLine |
-| `bg3` | `#111111` | Statusline, Pmenu, alt surfaces |
-| `fg` | `#d8d8d8` | Normal text |
-| `dim` | `#7a7a7a` | Comments |
-| `muted` | `#555555` | LineNr, NC statusline, dim chrome |
-| `accent` | `#f1f1f1` | CursorLineNr, Function, PmenuSel |
-| `red` | `#ff6b6b` | Errors |
-| `orange` | `#f5a97f` | Special, IncSearch |
-| `yellow` | `#eed49f` | Warnings, Search, Todo |
-| `green` | `#a6da95` | Strings |
-| `cyan` | `#8bd5ca` | Type, hints |
-| `blue` | `#8aadf4` | Statements, info |
-| `purple` | `#c6a0f6` | Constants, PreProc |
+| `bg_alt` | `#050505` | Statusline and subtle active-line surfaces |
+| `surface` | `#0b0b0b` | Floats and popup menus |
+| `surface2` | `#121212` | Highlighted selections and secondary surfaces |
+| `border` | `#242424` | Float borders and window separators |
+| `fg` | `#f2f2f2` | Normal text |
+| `fg_dim` | `#c8c8c8` | Dim foreground text |
+| `muted` | `#707070` | Comments and quiet UI text |
+| `faint` | `#4a4a4a` | Line numbers and gutters |
+| `orange` | `#ff7a18` | Primary heat accent |
+| `orange_soft` | `#ff9d2e` | Search and softer accent surfaces |
+| `red_orange` | `#ff3d1f` | Errors and hot accents |
 
 ## Highlight groups
 
-The colorscheme sets 32 groups. The ones most likely to interest you:
+The full adapter lets TokyoNight derive plugin-specific groups from the Blak palette. The fallback and Blak-owned groups most likely to interest you:
 
 ```lua
-Normal        fg = #d8d8d8, bg = #000000
-NormalFloat   fg = #d8d8d8, bg = #090909
-FloatBorder   fg = #555555, bg = #090909
-CursorLine    bg = #090909
-CursorLineNr  fg = #f1f1f1, bold
-LineNr        fg = #555555
+Normal        fg = #f2f2f2, bg = #000000
+NormalFloat   fg = #f2f2f2, bg = #0b0b0b
+FloatBorder   fg = #242424, bg = #0b0b0b
+CursorLine    bg = #050505
+CursorLineNr  fg = #f2f2f2, bold
+LineNr        fg = #4a4a4a
 SignColumn    bg = #000000
-StatusLine    fg = #d8d8d8, bg = #111111
-StatusLineNC  fg = #555555, bg = #090909
-WinSeparator  fg = #111111
-Visual        bg = #252525
-Search        fg = #000000, bg = #eed49f
-IncSearch     fg = #000000, bg = #f5a97f
-Pmenu         fg = #d8d8d8, bg = #090909
-PmenuSel      fg = #000000, bg = #f1f1f1
-Comment       fg = #7a7a7a, italic
-Constant      fg = #c6a0f6
-String        fg = #a6da95
-Function      fg = #f1f1f1, bold
-Statement     fg = #8aadf4
-PreProc       fg = #c6a0f6
-Type          fg = #8bd5ca
-Special       fg = #f5a97f
-Error         fg = #ff6b6b
-Todo          fg = #000000, bg = #eed49f, bold
-BlakAccent    fg = #f1f1f1, bold
+WinSeparator  fg = #242424
+Visual        bg = #121212
+Search        fg = #000000, bg = #ff9d2e
+IncSearch     fg = #000000, bg = #ff7a18
+Pmenu         fg = #c8c8c8, bg = #0b0b0b
+PmenuSel      fg = #000000, bg = #f2f2f2
+Comment       fg = #707070, italic
+Function      fg = #f2f2f2, bold
+Statement     fg = #ff7a18
+PreProc       fg = #ff9d2e
+Type          fg = #c8c8c8
+Special       fg = #ff7a18
+DiagnosticError fg = #ff3d1f
+DiagnosticWarn  fg = #ff7a18
+BlakAccent    fg = #ff7a18, bold
+BlakHot       fg = #ff3d1f, bold
+BlakMuted     fg = #707070
 ```
 
-Diagnostic groups (`DiagnosticError`, `DiagnosticWarn`, `DiagnosticInfo`, `DiagnosticHint`) map to red, yellow, blue, cyan respectively.
+Diagnostic groups (`DiagnosticError`, `DiagnosticWarn`, `DiagnosticInfo`, `DiagnosticHint`) map to red-orange, orange, dim foreground, and normal foreground respectively.
 
 ## Switching themes
 
@@ -68,7 +66,7 @@ return {
 }
 ```
 
-Blak loads the colorscheme through lazy.nvim's `install.colorscheme` chain, with `habamax` as a built-in fallback if the named scheme isn't installed yet (see [`lua/blak/lazy.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/lazy.lua)).
+Blak loads non-`blak` colorschemes through lazy.nvim's `install.colorscheme` chain, with `habamax` as a built-in fallback if the named scheme isn't installed yet (see [`lua/blak/lazy.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/lazy.lua)).
 
 You can also override individual groups in your `user.lua` via an autocmd:
 

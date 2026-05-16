@@ -25,6 +25,12 @@ package.loaded.oil = previous_oil
 assert(called_oil, "<leader>e did not call Oil")
 assert(opened_dir == nil, "<leader>e should let Oil choose the current buffer directory")
 local lazy_plugins = require("lazy.core.config").plugins
+assert(lazy_plugins["tokyonight.nvim"], "tokyonight.nvim spec missing")
+assert(lazy_plugins["tokyonight.nvim"].lazy == false, "tokyonight.nvim must load eagerly")
+assert(
+  lazy_plugins["tokyonight.nvim"].priority > lazy_plugins["snacks.nvim"].priority,
+  "tokyonight.nvim must load before UI plugins"
+)
 assert(lazy_plugins["oil.nvim"], "oil.nvim spec missing")
 assert(lazy_plugins["oil.nvim"].lazy == false, "oil.nvim must load eagerly for directory args")
 assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true, "oil.nvim must take directory buffers")
