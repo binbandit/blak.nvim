@@ -22,6 +22,21 @@ lua/blak/extras/     optional modules
 lua/blak/splash/     black-hole animation and dashboard integration
 ```
 
+## Testing local changes
+
+Before pushing, install your checkout as a real Neovim distribution so you
+can drive it end-to-end:
+
+```sh
+./dev-install.sh          # symlinks this repo to ~/.config/blak-dev
+blak-dev                  # launches Neovim with NVIM_APPNAME=blak-dev
+```
+
+The symlink means edits in the checkout are live on the next launch — no
+reinstall needed. Plugin state lives at `~/.local/share/blak-dev/`, fully
+isolated from any production `blak` install. Remove everything with
+`./dev-install.sh --uninstall`. Run `./dev-install.sh --help` for more.
+
 ## Validation
 
 Without Neovim:
