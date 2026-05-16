@@ -2,6 +2,8 @@
 
 Blak is optimized for maintainability first. A feature belongs in core only if most users benefit from it. Everything else should be an extra.
 
+Read [MANIFESTO.md](MANIFESTO.md) before changing defaults. It is the product contract; this file is the contributor playbook.
+
 ## Design rules
 
 1. Prefer native Neovim APIs before adding plugins.

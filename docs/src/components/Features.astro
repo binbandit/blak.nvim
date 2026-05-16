@@ -1,0 +1,88 @@
+---
+const cells = [
+  {
+    tag: "core",
+    title: "Native LSP, not a wrapper",
+    body: "Built on Neovim 0.12 — <code>vim.lsp.config()</code> and <code>vim.lsp.enable()</code> drive servers. Mason handles tools.",
+    code: `vim.lsp.config('lua_ls', {
+  settings = { Lua = {
+    diagnostics = { globals = { 'vim' } },
+  } },
+})`,
+    lang: "lua",
+  },
+  {
+    tag: "extras",
+    title: "One command per capability",
+    body: "Languages, AI, alt explorers — opt-in. Disable and they leave nothing behind.",
+    code: `:BlakExtras enable lang.rust
+:BlakExtras enable git.lazygit
+:BlakExtras disable ai.copilot`,
+    lang: "vim",
+  },
+  {
+    tag: "safety",
+    title: "Lockfile rollback, always",
+    body: "<code>:BlakUpdate</code> snapshots <code>lazy-lock.json</code> before any change. <code>:BlakRollback</code> restores in one step.",
+    code: `:BlakUpdate
+:BlakRollback     " undo the last update
+:BlakUpgrade      " explicit, bigger moves`,
+    lang: "vim",
+  },
+  {
+    tag: "keys",
+    title: "No hidden chords",
+    body: "Every keymap has a description and shows in <code>:BlakKeys</code>. The leader is <code>&lt;Space&gt;</code>.",
+    code: `<Space><Space>   smart find
+<Space>ff        files
+<Space>fg        grep
+<Space>e         explorer`,
+    lang: "text",
+  },
+  {
+    tag: "picker",
+    title: "fff.nvim by default",
+    body: "Snappier than telescope for the common path. Swap providers in one line.",
+    code: `return {
+  picker = { provider = 'fff' },
+}`,
+    lang: "lua",
+  },
+  {
+    tag: "install",
+    title: "Isolated, never overwrites",
+    body: "Installer uses <code>NVIM_APPNAME=blak</code>. Your <code>~/.config/nvim</code> is untouched.",
+    code: `curl -fsSL .../install.sh | sh
+# clones to ~/.config/blak
+# launcher at ~/.local/bin/blak`,
+    lang: "sh",
+  },
+];
+---
+
+<section class="section">
+  <header class="section-head">
+    <span class="eyebrow">
+      <span class="eyebrow-dot" aria-hidden="true"></span>
+      <span>// features</span>
+    </span>
+    <h2 class="section-title">A distribution that gets out of the way.</h2>
+    <p class="section-sub">
+      Defaults you can read in an afternoon. Extras you can roll back in one
+      command. Update without losing muscle memory.
+    </p>
+  </header>
+
+  <div class="bento">
+    {cells.map((cell) => (
+      <article class="cell">
+        <header class="cell-head">
+          <span class="cell-tag">{cell.tag}</span>
+          <h3 class="cell-title">{cell.title}</h3>
+        </header>
+        <p class="cell-body" set:html={cell.body} />
+        <pre class={`cell-code lang-${cell.lang}`}><code>{cell.code}</code></pre>
+      </article>
+    ))}
+  </div>
+</section>

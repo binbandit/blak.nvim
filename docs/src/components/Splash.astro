@@ -1,0 +1,142 @@
+---
+import splash from "../data/splash.json";
+
+type Span = [start: number, end: number, fg: string];
+type FrameColors = Span[][];
+type SplashData = {
+  cols: number;
+  rows: number;
+  delays: number[];
+  frames: string[][];
+  colors: FrameColors[];
+};
+
+const data = splash as SplashData;
+
+// Render frame index 0 statically so the splash is visible with no JS
+// (and never flashes empty before the animator starts).
+function renderFrameHtml(frameIndex: number): string {
+  const lines: string[] = [];
+  const rows = data.frames[frameIndex];
+  const colorRows = data.colors[frameIndex] ?? [];
+  for (let r = 0; r < rows.length; r++) {
+    const line = rows[r];
+    const spans = colorRows[r] ?? [];
+    const chars = Array.from(line); // braille code-points
+    if (spans.length === 0) {
+      lines.push(escapeHtml(chars.join("")));
+      continue;
+    }
+    let cursor = 0;
+    const parts: string[] = [];
+    for (const [start, end, fg] of spans) {
+      if (start > cursor) {
+        parts.push(escapeHtml(chars.slice(cursor, start).join("")));
+      }
+      parts.push(
+        `<span style="color:${fg}">${escapeHtml(chars.slice(start, end).join(""))}</span>`,
+      );
+      cursor = end;
+    }
+    if (cursor < chars.length) {
+      parts.push(escapeHtml(chars.slice(cursor).join("")));
+    }
+    lines.push(parts.join(""));
+  }
+  return lines.join("\n");
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+const initial = renderFrameHtml(0);
+
+// JSON-serialise just what the client needs. We strip whitespace from frame
+// strings ourselves (they are fixed-width braille and need to be preserved
+// byte-for-byte) so JSON.stringify is fine.
+const clientData = JSON.stringify({
+  cols: data.cols,
+  rows: data.rows,
+  delays: data.delays,
+  frames: data.frames,
+  colors: data.colors,
+});
+---
+
+<figure class="splash" aria-label="Animated black-hole splash">
+  <pre class="splash-grid" set:html={initial} />
+  <figcaption class="splash-caption">
+    <span class="dot" aria-hidden="true"></span>
+    The same splash that opens Neovim on first launch.
+  </figcaption>
+</figure>
+
+<script is:inline define:vars={{ clientData }}>
+  (() => {
+    const data = JSON.parse(clientData);
+    const grid = document.querySelector(".splash-grid");
+    if (!grid) return;
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function renderFrame(i) {
+      const rows = data.frames[i];
+      const colors = data.colors[i] || [];
+      const lines = [];
+      for (let r = 0; r < rows.length; r++) {
+        const line = rows[r];
+        const spans = colors[r] || [];
+        const chars = Array.from(line);
+        if (spans.length === 0) {
+          lines.push(escapeHtml(chars.join("")));
+          continue;
+        }
+        let cursor = 0;
+        const parts = [];
+        for (const [start, end, fg] of spans) {
+          if (start > cursor) {
+            parts.push(escapeHtml(chars.slice(cursor, start).join("")));
+          }
+          parts.push(
+            '<span style="color:' +
+              fg +
+              '">' +
+              escapeHtml(chars.slice(start, end).join("")) +
+              "</span>",
+          );
+          cursor = end;
+        }
+        if (cursor < chars.length) {
+          parts.push(escapeHtml(chars.slice(cursor).join("")));
+        }
+        lines.push(parts.join(""));
+      }
+      grid.innerHTML = lines.join("\n");
+    }
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return; // keep the static first frame
+
+    let idx = 1;
+    let stopped = false;
+    function tick() {
+      if (stopped) return;
+      renderFrame(idx);
+      const delay = data.delays[idx] || 80;
+      idx = (idx + 1) % data.frames.length;
+      setTimeout(() => requestAnimationFrame(tick), delay);
+    }
+    // Only animate while the tab is visible — saves CPU on backgrounded tabs.
+    document.addEventListener("visibilitychange", () => {
+      stopped = document.hidden;
+      if (!stopped) tick();
+    });
+    requestAnimationFrame(tick);
+  })();
+</script>

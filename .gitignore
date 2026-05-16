@@ -5,3 +5,8 @@ lua/blak/user.lua
 
 __pycache__/
 *.pyc
+
+# docs site
+docs/node_modules/
+docs/dist/
+docs/.astro/

@@ -1,0 +1,49 @@
+---
+const stack = [
+  { label: "package manager", value: "lazy.nvim", meta: "+ lockfile rollback" },
+  { label: "default picker", value: "fff.nvim", meta: "fast, native" },
+  { label: "completion", value: "blink.cmp", meta: "" },
+  { label: "lsp wiring", value: "vim.lsp.config()", meta: "native, no wrapper" },
+  { label: "formatter", value: "conform.nvim", meta: "" },
+  { label: "linter", value: "nvim-lint", meta: "" },
+  { label: "treesitter", value: "nvim-treesitter", meta: "" },
+  { label: "explorer", value: "oil.nvim", meta: "+ neotree extra" },
+  { label: "git signs", value: "gitsigns.nvim", meta: "" },
+  { label: "which-key", value: "which-key.nvim", meta: "every map described" },
+  { label: "dashboard", value: "Snacks", meta: "+ black-hole splash" },
+  { label: "colorscheme", value: "blak", meta: "monochrome + ember red" },
+];
+---
+
+<section class="section">
+  <header class="section-head">
+    <span class="eyebrow">
+      <span class="eyebrow-dot" aria-hidden="true"></span>
+      <span>// stack</span>
+    </span>
+    <h2 class="section-title">The default kit.</h2>
+    <p class="section-sub">
+      Twelve core decisions. Wired up. Reversible. Anything beyond this set
+      lives in an opt-in extra.
+    </p>
+  </header>
+
+  <div class="terminal" aria-label="Default stack">
+    <header class="terminal-bar">
+      <span class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="terminal-title">:BlakDoctor</span>
+    </header>
+    <div class="terminal-body">
+      <ul class="stack">
+        {stack.map((row) => (
+          <li class="stack-row">
+            <span class="stack-mark" aria-hidden="true">●</span>
+            <span class="stack-label">{row.label}</span>
+            <span class="stack-value">{row.value}</span>
+            {row.meta && <span class="stack-meta">— {row.meta}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,46 @@
+---
+title: Why Blak
+description: What Blak is, what it isn't, and why most distros miss the contract.
+---
+
+import Features from "../../../components/Features.astro";
+import Compare from "../../../components/Compare.astro";
+
+Blak is a Neovim distribution built around a single product contract:
+
+> **Everything useful. Nothing escapes.**
+
+The name is the promise. A black hole pulls in everything useful for editing code — pickers, LSP, completion, formatting, git, treesitter — and lets nothing escape back out as noise, mystery, or unstable churn.
+
+## What Blak is
+
+- **Native-first.** Built on Neovim 0.12's `vim.lsp.config()` and `vim.lsp.enable()` for LSP. No wrapper plugin where a one-line native API exists.
+- **Useful immediately.** Snacks dashboard, fff.nvim picker, blink.cmp completion, gitsigns, oil, which-key, treesitter — wired up and consistent on first launch.
+- **Boring on purpose.** Defaults are memorable, documented, and never silently changed by a stable update.
+- **Reversible.** Extras are opt-in modules with state stored outside the repo. Disable them and they leave nothing behind.
+- **Isolated.** Installed under `NVIM_APPNAME=blak`. Your existing `~/.config/nvim` is untouched.
+
+## What Blak isn't
+
+- **Not a kitchen sink.** Features land in core only if most users benefit. Everything else is an extra.
+- **Not a wrapper that hides Neovim.** Read `lua/blak/config/defaults.lua`, fork it, own it.
+- **Not stable-by-marketing.** `:BlakUpdate` snapshots `lazy-lock.json` first. `:BlakRollback` restores the last known-good set in one step.
+
+<Features />
+
+<Compare />
+
+## Who Blak is for
+
+You'll like Blak if:
+
+- You want a config you can read in an afternoon.
+- You want a distro that ships with sensible defaults but doesn't trap you.
+- You want updates that won't quietly swap your picker, completion engine, or LSP strategy.
+- You'd rather type `:BlakExtras enable lang.rust` than learn a config DSL.
+
+## What's next
+
+- [Install Blak](/blak.nvim/start/install/) — one command.
+- [Customize Blak](/blak.nvim/start/customize/) — `user.lua` and `:BlakExtras`.
+- [Read the philosophy](/blak.nvim/guide/philosophy/) — the rules behind the rules.

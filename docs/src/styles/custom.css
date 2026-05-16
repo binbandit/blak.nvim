@@ -1,0 +1,1187 @@
+/* ============================================================================
+   blak.nvim — documentation theme
+   Pure inky black. Bold sans display. One ember of red as accent.
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+:root {
+  /* Palette ------------------------------------------------------------------ */
+  --ink: #000000;
+  --ink-2: #060606;
+  --ink-3: #0a0a0a;
+  --ink-4: #0f0f0f;
+  --line: #161616;
+  --line-bright: #232323;
+  --line-bright-2: #2e2e2e;
+
+  --paper: #e8e8e8;
+  --paper-strong: #ffffff;
+  --paper-dim: #8a8a8a;
+  --paper-muted: #5e5e5e;
+  --paper-faint: #3a3a3a;
+
+  /* Single accent: the deep red from the actual black-hole GIF. */
+  --ember: #cc3300;
+  --ember-bright: #dd5500;
+  --ember-hot: #ee6611;
+  --ember-low: #220a05;
+
+  --c-red: #ff6b6b;
+  --c-yellow: #eed49f;
+  --c-green: #a6da95;
+  --c-blue: #8aadf4;
+  --c-cyan: #8bd5ca;
+}
+
+/* Force the dark palette on every theme value. */
+:root,
+:root[data-theme="dark"],
+:root[data-theme="light"] {
+  --sl-color-white: var(--paper-strong);
+  --sl-color-gray-1: #e6e6e6;
+  --sl-color-gray-2: #c2c2c2;
+  --sl-color-gray-3: #8a8a8a;
+  --sl-color-gray-4: #5a5a5a;
+  --sl-color-gray-5: #2a2a2a;
+  --sl-color-gray-6: #161616;
+  --sl-color-gray-7: #0a0a0a;
+  --sl-color-black: var(--ink);
+
+  --sl-color-accent-low: var(--ember-low);
+  --sl-color-accent: var(--ember);
+  --sl-color-accent-high: var(--paper-strong);
+
+  --sl-color-bg: var(--ink);
+  --sl-color-bg-nav: rgba(0, 0, 0, 0.7);
+  --sl-color-bg-sidebar: var(--ink);
+  --sl-color-bg-inline-code: var(--ink-3);
+  --sl-color-bg-accent: var(--ember);
+
+  --sl-color-hairline-light: var(--line);
+  --sl-color-hairline: var(--line);
+  --sl-color-hairline-shade: var(--line);
+
+  --sl-color-text: var(--paper);
+  --sl-color-text-accent: var(--paper-strong);
+  --sl-color-text-invert: var(--ink);
+
+  --sl-color-bg-badge: var(--ink-3);
+
+  --sl-shadow-sm: none;
+  --sl-shadow-md: none;
+  --sl-shadow-lg: none;
+}
+
+/* Typography ----------------------------------------------------------------- */
+:root {
+  --sl-font:
+    "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif;
+  --sl-font-mono:
+    "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  --sl-text-h1: 2.5rem;
+  --sl-text-h2: 1.625rem;
+  --sl-text-h3: 1.25rem;
+  --sl-text-h4: 1.0625rem;
+  --sl-line-height: 1.7;
+
+  --content-max: 46rem;
+  --hero-max: 64rem;
+}
+
+html {
+  font-feature-settings: "ss01" on, "cv11" on;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--ink);
+  color: var(--paper);
+  letter-spacing: -0.005em;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Markdown defaults --------------------------------------------------------- */
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
+  letter-spacing: -0.022em;
+  font-weight: 700;
+  color: var(--paper-strong);
+}
+
+.sl-markdown-content h1 {
+  font-size: clamp(2rem, 2.5vw + 1rem, 3rem);
+  line-height: 1.03;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
+.sl-markdown-content h2 {
+  margin-top: 3.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  font-size: 1.5rem;
+  letter-spacing: -0.022em;
+  line-height: 1.2;
+}
+
+.sl-markdown-content h2:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 1.5rem;
+}
+
+.sl-markdown-content h3 {
+  margin-top: 2rem;
+  font-size: 1.15rem;
+}
+
+.sl-markdown-content p,
+.sl-markdown-content li {
+  color: var(--paper);
+}
+
+.sl-markdown-content a {
+  color: var(--paper-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--paper-faint);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.sl-markdown-content a:hover {
+  text-decoration-color: var(--ember);
+}
+
+.sl-markdown-content :not(a) > code {
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  padding: 0.1em 0.4em;
+  font-size: 0.85em;
+  color: var(--paper-strong);
+  font-family: var(--sl-font-mono);
+  font-weight: 500;
+}
+
+.sl-markdown-content blockquote {
+  border-left: 2px solid var(--ember);
+  background: transparent;
+  margin: 1.5rem 0;
+  padding: 0.25rem 1.25rem;
+  color: var(--paper);
+  font-style: normal;
+}
+
+.sl-markdown-content blockquote p {
+  margin: 0;
+}
+
+.sl-markdown-content :is(ul, ol) {
+  padding-left: 1.25rem;
+}
+
+.sl-markdown-content li {
+  margin-block: 0.35rem;
+}
+
+.sl-markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-block: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.sl-markdown-content table th,
+.sl-markdown-content table td {
+  border: none;
+  border-bottom: 1px solid var(--line);
+  padding: 0.8rem 1rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.sl-markdown-content table th {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.7rem;
+  color: var(--paper-dim);
+  font-weight: 600;
+  background: transparent;
+}
+
+.sl-markdown-content table tbody tr:hover {
+  background: var(--ink-2);
+}
+
+/* ============================================================================
+   Header
+   ========================================================================== */
+
+header.header {
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.site-title {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.55rem;
+  width: auto !important;
+  text-decoration: none !important;
+}
+
+.site-logo {
+  flex: none;
+  filter: drop-shadow(0 0 6px rgba(204, 51, 0, 0.55));
+}
+
+.site-title-text {
+  font-family: var(--sl-font);
+  font-size: 1.025rem;
+  font-weight: 700;
+  letter-spacing: -0.014em;
+  color: var(--paper-strong);
+}
+
+.social-icons a {
+  color: var(--paper-dim);
+  transition: color 0.15s ease;
+}
+
+.social-icons a:hover {
+  color: var(--paper-strong);
+}
+
+/* ============================================================================
+   Search box — borderless, calm
+   ========================================================================== */
+
+.search-container, /* legacy */
+site-search {
+  --search-radius: 0.5rem;
+}
+
+site-search button[data-open-modal],
+button[data-open-modal] {
+  background: var(--ink-2);
+  border: 1px solid transparent;
+  color: var(--paper-dim);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--sl-font);
+  font-size: 0.85rem;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  transition: background 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease;
+  box-shadow: none;
+  cursor: pointer;
+  height: 2.25rem;
+  min-width: 0;
+}
+
+button[data-open-modal]:hover {
+  background: var(--ink-3);
+  color: var(--paper-strong);
+  border-color: var(--line-bright);
+}
+
+button[data-open-modal]:focus-visible {
+  outline: 1px solid var(--ember);
+  outline-offset: 2px;
+}
+
+button[data-open-modal] svg {
+  opacity: 0.6;
+  width: 14px;
+  height: 14px;
+}
+
+button[data-open-modal]:hover svg {
+  opacity: 0.85;
+}
+
+/* Tame every kbd inside the search button into subtle mono characters. */
+button[data-open-modal] kbd,
+button[data-open-modal] kbd kbd {
+  all: unset;
+  font-family: var(--sl-font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--paper-muted);
+  letter-spacing: 0.02em;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  text-shadow: none;
+  display: inline;
+}
+
+button[data-open-modal] kbd {
+  margin-left: 0.6rem;
+}
+
+button[data-open-modal] kbd kbd + kbd {
+  margin-left: 0.05em;
+}
+
+/* The modal Pagefind search dialog */
+dialog[aria-label="Search"] {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+dialog[aria-label="Search"] > div {
+  background: var(--ink-2);
+  border: 1px solid var(--line-bright);
+  border-radius: 0.75rem;
+  box-shadow:
+    0 30px 80px -30px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(204, 51, 0, 0.06);
+}
+
+/* ============================================================================
+   Sidebar
+   ========================================================================== */
+
+.sidebar-pane {
+  border-inline-end-color: var(--line);
+  background: var(--ink);
+}
+
+.sidebar-content {
+  padding-block: 1.5rem;
+}
+
+.sidebar-content nav > ul > li > details > summary,
+.sidebar-content nav > ul > li > a {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.68rem;
+  color: var(--paper-dim);
+}
+
+.sidebar-content a {
+  color: var(--paper-dim);
+  border-inline-start: 1px solid var(--line);
+  border-radius: 0;
+  padding-inline-start: 0.9rem;
+  padding-block: 0.35rem;
+  font-size: 0.9rem;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.sidebar-content a:hover {
+  color: var(--paper-strong);
+  background: transparent;
+}
+
+.sidebar-content a[aria-current="page"] {
+  color: var(--paper-strong);
+  border-inline-start-color: var(--ember);
+  background: transparent;
+  font-weight: 500;
+}
+
+/* TOC ----------------------------------------------------------------------- */
+starlight-toc {
+  font-size: 0.82rem;
+}
+
+starlight-toc h2 {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--paper-dim);
+  font-weight: 600;
+  border: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+
+starlight-toc a {
+  color: var(--paper-dim);
+}
+
+starlight-toc a[aria-current="true"] {
+  color: var(--paper-strong);
+}
+
+starlight-toc a:hover {
+  color: var(--paper-strong);
+}
+
+/* Pagination ---------------------------------------------------------------- */
+.pagination-links {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  gap: 1rem;
+}
+
+.pagination-links a {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.9rem 1.1rem;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  text-decoration: none !important;
+}
+
+.pagination-links a:hover {
+  border-color: var(--line-bright);
+  background: var(--ink-2);
+}
+
+.pagination-links a span:first-child {
+  color: var(--paper-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.66rem;
+  font-family: var(--sl-font-mono);
+  font-weight: 500;
+}
+
+.pagination-links a .link-title,
+.pagination-links a > span:last-child {
+  color: var(--paper-strong);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.012em;
+}
+
+.pagination-links a svg {
+  color: var(--paper-muted);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.pagination-links a:hover svg {
+  color: var(--ember);
+}
+
+.pagination-links a[rel="next"]:hover svg {
+  transform: translateX(2px);
+}
+
+.pagination-links a[rel="prev"]:hover svg {
+  transform: translateX(-2px);
+}
+
+/* Code blocks --------------------------------------------------------------- */
+.expressive-code {
+  margin-block: 1.5rem;
+}
+
+.expressive-code .frame {
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--ink-2);
+  box-shadow: none !important;
+}
+
+.expressive-code .frame pre,
+.expressive-code .frame pre > code {
+  background: var(--ink-2) !important;
+}
+
+/* Always show a slim scrollbar so users see there's more content to the right.
+   Default macOS hidden scrollbars make horizontal overflow invisible. */
+.expressive-code .frame pre {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-bright) transparent;
+}
+
+.expressive-code .frame pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+.expressive-code .frame pre::-webkit-scrollbar-thumb {
+  background: var(--line-bright);
+  border-radius: 4px;
+  border: 2px solid var(--ink-2);
+}
+
+.expressive-code .frame pre::-webkit-scrollbar-thumb:hover {
+  background: var(--paper-muted);
+}
+
+/* Hide the noisy traffic-light dots on plain code frames — they imply
+   terminal chrome where there is none. Keep them only on frames that
+   actually display a title. */
+.expressive-code .frame:not([data-language]):not(.has-title)::before,
+.expressive-code .frame:not(.is-terminal):not(.has-title) .header {
+  display: none;
+}
+
+/* Code title bar (file name / lang chip) when present. */
+.expressive-code .frame .header {
+  background: var(--ink-3);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--sl-font-mono);
+  font-size: 0.7rem;
+  color: var(--paper-dim);
+  letter-spacing: 0.02em;
+}
+
+.expressive-code .frame .title {
+  color: var(--paper);
+  font-weight: 500;
+}
+
+/* Copy button polish */
+.expressive-code .copy button {
+  background: var(--ink-3);
+  border: 1px solid var(--line-bright);
+  border-radius: 0.3rem;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.expressive-code .copy button:hover {
+  border-color: var(--ember);
+}
+
+.expressive-code .copy button .ready,
+.expressive-code .copy button .success {
+  color: var(--paper);
+}
+
+/* Asides -------------------------------------------------------------------- */
+.sl-markdown-content .starlight-aside {
+  border-left-width: 2px;
+  border-radius: 0;
+  background: var(--ink-2);
+  border-color: var(--line-bright);
+}
+
+.starlight-aside--tip { border-color: var(--c-cyan); }
+.starlight-aside--note { border-color: var(--c-blue); }
+.starlight-aside--caution { border-color: var(--c-yellow); }
+.starlight-aside--danger { border-color: var(--ember); }
+
+/* Selection / focus / scrollbar -------------------------------------------- */
+::selection {
+  background: var(--ember);
+  color: var(--paper-strong);
+}
+
+:focus-visible {
+  outline: 1.5px solid var(--ember);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--line-bright);
+  border-radius: 5px;
+  border: 2px solid var(--ink);
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--paper-muted); }
+
+/* Page container width ------------------------------------------------------ */
+.sl-container {
+  max-width: var(--content-max);
+}
+
+[data-has-hero] .sl-container {
+  max-width: var(--hero-max);
+}
+
+/* ============================================================================
+   Landing — stripped, centered hero
+   ========================================================================== */
+
+[data-has-hero] main {
+  --hero-vpad: 4rem;
+}
+
+[data-has-hero] .hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2.5rem;
+  min-height: calc(100vh - 8rem);
+  padding-block: var(--hero-vpad) 4rem;
+  position: relative;
+}
+
+.hero-splash {
+  width: 100%;
+  max-width: 44rem;
+  display: grid;
+  place-items: center;
+  padding: 0 1rem;
+}
+
+.hero-wordmark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  max-width: 36rem;
+}
+
+.hero-name {
+  font-family: var(--sl-font);
+  font-size: clamp(2.5rem, 4.5vw + 0.5rem, 4.5rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  color: var(--paper-strong);
+  margin: 0;
+}
+
+.hero-tagline {
+  font-family: var(--sl-font);
+  font-size: clamp(1.125rem, 1.2vw + 0.85rem, 1.5rem);
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  line-height: 1.3;
+  color: var(--paper-dim);
+  margin: 0;
+  max-width: 32rem;
+}
+
+/* Install command — wide, polished. */
+.hero-install {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 38rem;
+  padding: 0.85rem 0.55rem 0.85rem 1rem;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  font-family: var(--sl-font-mono);
+  font-size: 0.82rem;
+  color: var(--paper);
+  text-align: left;
+  transition: border-color 0.15s ease;
+}
+
+.hero-install:hover {
+  border-color: var(--line-bright);
+}
+
+.hero-install code {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  color: var(--paper);
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-bright) transparent;
+}
+
+.hero-install-prompt {
+  color: var(--ember);
+  font-weight: 700;
+  user-select: none;
+  flex: none;
+}
+
+.hero-install-copy {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: 1px solid var(--line-bright);
+  border-radius: 0.4rem;
+  color: var(--paper-dim);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.hero-install-copy:hover {
+  color: var(--paper-strong);
+  border-color: var(--ember);
+  background: rgba(204, 51, 0, 0.06);
+}
+
+.hero-install-copy .icon-check {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  color: var(--c-green);
+}
+
+.hero-install-copy[data-copied] {
+  border-color: var(--c-green);
+}
+
+.hero-install-copy[data-copied] .icon-copy {
+  opacity: 0;
+}
+
+.hero-install-copy[data-copied] .icon-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Actions ------------------------------------------------------------------- */
+.hero-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.15rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: -0.005em;
+  text-decoration: none !important;
+  border: 1px solid transparent;
+  transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.hero-btn.variant-primary {
+  background: var(--paper-strong);
+  color: var(--ink);
+  border-color: var(--paper-strong);
+}
+
+.hero-btn.variant-primary:hover {
+  background: var(--ember);
+  color: var(--paper-strong);
+  border-color: var(--ember);
+  transform: translateY(-1px);
+}
+
+.hero-btn.variant-ghost {
+  background: transparent;
+  color: var(--paper);
+  border-color: var(--line-bright);
+}
+
+.hero-btn.variant-ghost:hover {
+  border-color: var(--ember);
+  color: var(--paper-strong);
+  transform: translateY(-1px);
+}
+
+/* ============================================================================
+   Splash — big, centred, plays at editor speed (80ms/frame)
+   ========================================================================== */
+
+.splash {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+
+.splash-grid {
+  font-family:
+    "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-weight: 500;
+  font-size: clamp(1rem, 1.95vw, 1.6rem);
+  line-height: 0.92;
+  letter-spacing: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--ember);
+  white-space: pre;
+  text-align: left;
+  overflow: visible;
+  font-variant-emoji: text;
+  font-variant-ligatures: none;
+  font-feature-settings: "calt" off, "liga" off;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.splash-caption {
+  display: none;
+}
+
+/* ============================================================================
+   Marketing components (used inside /start/why/)
+   ========================================================================== */
+
+.section {
+  margin-block: 4rem 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--line);
+}
+
+.section-head {
+  margin-bottom: 2.5rem;
+  max-width: 44rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--sl-font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--paper-dim);
+  margin-bottom: 1rem;
+}
+
+.eyebrow-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 6px var(--ember);
+}
+
+.section-title {
+  font-family: var(--sl-font);
+  font-weight: 800;
+  font-size: clamp(1.625rem, 1.6vw + 1rem, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--paper-strong);
+  margin: 0 0 0.85rem;
+}
+
+.section-sub {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--paper-dim);
+  margin: 0;
+  max-width: 38rem;
+}
+
+.section-sub code {
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  padding: 0.05em 0.35em;
+  font-size: 0.86em;
+  color: var(--paper-strong);
+  font-family: var(--sl-font-mono);
+}
+
+/* Bento --------------------------------------------------------------------- */
+.bento {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+/* Use a container query so the bento responds to its OWN width, not the
+   viewport. Doc pages have sidebar + TOC eating viewport width — without
+   this, cells go 2-col while still too narrow for their titles. */
+@container (min-width: 36rem) {
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.cell {
+  background: var(--ink);
+  padding: 1.6rem 1.5rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: background 0.2s ease;
+}
+
+.cell:hover {
+  background: var(--ink-2);
+}
+
+.cell-tag {
+  align-self: flex-start;
+  font-family: var(--sl-font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ember);
+  border: 1px solid rgba(204, 51, 0, 0.35);
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.25rem;
+  background: rgba(204, 51, 0, 0.05);
+  font-weight: 500;
+}
+
+.cell-title {
+  font-family: var(--sl-font);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: -0.015em;
+  color: var(--paper-strong);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.cell-body {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--paper-dim);
+  margin: 0;
+}
+
+.cell-body code {
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  padding: 0.05em 0.35em;
+  font-size: 0.86em;
+  color: var(--paper-strong);
+  font-family: var(--sl-font-mono);
+}
+
+.cell-code {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  font-family: var(--sl-font-mono);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--paper);
+  overflow-x: auto;
+  white-space: pre;
+  scrollbar-width: thin;
+}
+
+.cell-code code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* Terminal panel (Compare) -------------------------------------------------- */
+.terminal {
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  overflow: hidden;
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.9rem;
+  background: var(--ink-3);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--sl-font-mono);
+  font-size: 0.7rem;
+  color: var(--paper-muted);
+}
+
+.terminal-dots {
+  display: inline-flex;
+  gap: 0.32rem;
+}
+
+.terminal-dots i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--line-bright);
+}
+
+.terminal-dots i:first-child {
+  background: var(--ember);
+}
+
+.terminal-title {
+  color: var(--paper);
+  letter-spacing: 0.02em;
+}
+
+.terminal-body {
+  padding: 0.85rem 0;
+}
+
+.stack {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 50rem) {
+  .stack {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stack-row {
+  display: grid;
+  grid-template-columns: 0.7rem 8rem 1fr;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.5rem 1.1rem;
+  font-family: var(--sl-font-mono);
+  font-size: 0.85rem;
+}
+
+.stack-row:hover {
+  background: rgba(204, 51, 0, 0.04);
+}
+
+.stack-mark {
+  color: var(--ember);
+  font-size: 0.55rem;
+  align-self: center;
+}
+
+.stack-label {
+  color: var(--paper-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+
+.stack-value {
+  color: var(--paper-strong);
+  font-weight: 500;
+}
+
+.stack-meta {
+  color: var(--paper-dim);
+  grid-column: 3;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 30rem) {
+  .stack-row {
+    grid-template-columns: 0.7rem 1fr;
+  }
+  .stack-label,
+  .stack-value,
+  .stack-meta {
+    grid-column: 2;
+  }
+}
+
+/* Footer & "Edit page" / meta ---------------------------------------------- */
+.sl-flex.meta {
+  font-family: var(--sl-font-mono);
+  font-size: 0.72rem;
+  color: var(--paper-muted);
+  letter-spacing: 0.04em;
+  margin-top: 2.5rem;
+}
+
+.sl-flex.meta a {
+  color: var(--paper-dim);
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.15s ease;
+}
+
+.sl-flex.meta a:hover {
+  color: var(--paper-strong);
+}
+
+.sl-flex.meta a:hover svg {
+  color: var(--ember);
+}
+
+footer.sl-footer-meta {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  color: var(--paper-muted);
+  font-family: var(--sl-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+footer.sl-footer-meta a {
+  color: var(--paper-dim);
+  text-decoration: none !important;
+}
+
+footer.sl-footer-meta a:hover {
+  color: var(--paper-strong);
+}
+
+/* Anchor scroll margin — keep headings clear of the sticky top nav. */
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: 4.5rem;
+}
+
+/* Hide the (no-op) theme toggle entirely. */
+starlight-theme-select,
+.theme-toggle {
+  display: none !important;
+}
+
+/* Remove the "Edit page" link gutter on the landing for a cleaner look. */
+[data-has-hero] .sl-flex.meta,
+[data-has-hero] footer.sl-footer-meta {
+  display: none;
+}

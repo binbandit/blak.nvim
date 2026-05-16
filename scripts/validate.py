@@ -16,6 +16,10 @@ LUA = sorted(ROOT.rglob("*.lua"))
 REQUIRE_RE = re.compile(r"require\(['\"](blak(?:\.[A-Za-z0-9_\-]+)*)['\"]\)")
 ID_RE = re.compile(r"id\s*=\s*['\"]([^'\"]+)['\"]")
 KEYWORD_RE = re.compile(r"\b(function|if|for|while|repeat|end|until)\b")
+DOCS_LINK_RE = re.compile(
+    r"\]\(/blak\.nvim/([^)\s#]*)(?:#[^) \t]*)?\)"
+    r"|href=[\"']/blak\.nvim/([^\"'#]*)(?:#[^\"']*)?[\"']"
+)
 
 
 def strip_lua(text: str) -> str:
@@ -202,6 +206,41 @@ def check_blackhole_frames() -> list[str]:
     return errors
 
 
+def doc_slug(path: Path) -> str:
+    rel = path.relative_to(ROOT / "docs" / "src" / "content" / "docs").with_suffix("")
+    parts = list(rel.parts)
+    if parts and parts[-1] == "index":
+        parts = parts[:-1]
+    suffix = "/".join(parts)
+    return "/blak.nvim/" + (suffix + "/" if suffix else "")
+
+
+def check_docs_links() -> list[str]:
+    docs_root = ROOT / "docs" / "src" / "content" / "docs"
+    source_root = ROOT / "docs" / "src"
+    if not docs_root.exists() or not source_root.exists():
+        return []
+
+    slugs = {
+        doc_slug(path)
+        for path in docs_root.rglob("*")
+        if path.suffix in {".md", ".mdx", ".mdoc"}
+    }
+
+    errors: list[str] = []
+    for path in source_root.rglob("*"):
+        if path.suffix not in {".astro", ".md", ".mdx", ".mjs", ".ts"}:
+            continue
+        text = path.read_text(encoding="utf-8")
+        for match in DOCS_LINK_RE.finditer(text):
+            target = (match.group(1) or match.group(2) or "").strip()
+            normalized = target.strip("/")
+            slug = "/blak.nvim/" + (normalized + "/" if normalized else "")
+            if slug not in slugs:
+                errors.append(f"{path.relative_to(ROOT)}: broken docs link {slug}")
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -232,9 +271,11 @@ def main() -> int:
         seen[extra_id] = path
 
     errors.extend(check_blackhole_frames())
+    errors.extend(check_docs_links())
 
     for rel in [
         "README.md",
+        "MANIFESTO.md",
         "CONTRIBUTING.md",
         "NOTICE",
         "doc/blak.txt",
