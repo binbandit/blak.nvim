@@ -864,16 +864,29 @@ starlight-toc a:hover {
   --hero-vpad: 4rem;
 }
 
+@media (max-width: 40rem) {
+  [data-has-hero] main {
+    --hero-vpad: 2rem;
+  }
+}
+
 [data-has-hero] .hero {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 2.5rem;
+  gap: 2rem;
   min-height: calc(100vh - 8rem);
-  padding-block: var(--hero-vpad) 4rem;
+  padding: var(--hero-vpad) 1rem 4rem;
   position: relative;
+}
+
+@media (min-width: 40rem) {
+  [data-has-hero] .hero {
+    gap: 2.5rem;
+    padding-inline: 0;
+  }
 }
 
 .hero-splash {
@@ -881,7 +894,13 @@ starlight-toc a:hover {
   max-width: 44rem;
   display: grid;
   place-items: center;
-  padding: 0 1rem;
+  padding: 0 2rem;
+}
+
+@media (min-width: 40rem) {
+  .hero-splash {
+    padding: 0 1rem;
+  }
 }
 
 .hero-wordmark {
@@ -1064,11 +1083,14 @@ starlight-toc a:hover {
   width: 100%;
 }
 
+/* The splash is 50 cols of braille. In JetBrains Mono ~0.6em per char, so
+   the row needs ~30em of width. We scale the font so the splash reads as
+   a logo on phones (≈55% viewport width) and grows to a hero on desktop. */
 .splash-grid {
   font-family:
     "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   font-weight: 500;
-  font-size: clamp(1rem, 1.95vw, 1.6rem);
+  font-size: clamp(0.42rem, 1.85vw, 1.4rem);
   line-height: 0.92;
   letter-spacing: 0;
   margin: 0;
@@ -1078,11 +1100,18 @@ starlight-toc a:hover {
   white-space: pre;
   text-align: left;
   overflow: visible;
+  max-width: 100%;
   font-variant-emoji: text;
   font-variant-ligatures: none;
   font-feature-settings: "calt" off, "liga" off;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 48rem) {
+  .splash-grid {
+    font-size: clamp(0.85rem, 2vw, 1.4rem);
+  }
 }
 
 .splash-caption {
