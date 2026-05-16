@@ -78,7 +78,7 @@ Mason tools
 | `git not found` | Install git. Lazy.nvim needs it to clone plugins. |
 | `rg not found` | Install ripgrep. Without it pickers fall back to slow built-in walks. |
 | `fff not loadable` | Run `:Lazy sync`, then check `:Lazy log fff.nvim`. The binary downloads during plugin build. |
-| `extras.json has unknown id` | The extra was removed or renamed. Edit `stdpath('state')/blak/extras.json` and remove it, or run `:BlakExtras disable <id>`. |
+| `Unknown extra: <id>` | The extra was removed or renamed. Run `:BlakExtras disable <id>` to remove the stale state entry. If it is still listed in `lua/blak/user.lua`, remove it there too. |
 
 ## Where the file lives
 

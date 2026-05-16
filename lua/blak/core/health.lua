@@ -52,12 +52,17 @@ function M.check()
   end
 
   h.start("Enabled extras")
-  local enabled = require("blak.extras").enabled(config)
+  local extras = require("blak.extras")
+  local enabled = extras.enabled(config)
   if #enabled == 0 then
     h.info("No extras enabled")
   else
     for _, id in ipairs(enabled) do
-      h.ok(id)
+      if extras.is_known(id) then
+        h.ok(id)
+      else
+        h.warn("Unknown extra: " .. id .. ". Run :BlakExtras disable " .. id .. " to remove stale state.")
+      end
     end
   end
 

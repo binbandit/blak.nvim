@@ -187,6 +187,9 @@ local function main()
   pcall(vim.api.nvim_del_user_command, "Lazy")
   vim.api.nvim_create_user_command("Lazy", function(opts)
     table.insert(lazy_calls, opts.args)
+    if opts.args == "update" then
+      vim.api.nvim_exec_autocmds("User", { pattern = "LazyUpdatePre", modeline = false })
+    end
   end, { nargs = "*", bang = true })
 
   local backup_dir = util.join(vim.fn.stdpath("state"), "blak", "lockbacks")

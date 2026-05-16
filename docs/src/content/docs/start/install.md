@@ -44,10 +44,15 @@ The installer respects environment variables when you want isolation for testing
 # Install under a different app name (e.g. blak-dev)
 curl -fsSL https://getblak.dev/install.sh | BLAK_APPNAME=blak-dev sh
 
-# Install from a fork or a branch
+# Install from a fork
 curl -fsSL https://getblak.dev/install.sh | \
   BLAK_REPO_URL=https://github.com/your-fork/blak.nvim.git sh
+
+# Install a specific branch or tag from that repo
+curl -fsSL https://getblak.dev/install.sh | BLAK_REF=feature-branch sh
 ```
+
+When `BLAK_APPNAME` is set, the config directory and launcher both use that name. For example, `BLAK_APPNAME=blak-dev` creates `~/.config/blak-dev/` and `~/.local/bin/blak-dev`.
 
 ## From a clone (developers)
 

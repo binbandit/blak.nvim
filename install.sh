@@ -3,10 +3,18 @@ set -eu
 
 APPNAME="${BLAK_APPNAME:-blak}"
 REPO_URL="${BLAK_REPO_URL:-https://github.com/binbandit/blak.nvim.git}"
+BLAK_REF="${BLAK_REF:-}"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 BIN_DIR="${BLAK_BIN_DIR:-$HOME/.local/bin}"
 TARGET="$CONFIG_HOME/$APPNAME"
-LAUNCHER="$BIN_DIR/blak"
+LAUNCHER="$BIN_DIR/$APPNAME"
+
+case "$APPNAME" in
+  "" | */* | . | ..)
+    echo "Invalid BLAK_APPNAME: $APPNAME" >&2
+    exit 1
+    ;;
+esac
 
 if ! command -v git >/dev/null 2>&1; then
   echo "git is required" >&2
@@ -29,7 +37,11 @@ if [ -e "$TARGET" ]; then
   exit 1
 fi
 
-git clone --filter=blob:none --depth=1 "$REPO_URL" "$TARGET"
+if [ -n "$BLAK_REF" ]; then
+  git clone --filter=blob:none --depth=1 --branch "$BLAK_REF" "$REPO_URL" "$TARGET"
+else
+  git clone --filter=blob:none --depth=1 "$REPO_URL" "$TARGET"
+fi
 
 launcher_status=""
 if mkdir -p "$BIN_DIR" 2>/dev/null; then
@@ -55,10 +67,10 @@ cat <<OUTPUT
 Blak installed to $TARGET
 
 Start it with:
-  blak
+  $APPNAME
 
 $launcher_status
 
 Optional shell alias:
-  alias blak='NVIM_APPNAME=$APPNAME nvim'
+  alias $APPNAME='NVIM_APPNAME=$APPNAME nvim'
 OUTPUT

@@ -91,7 +91,7 @@ If you find yourself adding plugins inside `user.lua`, consider whether it shoul
 :BlakExtras disable git.lazygit
 ```
 
-State is stored in `stdpath('state')/blak/extras.json`, not in the repo — so multiple machines, multiple checkouts, or a fresh clone all start from the same defaults.
+State is stored in `stdpath('state')/blak/extras.json`, not in the repo. A fresh clone with the same `NVIM_APPNAME` reuses that state; a fresh install under a new `NVIM_APPNAME` starts from your config defaults.
 
 Need an extra that doesn't exist yet? See the [Contributing guide](/contributing/#adding-an-extra) — they're small and self-contained.
 

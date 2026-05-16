@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 LUA = sorted(ROOT.rglob("*.lua"))
 REQUIRE_RE = re.compile(r"require\(['\"](blak(?:\.[A-Za-z0-9_\-]+)*)['\"]\)")
 ID_RE = re.compile(r"id\s*=\s*['\"]([^'\"]+)['\"]")
-KEYWORD_RE = re.compile(r"\b(function|if|for|while|repeat|end|until)\b")
+KEYWORD_RE = re.compile(r"\b(function|if|for|while|repeat|do|end|until)\b")
 DOCS_LINK_RE = re.compile(
     r"\]\(/blak\.nvim/([^)\s#]*)(?:#[^) \t]*)?\)"
     r"|href=[\"']/blak\.nvim/([^\"'#]*)(?:#[^\"']*)?[\"']"
@@ -113,7 +113,9 @@ def check_keyword_balance(path: Path, text: str) -> list[str]:
     errors: list[str] = []
     for match in KEYWORD_RE.finditer(clean):
         kw, pos = match.group(1), match.start()
-        if kw in {"function", "if", "for", "while", "repeat"}:
+        if kw == "do" and stack and stack[-1][0] in {"for", "while"}:
+            continue
+        if kw in {"function", "if", "for", "while", "repeat", "do"}:
             stack.append((kw, pos))
         elif kw == "until":
             if stack and stack[-1][0] == "repeat":
@@ -121,7 +123,7 @@ def check_keyword_balance(path: Path, text: str) -> list[str]:
             else:
                 errors.append(f"{path}: unexpected until near offset {pos}")
         elif kw == "end":
-            if stack and stack[-1][0] in {"function", "if", "for", "while"}:
+            if stack and stack[-1][0] in {"function", "if", "for", "while", "do"}:
                 stack.pop()
             else:
                 errors.append(f"{path}: unexpected end near offset {pos}")

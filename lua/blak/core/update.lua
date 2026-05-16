@@ -1,4 +1,5 @@
 local M = {}
+local skip_next_lazy_update_backup = false
 
 local function lockfile()
   return require("blak.util").join(vim.fn.stdpath("config"), "lazy-lock.json")
@@ -32,6 +33,39 @@ local function next_backup_path()
   return util.join(dir, string.format("lazy-lock-%s-%s.json", stamp, uv.hrtime()))
 end
 
+local function backup_order(path)
+  local name = vim.fn.fnamemodify(path, ":t")
+  local stamp, suffix = name:match("^lazy%-lock%-(%d%d%d%d%d%d%d%d%-%d%d%d%d%d%d)%-?(%d*)%.json$")
+  if stamp then
+    return stamp, tonumber(suffix) or 0
+  end
+  return name, 0
+end
+
+local function latest_backup(files)
+  table.sort(files, function(a, b)
+    local a_stamp, a_suffix = backup_order(a)
+    local b_stamp, b_suffix = backup_order(b)
+    if a_stamp == b_stamp then
+      return a_suffix < b_suffix
+    end
+    return a_stamp < b_stamp
+  end)
+  return files[#files]
+end
+
+local function lazy_update()
+  local dest = M.backup()
+  skip_next_lazy_update_backup = dest ~= nil
+  local ok, err = pcall(vim.cmd, "Lazy update")
+  if skip_next_lazy_update_backup then
+    skip_next_lazy_update_backup = false
+  end
+  if not ok then
+    error(err)
+  end
+end
+
 function M.backup()
   local util = require("blak.util")
   local lock = lockfile()
@@ -51,6 +85,10 @@ function M.setup(_)
     pattern = "LazyUpdatePre",
     group = vim.api.nvim_create_augroup("BlakUpdate", { clear = true }),
     callback = function()
+      if skip_next_lazy_update_backup then
+        skip_next_lazy_update_backup = false
+        return
+      end
       local dest = M.backup()
       if dest then
         require("blak.util").notify("Rollback point created: " .. vim.fn.fnamemodify(dest, ":t"))
@@ -60,21 +98,18 @@ function M.setup(_)
 end
 
 function M.update()
-  M.backup()
-  vim.cmd("Lazy update")
+  lazy_update()
 end
 
 function M.upgrade()
-  M.backup()
   require("blak.util").notify("Upgrade mode: review Lazy changes before accepting workflow-affecting plugin swaps.")
-  vim.cmd("Lazy update")
+  lazy_update()
 end
 
 function M.rollback()
   local util = require("blak.util")
   local files = vim.fn.glob(util.join(backup_dir(), "lazy-lock-*.json"), false, true)
-  table.sort(files)
-  local latest = files[#files]
+  local latest = latest_backup(files)
   if not latest then
     util.warn("No rollback lockfile found.")
     return

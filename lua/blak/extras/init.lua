@@ -32,9 +32,11 @@ local function registry()
   return registry_cache
 end
 
-local function merge_formatters(target, source)
+local function merge_missing_by_ft(target, source)
   for ft, value in pairs(source or {}) do
-    target[ft] = value
+    if target[ft] == nil then
+      target[ft] = value
+    end
   end
 end
 
@@ -51,6 +53,10 @@ function M.enabled(config)
   local util = require("blak.util")
   local state = require("blak.extras.state").read()
   return util.unique(vim.list_extend(vim.deepcopy(config.extras.enabled or {}), state))
+end
+
+function M.is_known(id)
+  return registry()[id] ~= nil
 end
 
 function M.apply(config)
@@ -70,10 +76,10 @@ function M.apply(config)
         config.lsp.servers = vim.tbl_deep_extend("force", config.lsp.servers or {}, extra.lsp.servers)
       end
       if extra.format and extra.format.formatters_by_ft then
-        merge_formatters(config.format.formatters_by_ft, extra.format.formatters_by_ft)
+        merge_missing_by_ft(config.format.formatters_by_ft, extra.format.formatters_by_ft)
       end
       if extra.lint and extra.lint.linters_by_ft then
-        merge_formatters(config.lint.linters_by_ft, extra.lint.linters_by_ft)
+        merge_missing_by_ft(config.lint.linters_by_ft, extra.lint.linters_by_ft)
       end
       if extra.snacks then
         config.snacks = vim.tbl_deep_extend("force", config.snacks or {}, extra.snacks)
@@ -104,6 +110,11 @@ local function lines(config)
     local mark = enabled_lookup[id] and "●" or "○"
     table.insert(out, string.format("%s %-26s %s", mark, id, extra.description or extra.label or ""))
   end
+  for _, id in ipairs(require("blak.util").tbl_keys(enabled_lookup)) do
+    if not M.is_known(id) then
+      table.insert(out, string.format("! %-26s Unknown extra; disable it to remove stale state", id))
+    end
+  end
   return out
 end
 
@@ -119,11 +130,21 @@ function M.command(opts)
   end
 
   if action == "enable" or action == "disable" then
-    if not id or not registry()[id] then
+    if not id then
       util.warn("Unknown extra: " .. tostring(id))
       return
     end
     local current = require("blak.extras.state").read()
+    local known = M.is_known(id)
+    if action == "enable" and not known then
+      util.warn("Unknown extra: " .. id)
+      return
+    end
+    if action == "disable" and not known and not contains(current, id) and not contains(config.extras.enabled, id) then
+      util.warn("Unknown extra: " .. id)
+      return
+    end
+
     local next_ids = {}
     local found = false
     for _, current_id in ipairs(current) do
@@ -144,7 +165,11 @@ function M.command(opts)
       util.warn(id .. " is still enabled in lua/blak/user.lua. Remove it there to disable it.")
       return
     end
-    util.notify((action == "enable" and "Enabled " or "Disabled ") .. id .. ". Restart Blak, then run :Lazy sync if plugins changed.")
+    if action == "disable" and not known then
+      util.notify("Removed stale extra " .. id .. " from state. Restart Blak, then run :Lazy sync if plugins changed.")
+    else
+      util.notify((action == "enable" and "Enabled " or "Disabled ") .. id .. ". Restart Blak, then run :Lazy sync if plugins changed.")
+    end
     return
   end
 

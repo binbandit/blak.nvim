@@ -19,7 +19,7 @@ An extra is a single Lua module that can contribute any of:
 - Keymaps (auto-shown in `:BlakKeys`)
 - Plugin specs for lazy.nvim
 
-When you disable an extra, every one of those contributions is rolled back. **No orphaned plugins, no leftover keymaps, no surprise behavior on next launch.**
+When you disable an extra and restart, Blak stops registering that extra's plugin specs, keymaps, tools, parsers, and config contributions. Run `:BlakExtras sync` afterward to let lazy.nvim clean up removed plugins.
 
 ## Managing extras
 
@@ -32,9 +32,12 @@ When you disable an extra, every one of those contributions is rolled back. **No
 
 State persists outside the repo in `stdpath('state')/blak/extras.json`. That means:
 
-- A fresh clone starts from your config defaults, not your machine state.
+- A fresh clone with the same `NVIM_APPNAME` reuses the same enabled extras.
+- A fresh install under a new `NVIM_APPNAME` starts from your config defaults.
 - Multiple checkouts (`blak`, `blak-dev`) can have different enabled sets.
 - `user.lua` and `extras.json` compose: anything in `extras.enabled` in `user.lua` is added on top of the state file.
+
+If an extra was renamed or removed, `:BlakDoctor` reports it as unknown. Run `:BlakExtras disable <id>` to remove that stale state entry.
 
 After enabling or disabling an extra:
 
