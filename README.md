@@ -1,5 +1,9 @@
 # blak.nvim
 
+<p align="center">
+  <img src="./assets/blak-ascii.svg" alt="blak.nvim ASCII black-hole logo" width="720">
+</p>
+
 **Blak** is a native-first Neovim distribution built around a black-hole aesthetic and a strict product contract:
 
 > Everything useful. Nothing escapes.
