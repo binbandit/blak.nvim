@@ -4,13 +4,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/sync-install-script.mjs",
+    "build:social": "node scripts/render-social-card.mjs",
+    "predev": "node scripts/sync-install-script.mjs && node scripts/render-social-card.mjs",
     "dev": "astro dev",
-    "prestart": "node scripts/sync-install-script.mjs",
+    "prestart": "node scripts/sync-install-script.mjs && node scripts/render-social-card.mjs",
     "start": "astro dev",
-    "prebuild": "node scripts/sync-install-script.mjs",
+    "prebuild": "node scripts/sync-install-script.mjs && node scripts/render-social-card.mjs",
     "build": "astro build",
-    "prepreview": "node scripts/sync-install-script.mjs",
+    "prepreview": "node scripts/sync-install-script.mjs && node scripts/render-social-card.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

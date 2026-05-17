@@ -2,9 +2,14 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
+const site = "https://getblak.dev";
+const socialImage = new URL("/social-card.png", site).href;
+const socialImageAlt =
+  "blak.nvim social card with the landing-page ASCII black-hole splash.";
+
 // https://astro.build/config
 export default defineConfig({
-  site: "https://getblak.dev",
+  site,
   trailingSlash: "ignore",
   integrations: [
     starlight({
@@ -36,8 +41,50 @@ export default defineConfig({
         {
           tag: "meta",
           attrs: {
-            property: "og:title",
-            content: "blak.nvim — Everything useful. Nothing escapes.",
+            property: "og:image",
+            content: socialImage,
+          },
+        },
+        {
+          tag: "meta",
+          attrs: {
+            property: "og:image:type",
+            content: "image/png",
+          },
+        },
+        {
+          tag: "meta",
+          attrs: {
+            property: "og:image:width",
+            content: "1200",
+          },
+        },
+        {
+          tag: "meta",
+          attrs: {
+            property: "og:image:height",
+            content: "630",
+          },
+        },
+        {
+          tag: "meta",
+          attrs: {
+            property: "og:image:alt",
+            content: socialImageAlt,
+          },
+        },
+        {
+          tag: "meta",
+          attrs: {
+            name: "twitter:image",
+            content: socialImage,
+          },
+        },
+        {
+          tag: "meta",
+          attrs: {
+            name: "twitter:image:alt",
+            content: socialImageAlt,
           },
         },
         // The brand is a black hole. Force the dark theme before any
