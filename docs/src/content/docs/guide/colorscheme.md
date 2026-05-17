@@ -13,6 +13,10 @@ ui = {
 
 There is no Blak palette overlay. TokyoNight owns the colors and plugin highlight groups.
 
+## Native Theme
+
+A first-party Blak theme is still something we want. We tried a bespoke palette, but it was not good enough yet, so Blak ships TokyoNight until a native theme earns its place.
+
 ## Switching themes
 
 Set `ui.colorscheme` to another installed colorscheme:
