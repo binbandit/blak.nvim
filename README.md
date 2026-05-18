@@ -150,6 +150,9 @@ Then edit `lua/blak/user.lua`. Most customization should stay this small:
 ```lua
 ---@type blak.UserConfig
 return {
+  ui = {
+    transparent = true,
+  },
   picker = { provider = "fff" },
   completion = { super_tab = true },
   extras = {

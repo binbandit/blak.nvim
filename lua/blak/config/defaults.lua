@@ -11,6 +11,7 @@ return {
 
   ui = {
     colorscheme = "tokyonight-night",
+    transparent = false,
     icons = true,
     notify = true,
     winborder = "rounded",

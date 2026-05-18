@@ -74,6 +74,8 @@
 
 ---@class blak.UiConfig
 ---@field colorscheme? string
+---@field transparent? boolean
+---@field theme? table
 ---@field icons? boolean
 ---@field notify? boolean
 ---@field winborder? blak.WinBorder

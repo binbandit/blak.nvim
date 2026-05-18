@@ -138,6 +138,21 @@ local function validate_hooks(errors, config)
   validate_hook(errors, "after", config.hooks.after)
 end
 
+local function validate_ui(errors, config)
+  if config.ui == nil then
+    return
+  end
+  if config.ui.colorscheme ~= nil then
+    expect(errors, "ui.colorscheme", config.ui.colorscheme, "string")
+  end
+  if config.ui.transparent ~= nil then
+    expect(errors, "ui.transparent", config.ui.transparent, "boolean")
+  end
+  if config.ui.theme ~= nil then
+    expect(errors, "ui.theme", config.ui.theme, "table")
+  end
+end
+
 function M.validate(config)
   local errors = {}
 
@@ -158,6 +173,8 @@ function M.validate(config)
   if has_package and not valid_channels[config.package.channel] then
     table.insert(errors, "package.channel must be stable, edge, or nightly")
   end
+
+  validate_ui(errors, config)
 
   if has_picker and not valid_pickers[config.picker.provider] then
     table.insert(errors, "picker.provider must be fff, snacks, telescope, or fzf_lua")

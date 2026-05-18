@@ -42,6 +42,19 @@ Blak config validation failed:
 - package.channel must be stable, edge, or nightly
 ```
 
+## `ui`
+
+| Key | Type | Allowed |
+| --- | --- | --- |
+| `colorscheme` | `string` | Any installed colorscheme name |
+| `transparent` | `boolean` | `true` or `false` |
+| `theme` | `table` | Options passed to a colorscheme Lua `setup()` function when available |
+
+Set `ui.transparent = true` to clear editor background highlights after the
+active colorscheme loads. Use `ui.theme` for colorscheme-native setup options.
+Blak tries the colorscheme name first, then the name before the final dash.
+Configure custom themes with unusual setup rules through `plugins.specs`.
+
 ## `picker`
 
 | Key | Type | Allowed |

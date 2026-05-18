@@ -11,9 +11,13 @@ ui = {
 }
 ```
 
-In Blak docs, theme settings live here: `ui.colorscheme` picks the active colorscheme, and `ui.theme` passes options to TokyoNight.
+In Blak docs, theme settings live here: `ui.colorscheme` picks the active
+colorscheme, `ui.transparent` asks Blak to clear editor backgrounds after the
+scheme loads, and `ui.theme` passes setup options to the active colorscheme
+when that colorscheme exposes a Lua `setup()` function.
 
-There is no Blak palette overlay. TokyoNight owns the colors and plugin highlight groups.
+There is no Blak palette overlay. The active colorscheme owns the colors and
+plugin highlight groups.
 
 ## Native Theme
 
@@ -45,20 +49,56 @@ return {
 }
 ```
 
-## TokyoNight Options
+## Transparent Background
 
-If you want to tune TokyoNight itself, pass options through `ui.theme`. Blak forwards this table to `require("tokyonight").setup()` without adding its own palette:
+Set `ui.transparent = true` when you want the terminal background to show
+through the main editor UI:
 
 ```lua
 return {
   ui = {
-    colorscheme = "tokyonight-night",
+    colorscheme = "base46-mountain",
+    transparent = true,
+  },
+}
+```
+
+Blak applies this with native highlight APIs after the colorscheme loads, so it
+works with TokyoNight, Base46 schemes, and other installed colorschemes. Some
+plugins may still own their own shaded surfaces.
+
+## Theme Options
+
+If you want to tune the colorscheme itself, pass options through `ui.theme`.
+Blak tries to call the theme module's `setup()` before loading the colorscheme:
+
+```lua
+return {
+  ui = {
+    colorscheme = "catppuccin-mocha",
     theme = {
-      transparent = true,
-      styles = {
-        comments = { italic = false },
-      },
+      transparent_background = true,
+      integrations = { gitsigns = true },
     },
   },
 }
 ```
+
+Blak tries the colorscheme name first, then the name before the final dash. For
+example, `tokyonight-night` can configure `require("tokyonight").setup(...)`.
+If the theme does not expose an inferable setup module, configure it where the
+plugin is installed instead:
+
+```lua
+return {
+  plugins = {
+    specs = {
+      { "owner/my-theme.nvim", opts = { style = "dark" } },
+    },
+  },
+  ui = { colorscheme = "my-theme-dark" },
+}
+```
+
+That keeps Blak's theme contract small while still letting custom plugins use
+their own setup rules.

@@ -298,6 +298,32 @@ assert(
 if lazy_plugins["tokyonight.nvim"]._.loaded then
   assert(vim.g.colors_name == "tokyonight-night", "TokyoNight Night should be the default colorscheme")
 end
+local theme = require("blak.theme")
+assert(
+  theme.theme_opts({ ui = { transparent = true } }).transparent == true,
+  "ui.transparent should enable theme transparency"
+)
+package.loaded["blak-smoke-theme"] = nil
+package.preload["blak-smoke-theme"] = function()
+  return {
+    setup = function(opts)
+      vim.g.blak_smoke_theme_option = opts.flavour
+    end,
+  }
+end
+theme.setup_colorscheme({
+  ui = {
+    colorscheme = "blak-smoke-theme-dark",
+    theme = { flavour = "void" },
+  },
+}, "blak-smoke-theme-dark")
+assert(vim.g.blak_smoke_theme_option == "void", "ui.theme should pass through to theme setup")
+package.loaded["blak-smoke-theme"] = nil
+package.preload["blak-smoke-theme"] = nil
+vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#111111" })
+theme.apply_transparency({ ui = { theme = { transparent = true } } })
+local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+assert(normal_hl.bg == nil, "theme transparent option should clear Normal background")
 assert(lazy_plugins["oil.nvim"], "oil.nvim spec missing")
 assert(lazy_plugins["oil.nvim"].lazy == false, "oil.nvim must load eagerly for directory args")
 assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true, "oil.nvim must take directory buffers")

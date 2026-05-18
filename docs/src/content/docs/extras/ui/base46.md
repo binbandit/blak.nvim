@@ -50,9 +50,11 @@ return {
 Blak loads `ui.colorscheme` during startup. If the scheme cannot be found, Blak
 warns and falls back to TokyoNight.
 
-## Keep TokyoNight options separate
+## Theme options
 
-`ui.theme` only configures TokyoNight. It will not tune Base46 schemes:
+Blak passes `ui.theme` to colorschemes that expose a Lua `setup()` function.
+Base46 schemes are plain colorschemes, so use Blak's `ui.transparent` option
+for transparent backgrounds:
 
 ```lua
 return {
@@ -60,8 +62,8 @@ return {
     enabled = { "ui.base46" },
   },
   ui = {
-    colorscheme = "base46-gruvchad",
-    -- ui.theme is for tokyonight.nvim only.
+    colorscheme = "base46-mountain",
+    transparent = true,
   },
 }
 ```

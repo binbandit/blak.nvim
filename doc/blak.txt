@@ -84,6 +84,13 @@ For example, to use SuperTab-style completion where Blak can delegate to the
 completion engine: >
   return { completion = { super_tab = true } }
 <
+To make the active colorscheme use transparent editor backgrounds: >
+  return { ui = { transparent = true } }
+<
+Theme-native setup options can be passed through ui.theme when the
+colorscheme exposes a Lua setup() function: >
+  return { ui = { colorscheme = "catppuccin-mocha", theme = { flavour = "mocha" } } }
+<
 Personal lazy.nvim specs can be added under plugins.specs: >
   return {
     plugins = {
