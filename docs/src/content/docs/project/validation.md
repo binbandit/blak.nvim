@@ -27,7 +27,7 @@ Runs [`scripts/validate.py`](https://github.com/binbandit/blak.nvim/blob/main/sc
 ### Output
 
 ```
-Validation passed: 61 Lua files, 18 extras
+Validation passed: 62 Lua files, 19 extras
 ```
 
 On failure, every problem is reported in one pass — fix them in a batch rather than running validate → fix → run → fix.

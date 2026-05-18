@@ -11,6 +11,7 @@ local modules = {
   "blak.extras.ui.animations",
   "blak.extras.ui.base46",
   "blak.extras.ui.image_preview",
+  "blak.extras.ui.lualine",
   "blak.extras.ui.zen",
   "blak.extras.git.lazygit",
   "blak.extras.git.diffview",

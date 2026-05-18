@@ -172,6 +172,7 @@ local function main()
 
   run("BlakExtras list", "BlakExtras list")
   assert_contains(":BlakExtras list", current_text(), "lang.rust")
+  assert_contains(":BlakExtras list", current_text(), "ui.lualine")
   assert_contains(":BlakExtras list", current_text(), "editor.snacks-explorer")
   wipe_current()
 

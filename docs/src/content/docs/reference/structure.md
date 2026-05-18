@@ -88,7 +88,9 @@ lua/blak/
 │   │   └── markdown.lua
 │   ├── ui/
 │   │   ├── animations.lua
+│   │   ├── base46.lua
 │   │   ├── image_preview.lua
+│   │   ├── lualine.lua
 │   │   └── zen.lua
 │   ├── git/
 │   │   ├── lazygit.lua

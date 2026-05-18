@@ -36,6 +36,7 @@ lang.markdown
 ui.animations
 ui.base46
 ui.image-preview
+ui.lualine
 ui.zen
 
 git.lazygit

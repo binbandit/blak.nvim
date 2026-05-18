@@ -19,7 +19,7 @@ Blak targets **Neovim 0.12+** and is built on the native LSP API. The installer 
 | **ripgrep (`rg`)** | Backing grep for the picker |
 | **fd** | Faster file discovery than the built-in walk |
 | **tree-sitter CLI** | Build parsers locally — Blak can install this via Mason on first run |
-| **A Nerd Font** | Icons in the dashboard, sidebar, and statusline |
+| **A Nerd Font** | Icons in the dashboard, sidebar, and optional statusline |
 
 Blak runs without these — pickers fall back to plain finds, icons drop to text — but you'll feel the difference immediately.
 

@@ -164,6 +164,18 @@ Image previews in pickers and floats — works in Kitty, WezTerm, and Ghostty.
 | --- | --- |
 | Snacks | `image.enabled = true` |
 
+### `ui.lualine`
+
+[lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) as an opt-in statusline.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `nvim-lualine/lualine.nvim` |
+| Deps | `mini.icons` |
+| Config | global statusline, Blak theme auto-detection, ASCII separators |
+
+This extra turns off native `showmode` while lualine is enabled because the statusline already displays the current mode. Disable the extra, restart Blak, then run `:BlakExtras sync` to remove the plugin spec.
+
 ### `ui.zen`
 
 Distraction-free editing mode.
