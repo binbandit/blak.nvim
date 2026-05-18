@@ -24,7 +24,7 @@ The name is the promise. A black hole pulls in everything useful for editing cod
 
 - **Not a kitchen sink.** Features land in core only if most users benefit. Everything else is an extra.
 - **Not a wrapper that hides Neovim.** Read `lua/blak/config/defaults.lua`, fork it, own it.
-- **Not stable-by-marketing.** `:BlakUpdate` snapshots `lazy-lock.json` first. `:BlakRollback` restores the last known-good set in one step.
+- **Not stable-by-marketing.** `:BlakUpdate` snapshots `lazy-lock.json`, `user.lua`, extras state, migration state, and update state first. `:BlakRollback` restores the last known-good set in one step.
 
 <Features />
 

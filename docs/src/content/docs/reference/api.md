@@ -152,12 +152,16 @@ Applies every enabled extra's contributions to the config table in place. Called
 
 ```lua
 local update = require("blak.core.update")
-update.backup()       -- snapshot the lockfile now
+update.backup()       -- snapshot lockfile + config state now
 update.update()       -- :BlakUpdate
 update.rollback()     -- :BlakRollback
 update.upgrade()      -- :BlakUpgrade
 update.news()         -- :BlakNews
 ```
+
+`require("blak.core.migrations")` owns upgrade migrations. `:BlakUpdate`
+refuses pending breaking migrations; `:BlakUpgrade` snapshots first, then runs
+them.
 
 ## `require("blak.providers.picker")`
 

@@ -51,7 +51,7 @@ NVIM_APPNAME=blak nvim
 
 Blak's defaults are intentionally small. They cover the editing floor and leave preference-heavy features as extras.
 
-- Package backend: `lazy.nvim`, committed lockfile, rollback snapshots
+- Package backend: `lazy.nvim`, committed lockfile, config-aware rollback snapshots
 - Picker: `fff.nvim` for files and grep, with Snacks fallback for broader picker actions
 - UI: Snacks dashboard/input/notifier/picker/quickfile/bigfile/words, plus the animated black-hole splash
 - Completion: `blink.cmp` on the stable `1.*` line
@@ -72,9 +72,9 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 :BlakPick files    picker entrypoint
 :BlakExtras        extras UI
 :BlackExtras       alias for :BlakExtras
-:BlakUpdate        update plugins with lockfile backup
-:BlakUpgrade       intentional bigger moves
-:BlakRollback      restore last lockfile backup and run Lazy restore
+:BlakUpdate        update plugins within the current channel
+:BlakUpgrade       run migrations and intentional bigger moves
+:BlakRollback      restore last rollback snapshot and run Lazy restore
 :BlakToolsInstall  install Mason tools required by enabled extras
 :BlakTreesitterInstall install configured Treesitter parsers
 :BlakTerminal [cmd] toggle the configured terminal
@@ -194,7 +194,7 @@ unload plugins, keymaps, or runtime hooks that already ran.
 
 Blak should feel like a polished editor immediately, but never like a mystery box. Defaults live in `lua/blak/config/defaults.lua`, plugin specs live in `lua/blak/plugins/`, provider adapters live in `lua/blak/providers/`, and extras live in `lua/blak/extras/`.
 
-Stable updates must not silently swap major workflow components. `:BlakUpdate` creates rollback points; `:BlakUpgrade` exists for intentional bigger moves.
+Stable updates must not silently swap major workflow components. `:BlakUpdate` snapshots the lockfile and config state, then refuses channel changes and pending breaking migrations. `:BlakUpgrade` snapshots first, applies migrations, accepts the current channel, and is the explicit path for bigger moves.
 
 ## Before posting
 

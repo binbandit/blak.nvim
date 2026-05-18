@@ -90,7 +90,7 @@ Not emitted by Blak, but useful to know about — Blak listens for these to star
 
 | Event | Source | What |
 | --- | --- | --- |
-| `User LazyUpdatePre` | lazy.nvim | Fires before any `:Lazy update`. Blak snapshots `lazy-lock.json`. |
+| `User LazyUpdatePre` | lazy.nvim | Fires before any `:Lazy update`. Blak writes a rollback snapshot. |
 
 You can hook these too:
 

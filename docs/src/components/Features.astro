@@ -22,11 +22,11 @@ const cells = [
   },
   {
     tag: "safety",
-    title: "Lockfile rollback, always",
-    body: "<code>:BlakUpdate</code> snapshots <code>lazy-lock.json</code> before any change. <code>:BlakRollback</code> restores in one step.",
+    title: "Rollback snapshots, always",
+    body: "<code>:BlakUpdate</code> snapshots the lockfile and config state before any change. <code>:BlakRollback</code> restores them in one step.",
     code: `:BlakUpdate
 :BlakRollback     " undo the last update
-:BlakUpgrade      " explicit, bigger moves`,
+:BlakUpgrade      " migrations + bigger moves`,
     lang: "vim",
   },
   {

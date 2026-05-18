@@ -10,7 +10,7 @@ Initial implementation. Complete enough to install, use, and share — young eno
 **Core**
 
 - Native-first Neovim 0.12 config built on `vim.lsp.config()` and `vim.lsp.enable()`.
-- `lazy.nvim` package backend with lockfile snapshot/rollback (`:BlakUpdate`, `:BlakRollback`).
+- `lazy.nvim` package backend with config-aware rollback snapshots (`:BlakUpdate`, `:BlakUpgrade`, `:BlakRollback`).
 - `fff.nvim` as the primary file picker with `snacks` / `telescope` / `fzf-lua` provider fallbacks.
 - `blink.cmp` for completion.
 - Snacks dashboard, input, notifier, picker, quickfile, bigfile modules.

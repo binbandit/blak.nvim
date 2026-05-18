@@ -85,7 +85,9 @@ Translation:
 
 ### What commands.lua does
 
-The command-contract smoke test asserts every documented `:Blak*` command exists and can be invoked. It exercises overview, health, keys, news, picker dispatch, extras list/enable/disable/sync, update/upgrade/rollback backup wiring, tool/parser install no-op paths, formatting, format toggles, terminal, and splash preview.
+The command-contract smoke test asserts every documented `:Blak*` command exists and can be invoked. It exercises overview, health, keys, news, picker dispatch, extras list/enable/disable/sync, update/upgrade/rollback snapshot and migration wiring, tool/parser install no-op paths, formatting, format toggles, terminal, and splash preview.
+
+The update-contract smoke test focuses only on the update trust model: rollback snapshots include lockfile and config state, `:BlakUpdate` blocks channel changes and pending breaking migrations, `:BlakUpgrade` applies migrations and accepts the intended channel, `:BlakRollback` restores every tracked file, automatic `LazyUpdatePre` snapshots are de-duplicated, and legacy lockfile backups still restore.
 
 It stubs Lazy's update/sync/restore commands so CI checks Blak's command behavior without doing network updates in the middle of the test.
 

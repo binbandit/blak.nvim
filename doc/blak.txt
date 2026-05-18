@@ -38,13 +38,15 @@ COMMANDS                                                 *blak-commands*
     Alias for :BlakExtras.
 
 :BlakUpdate
-    Create a lazy-lock rollback point and run |:Lazy update|.
+    Create a rollback snapshot and run |:Lazy update| within the current
+    channel. Pending breaking migrations block this command.
 
 :BlakUpgrade
-    Run an intentional bigger update after creating a rollback point.
+    Create a rollback snapshot, apply pending upgrade migrations, then run an
+    intentional bigger update.
 
 :BlakRollback
-    Restore the latest lockfile backup and run |:Lazy restore|.
+    Restore the latest rollback snapshot and run |:Lazy restore|.
 
 :BlakToolsInstall
     Install Mason tools required by enabled extras.

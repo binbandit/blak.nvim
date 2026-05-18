@@ -47,7 +47,7 @@ That's it on the install side. Runtime state lands under the per-appname XDG dir
 
 ```
 $XDG_DATA_HOME/<appname>/             plugins (lazy.nvim install root)
-$XDG_STATE_HOME/<appname>/            extras.json + lockfile backups
+$XDG_STATE_HOME/<appname>/            extras.json + rollback snapshots
 $XDG_CACHE_HOME/<appname>/            caches
 ```
 
@@ -72,7 +72,7 @@ blak-main      # main branch
 blak-zig       # feature branch
 ```
 
-Each has its own plugin install, its own extras state, its own lockfile backups.
+Each has its own plugin install, its own extras state, and its own rollback snapshots.
 
 ## Uninstalling
 

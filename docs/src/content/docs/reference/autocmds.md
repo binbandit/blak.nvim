@@ -51,9 +51,9 @@ Registered in [`lua/blak/core/keymaps.lua`](https://github.com/binbandit/blak.nv
 
 ## Update (`BlakUpdate` group)
 
-### `User LazyUpdatePre` — snapshot lockfile
+### `User LazyUpdatePre` — snapshot rollback state
 
-Before any `:Lazy update`, copy the current `lazy-lock.json` to `$XDG_STATE_HOME/blak/lockbacks/lazy-lock-YYYYMMDD-HHMMSS.json`. This means even a manual `:Lazy update` is safe — you don't have to remember to run `:BlakUpdate`.
+Before any `:Lazy update`, write a rollback snapshot under `$XDG_STATE_HOME/blak/rollbacks/`. The snapshot includes `lazy-lock.json`, `lua/blak/user.lua`, enabled extras state, upgrade migration state, and accepted update state. This means even a manual `:Lazy update` is protected.
 
 Registered in [`lua/blak/core/update.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/update.lua).
 

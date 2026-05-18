@@ -37,7 +37,7 @@ cd ~/Developer/blak.nvim
 blak-dev                                          # launches NVIM_APPNAME=blak-dev
 ```
 
-Edits in the checkout are live on next launch. Plugin state and lockfile backups live under `~/.local/{share,state}/blak-dev/` — fully isolated from any production `blak` install. Full options in [Dev install](/project/dev-install/).
+Edits in the checkout are live on next launch. Plugin state and rollback snapshots live under `~/.local/{share,state}/blak-dev/` — fully isolated from any production `blak` install. Full options in [Dev install](/project/dev-install/).
 
 ## Validate before you push
 

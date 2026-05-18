@@ -92,9 +92,9 @@ function M.setup(config)
       "  :BlakPick {kind}           picker entrypoint",
       "  :BlakExtras                extras UI",
       "  :BlackExtras               alias for :BlakExtras",
-      "  :BlakUpdate                update plugins with lockfile backup",
-      "  :BlakUpgrade               intentional bigger moves",
-      "  :BlakRollback              restore last lockfile backup",
+      "  :BlakUpdate                update plugins within current channel",
+      "  :BlakUpgrade               run migrations and intentional bigger moves",
+      "  :BlakRollback              restore last rollback snapshot",
       "  :BlakToolsInstall          install Mason tools",
       "  :BlakTreesitterInstall     install configured parsers",
       "  :BlakTerminal [cmd]        toggle the configured terminal",
@@ -130,15 +130,15 @@ function M.setup(config)
 
   vim.api.nvim_create_user_command("BlakUpdate", function()
     require("blak.core.update").update()
-  end, { desc = "Update plugins after creating a rollback point" })
+  end, { desc = "Update plugins within the current channel after a rollback snapshot" })
 
   vim.api.nvim_create_user_command("BlakUpgrade", function()
     require("blak.core.update").upgrade()
-  end, { desc = "Run an explicit upgrade" })
+  end, { desc = "Run upgrade migrations and update after a rollback snapshot" })
 
   vim.api.nvim_create_user_command("BlakRollback", function()
     require("blak.core.update").rollback()
-  end, { desc = "Restore latest lockfile backup and run Lazy restore" })
+  end, { desc = "Restore latest rollback snapshot and run Lazy restore" })
 
   vim.api.nvim_create_user_command("BlakNews", function()
     require("blak.core.update").news()

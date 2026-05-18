@@ -54,7 +54,8 @@ lua/blak/
 │   ├── terminal.lua        Configured terminal provider used by :BlakTerminal
 │   ├── treesitter.lua      Parser install, FileType activation
 │   ├── tools.lua           Mason install orchestration
-│   ├── update.lua          :BlakUpdate / :BlakRollback / :BlakNews
+│   ├── migrations.lua      Upgrade migration registry
+│   ├── update.lua          :BlakUpdate / :BlakUpgrade / :BlakRollback / :BlakNews
 │   └── health.lua          :checkhealth blak
 │
 ├── plugins/
@@ -156,7 +157,10 @@ $XDG_DATA_HOME/blak/lazy/                       Cloned plugins
 $XDG_DATA_HOME/blak/mason/                      Mason packages (binaries + shims)
 
 $XDG_STATE_HOME/blak/extras.json                Enabled extras
-$XDG_STATE_HOME/blak/lockbacks/                 Lockfile snapshots (rollback)
+$XDG_STATE_HOME/blak/migrations.json            Applied upgrade migrations
+$XDG_STATE_HOME/blak/update.json                Accepted update channel
+$XDG_STATE_HOME/blak/rollbacks/                 Lockfile + config rollback snapshots
+$XDG_STATE_HOME/blak/lockbacks/                 Legacy lockfile-only snapshots
 ```
 
 Defaults if `XDG_*` aren't set: `~/.config`, `~/.local/share`, `~/.local/state`.

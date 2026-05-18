@@ -68,6 +68,8 @@ end
 local extras_state = join(vim.fn.stdpath("state"), "blak", "extras.json")
 local original_extras_state = read_file(extras_state)
 vim.fn.delete(extras_state)
+local update_state = join(vim.fn.stdpath("state"), "blak", "update.json")
+local original_update_state = read_file(update_state)
 
 vim.g.blak_config = {
   ui = { splash = { enabled = false, animate = false } },
@@ -244,23 +246,70 @@ local function main()
   end, { nargs = "*", bang = true })
 
   local backup_dir = util.join(vim.fn.stdpath("state"), "blak", "lockbacks")
+  local snapshot_dir = util.join(vim.fn.stdpath("state"), "blak", "rollbacks")
   vim.fn.delete(backup_dir, "rf")
+  vim.fn.delete(snapshot_dir, "rf")
   util.write_file(lockfile, '{"plugins":{"before":true}}')
+  util.write_file(user_file, 'return { ui = { notify = false } }\n')
+  util.write_file(extras_state, vim.json.encode({ enabled = { "lang.lua" } }))
+  util.write_file(update_state, vim.json.encode({ channel = "stable" }))
 
   run("BlakUpdate", "BlakUpdate")
   assert(lazy_calls[#lazy_calls] == "update", "BlakUpdate did not run Lazy update")
   local backups = vim.fn.glob(util.join(backup_dir, "lazy-lock-*.json"), false, true)
-  assert(#backups == 1, "BlakUpdate should create exactly one backup")
+  local snapshots = vim.fn.glob(util.join(snapshot_dir, "rollback-*"), false, true)
+  assert(#backups == 1, "BlakUpdate should create exactly one legacy lockfile backup")
+  assert(#snapshots == 1, "BlakUpdate should create exactly one rollback snapshot")
+  assert_contains(":BlakUpdate snapshot lockfile", util.read_file(util.join(snapshots[1], "lazy-lock.json")) or "", '"before"')
+  assert_contains(":BlakUpdate snapshot user.lua", util.read_file(util.join(snapshots[1], "user.lua")) or "", "notify = false")
+  assert_contains(":BlakUpdate snapshot extras", util.read_file(util.join(snapshots[1], "extras.json")) or "", "lang.lua")
 
+  config.package.channel = "edge"
+  local lazy_count = #lazy_calls
+  run("BlakUpdate blocked by channel change", "BlakUpdate")
+  assert(#lazy_calls == lazy_count, "BlakUpdate should not run Lazy update after a channel change")
+  config.package.channel = "stable"
+
+  local real_migrations = package.loaded["blak.core.migrations"]
+  package.loaded["blak.core.migrations"] = {
+    blocking = function()
+      return {
+        { id = "test.breaking", description = "Swap a workflow component" },
+      }
+    end,
+  }
+  lazy_count = #lazy_calls
+  run("BlakUpdate blocked by migration", "BlakUpdate")
+  assert(#lazy_calls == lazy_count, "BlakUpdate should not run Lazy update with pending breaking migrations")
+
+  local migration_ran = false
+  package.loaded["blak.core.migrations"] = {
+    blocking = function()
+      return {}
+    end,
+    run = function()
+      migration_ran = true
+      util.write_file(user_file, 'return { ui = { notify = false }, picker = { provider = "snacks" } }\n')
+      return 1
+    end,
+  }
   run("BlakUpgrade", "BlakUpgrade")
   assert(lazy_calls[#lazy_calls] == "update", "BlakUpgrade did not run Lazy update")
+  assert(migration_ran, "BlakUpgrade did not run pending migrations")
   backups = vim.fn.glob(util.join(backup_dir, "lazy-lock-*.json"), false, true)
-  assert(#backups == 2, "BlakUpgrade should create a unique backup")
+  snapshots = vim.fn.glob(util.join(snapshot_dir, "rollback-*"), false, true)
+  assert(#backups == 2, "BlakUpgrade should create a unique legacy lockfile backup")
+  assert(#snapshots == 2, "BlakUpgrade should create a unique rollback snapshot")
+  package.loaded["blak.core.migrations"] = real_migrations
 
   util.write_file(lockfile, '{"plugins":{"after":true}}')
   run("BlakRollback", "BlakRollback")
   assert(lazy_calls[#lazy_calls] == "restore", "BlakRollback did not run Lazy restore")
   assert_contains(":BlakRollback lockfile", util.read_file(lockfile) or "", '"before"')
+  assert_contains(":BlakRollback user.lua", util.read_file(user_file) or "", "notify = false")
+  assert(not (util.read_file(user_file) or ""):find('provider = "snacks"', 1, true), "BlakRollback did not restore user.lua")
+  assert_contains(":BlakRollback extras", util.read_file(extras_state) or "", "lang.lua")
+  assert_contains(":BlakRollback update state", util.read_file(update_state) or "", '"stable"')
 
   run("BlakExtras sync", "BlakExtras sync")
   assert(lazy_calls[#lazy_calls] == "sync", "BlakExtras sync did not run Lazy sync")
@@ -304,6 +353,7 @@ if user_file then
   restore_file(user_file, original_user_file)
 end
 restore_file(extras_state, original_extras_state)
+restore_file(update_state, original_update_state)
 
 if not ok then
   error(err)

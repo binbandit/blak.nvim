@@ -82,22 +82,24 @@ The UI uses `x` or `<CR>` to toggle the extra under the cursor, `s` to sync lazy
 
 ### `:BlakUpdate`
 
-1. Backs up the current `lazy-lock.json` to `stdpath('state')/blak/lockbacks/lazy-lock-YYYYMMDD-HHMMSS.json`.
-2. Runs `:Lazy update`.
+1. Refuses to continue if `package.channel` changed since the last accepted update or upgrade.
+2. Refuses to continue if a pending breaking migration requires `:BlakUpgrade`.
+3. Snapshots `lazy-lock.json`, `lua/blak/user.lua`, extras state, migration state, and update state to `stdpath('state')/blak/rollbacks/rollback-YYYYMMDD-HHMMSS/`.
+4. Runs `:Lazy update`.
 
-The backup also runs automatically on any `LazyUpdatePre` event, so even a bare `:Lazy update` is safe.
+The snapshot also runs automatically on any `LazyUpdatePre` event, so even a bare `:Lazy update` is protected.
 
 ### `:BlakUpgrade`
 
-For intentional bigger moves — channel changes, major-version bumps. Exists separately from `:BlakUpdate` so that stable updates never silently swap a major workflow component.
+For intentional bigger moves — channel changes, major-version bumps, and workflow-affecting migrations. It snapshots first, applies pending migrations, accepts the current channel, then runs `:Lazy update`.
 
 ### `:BlakRollback`
 
-1. Finds the most recent backup in the lockfile backup directory.
-2. Restores it as `lazy-lock.json`.
-3. Runs `:Lazy restore`.
+1. Finds the most recent rollback snapshot.
+2. Restores `lazy-lock.json`, `lua/blak/user.lua`, extras state, migration state, and update state.
+3. Reloads Blak config and runs `:Lazy restore`.
 
-Result: every plugin returns to the exact commit it was at before the last `:BlakUpdate`. Works offline.
+Result: every plugin and tracked config file returns to the state it was in before the last update or upgrade. Works offline.
 
 See the [Updates & rollback guide](/guide/updates/) for the full machinery.
 
@@ -157,9 +159,9 @@ Plays the black-hole animation in a scratch buffer. Useful for tweaking your ter
 :BlakExtras enable {id}    turn on an extra
 :BlakExtras disable {id}   turn off an extra
 :BlakExtras sync           :Lazy sync after changes
-:BlakUpdate                update + lockfile snapshot
-:BlakRollback              restore last lockfile snapshot
-:BlakUpgrade               explicit bigger moves
+:BlakUpdate                channel-safe update + rollback snapshot
+:BlakRollback              restore last rollback snapshot
+:BlakUpgrade               migrations + explicit bigger moves
 :BlakToolsInstall          install Mason tools
 :BlakTreesitterInstall     install parsers
 :BlakTerminal [cmd]        configured terminal

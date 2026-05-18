@@ -11,7 +11,7 @@ Initial implementation:
 - Native LSP via `vim.lsp.config()` and Mason integration
 - Conform formatting and nvim-lint linting
 - Reversible extras framework
-- Lockfile backup and rollback commands
+- Config-aware rollback snapshots and explicit upgrade migrations
 
 - `:BlakTreesitterInstall` parser installation helper
 - Public installer targets `binbandit/blak.nvim` and creates a `blak` launcher

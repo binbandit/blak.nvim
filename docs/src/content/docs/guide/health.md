@@ -84,7 +84,9 @@ Mason tools
 
 ```
 $XDG_STATE_HOME/blak/extras.json    -- enabled extras
-$XDG_STATE_HOME/blak/lockbacks/     -- lockfile backups for :BlakRollback
+$XDG_STATE_HOME/blak/update.json    -- accepted update channel
+$XDG_STATE_HOME/blak/rollbacks/     -- config-aware rollback snapshots
+$XDG_STATE_HOME/blak/lockbacks/     -- legacy lockfile-only backups
 $XDG_DATA_HOME/lazy/                -- lazy.nvim plugin install root
 $XDG_CONFIG_HOME/lazy-lock.json     -- current lockfile (per-NVIM_APPNAME)
 ```
