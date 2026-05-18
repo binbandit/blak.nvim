@@ -148,6 +148,7 @@ See the [LSP guide](/guide/lsp/).
 
 | Extra | Mapping | Action |
 | --- | --- | --- |
+| `editor.window-navigation` | `<C-h>` / `<C-j>` / `<C-k>` / `<C-l>` | Move between windows |
 | `ui.comfy-line-numbers` | label + `j` / `k` | Comfy vertical motions |
 | `ui.comfy-line-numbers` | label + `<Down>` / `<Up>` | Comfy vertical motions |
 | `ui.zen` | `<leader>uz` | Zen mode |

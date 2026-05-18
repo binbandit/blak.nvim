@@ -21,6 +21,7 @@ local modules = {
   "blak.extras.ai.copilot",
   "blak.extras.ai.sidekick",
   "blak.extras.editor.mini",
+  "blak.extras.editor.window_navigation",
   "blak.extras.editor.neotree",
   "blak.extras.editor.snacks_explorer",
   "blak.extras.editor.snacks_terminal",

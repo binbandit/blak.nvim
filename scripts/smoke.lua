@@ -82,6 +82,18 @@ for lhs, desc in pairs(blak_keymaps) do
   assert(vim.fn.maparg(lhs, "n", false, true).desc == desc, lhs .. " mapping missing")
 end
 assert(vim.fn.maparg("-", "n") == "", "Blak should leave native - unmapped")
+local window_nav_config = vim.deepcopy(require("blak.config.defaults"))
+require("blak.extras").apply_one(window_nav_config, "editor.window-navigation")
+require("blak.core.keymaps").setup(window_nav_config)
+local window_nav_keymaps = {
+  ["<C-h>"] = "Window left",
+  ["<C-j>"] = "Window down",
+  ["<C-k>"] = "Window up",
+  ["<C-l>"] = "Window right",
+}
+for lhs, desc in pairs(window_nav_keymaps) do
+  assert(vim.fn.maparg(lhs, "n", false, true).desc == desc, lhs .. " mapping missing")
+end
 local previous_oil = package.loaded.oil
 local called_oil = false
 local opened_dir = "unset"

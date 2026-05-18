@@ -67,7 +67,7 @@ configuration examples, install notes, and verification path.
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
 | Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/) |
 | AI | [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/) |
-| Editor | [`editor.mini`](/extras/editor/mini/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
+| Editor | [`editor.mini`](/extras/editor/mini/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
 
@@ -337,6 +337,17 @@ return {
 
 This extra does not enable any Mini module by default. Put the modules you want
 in `mini.modules`, enable `editor.mini`, then run `:BlakExtras sync`.
+
+### `editor.window-navigation`
+
+Native window movement on Ctrl-h/j/k/l.
+
+| Adds | Value |
+| --- | --- |
+| Keymaps | `<C-h>` left, `<C-j>` down, `<C-k>` up, `<C-l>` right |
+
+This is an extra instead of a core default because `<C-l>` redraws the screen in
+stock Neovim. Opting in keeps the shortcut explicit and reversible.
 
 ### `editor.neotree`
 

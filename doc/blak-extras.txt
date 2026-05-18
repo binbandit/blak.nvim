@@ -50,6 +50,7 @@ git.lazygit
 git.diffview
 
 editor.mini
+editor.window-navigation
 editor.neotree
 editor.snacks-explorer
 editor.snacks-terminal

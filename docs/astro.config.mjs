@@ -229,6 +229,7 @@ export default defineConfig({
             { label: "Copilot", slug: "extras/ai/copilot" },
             { label: "Sidekick", slug: "extras/ai/sidekick" },
             { label: "Mini.nvim modules", slug: "extras/editor/mini" },
+            { label: "Window navigation", slug: "extras/editor/window-navigation" },
             { label: "Neo-tree", slug: "extras/editor/neotree" },
             { label: "Snacks explorer", slug: "extras/editor/snacks-explorer" },
             { label: "Snacks terminal", slug: "extras/editor/snacks-terminal" },
