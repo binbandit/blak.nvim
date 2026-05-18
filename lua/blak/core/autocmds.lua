@@ -36,6 +36,8 @@ function M.setup(_)
       vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true, desc = "Close" })
     end,
   })
+
+  require("blak.core.reload").setup()
 end
 
 return M

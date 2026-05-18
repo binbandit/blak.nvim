@@ -65,5 +65,10 @@ Copy >
   lua/blak/user.lua
 < and return a table of overrides.
 
+Saving lua/blak/user.lua while Blak is running reloads the merged config and
+refreshes the current session. Run :BlakExtras sync or :Lazy sync after adding
+or removing plugin-backed extras; restart to unload runtime hooks that already
+ran.
+
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:

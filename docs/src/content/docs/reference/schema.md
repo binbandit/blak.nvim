@@ -71,7 +71,9 @@ To extend the default list instead, copy it from [the defaults page](/reference/
 
 ## Error handling
 
-If validation fails, `require("blak").setup()` raises and Blak does not load. You'll see the original Neovim banner and the error message in `:messages`. Fix `user.lua` and restart.
+If validation fails on startup, `require("blak").setup()` raises and Blak does not load. You'll see the original Neovim banner and the error message in `:messages`.
+
+If validation or evaluation fails during an automatic `user.lua` reload, Blak warns and keeps the previous in-session config active. Fix `user.lua` and save it again.
 
 The error message is verbose on purpose:
 

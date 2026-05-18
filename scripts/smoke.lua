@@ -1,11 +1,37 @@
 -- Run with: NVIM_APPNAME=blak-test nvim --headless -u NONE --cmd 'set loadplugins' --cmd 'lua vim.opt.rtp:prepend(vim.fn.getcwd())' -c 'lua dofile("scripts/smoke.lua")' -c qa
 -- This catches actual runtime/plugin-manager regressions in CI.
+local sep = package.config:sub(1, 1)
+
+local function join(...)
+  local out = {}
+  for _, part in ipairs({ ... }) do
+    if part and part ~= "" then
+      table.insert(out, (tostring(part):gsub("[/\\]+$", "")))
+    end
+  end
+  return table.concat(out, sep)
+end
+
+local function write_file(path, data)
+  vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
+  local fd = assert(io.open(path, "w"))
+  fd:write(data)
+  fd:close()
+end
+
+local runtime_dir = join(vim.fn.stdpath("state"), "blak-smoke-runtime")
+local user_file = join(runtime_dir, "lua", "blak", "user.lua")
+vim.fn.delete(runtime_dir, "rf")
+write_file(user_file, "return { editor = { relative_number = false }, picker = { provider = 'fff' } }\n")
+vim.opt.rtp:prepend(runtime_dir)
+
 vim.g.blak_config = {
   ui = { splash = { enabled = false } },
   mason = { automatic_install = false },
 }
 require("blak").setup()
 assert(require("blak.config").get())
+assert(require("blak.config").get().editor.relative_number == false, "user.lua was not loaded")
 assert(require("blak.config").get().explorer.provider == "oil", "Oil should be the default explorer provider")
 assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")
@@ -48,4 +74,23 @@ end
 assert(lazy_plugins["oil.nvim"], "oil.nvim spec missing")
 assert(lazy_plugins["oil.nvim"].lazy == false, "oil.nvim must load eagerly for directory args")
 assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true, "oil.nvim must take directory buffers")
+local reload_seen = false
+vim.api.nvim_create_autocmd("User", {
+  pattern = "BlakConfigReloaded",
+  callback = function()
+    reload_seen = true
+  end,
+})
+vim.cmd.edit(vim.fn.fnameescape(user_file))
+vim.api.nvim_buf_set_lines(0, 0, -1, false, {
+  "return { editor = { relative_number = true }, picker = { provider = 'snacks' } }",
+})
+vim.cmd.write()
+vim.wait(1000, function()
+  return reload_seen and require("blak.config").get().picker.provider == "snacks"
+end)
+assert(reload_seen, "saving user.lua did not emit BlakConfigReloaded")
+assert(require("blak.config").get().editor.relative_number == true, "saving user.lua did not reload config")
+assert(require("blak.config").get().picker.provider == "snacks", "saving user.lua did not refresh picker config")
 vim.cmd("checkhealth blak")
+vim.fn.delete(runtime_dir, "rf")

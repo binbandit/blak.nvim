@@ -125,6 +125,11 @@ return {
 }
 ```
 
+When Blak is already running, saving `lua/blak/user.lua` reloads the merged
+config and refreshes the current session. Plugin installs/removals still go
+through `:BlakExtras sync` or `:Lazy sync`; restarting remains the clean way to
+unload plugins, keymaps, or runtime hooks that already ran.
+
 ## Philosophy
 
 Blak should feel like a polished editor immediately, but never like a mystery box. Defaults live in `lua/blak/config/defaults.lua`, plugin specs live in `lua/blak/plugins/`, provider adapters live in `lua/blak/providers/`, and extras live in `lua/blak/extras/`.

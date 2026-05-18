@@ -22,6 +22,23 @@ By the time `BlakReady` fires:
 - Splash integration is hooked.
 - `lazy.nvim` is loaded; plugins are either ready or queued to load on their lazy triggers.
 
+## `BlakConfigReloaded`
+
+Fired after a running Blak session reloads `lua/blak/user.lua`:
+
+```lua
+vim.api.nvim_exec_autocmds("User", { pattern = "BlakConfigReloaded", modeline = false })
+```
+
+Blak watches `lua/blak/user.lua` when it exists and also listens for writes from
+inside Neovim. On reload it clears `package.loaded["blak.user"]`, rebuilds the
+merged config, reapplies safe in-session runtime pieces, refreshes lazy.nvim's
+spec graph, and emits this event.
+
+Plugin additions/removals still need `:BlakExtras sync` or `:Lazy sync`.
+Restarting is still the clean way to unload plugins, keymaps, and runtime hooks
+that already ran.
+
 ### Example: post-startup tweaks
 
 ```lua

@@ -34,6 +34,12 @@ if config.ui.splash.enabled then ... end
 
 Reapplies the merge with new opts. Generally only used by `require("blak").setup`.
 
+### `reload()`
+
+Clears the cached `blak.user` module, reapplies the original setup opts, and
+returns the refreshed merged config. Blak calls this automatically when
+`lua/blak/user.lua` changes.
+
 ## `require("blak.util")`
 
 A grab bag of helpers Blak's own modules use. Stable enough for your config.

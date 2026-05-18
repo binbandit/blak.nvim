@@ -71,4 +71,22 @@ function M.setup(config)
   })
 end
 
+function M.refresh(config)
+  if not package.loaded["lazy.core.config"] then
+    return
+  end
+
+  local ok, err = pcall(function()
+    local lazy_config = require("lazy.core.config")
+    lazy_config.options.spec = require("blak.plugins").specs(config)
+    require("lazy.core.plugin").load()
+    require("lazy.core.handler").setup()
+    vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
+    vim.api.nvim_exec_autocmds("User", { pattern = "LazyReload", modeline = false })
+  end)
+  if not ok then
+    require("blak.util").warn("Could not refresh lazy.nvim specs: " .. tostring(err))
+  end
+end
+
 return M
