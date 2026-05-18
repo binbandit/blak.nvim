@@ -74,6 +74,20 @@ TypeScript and JavaScript with ESLint + Prettier.
 | Format | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
 | Lint | `eslint_d` for js/ts/jsx/tsx |
 
+### `lang.typescript-tsgo`
+
+TypeScript and JavaScript with the experimental native `tsgo` LSP, ESLint, and Prettier.
+
+Enable this instead of `lang.typescript` when you want to try TypeScript's Go-based language server. If both are enabled and this extra applies after `lang.typescript`, it removes `ts_ls` from the merged config for future setup. Restart after switching if `ts_ls` already attached in the current session.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json`, `jsonc` |
+| Mason | `prettier`, `prettierd`, `eslint_d` |
+| LSP | `tsgo`, `eslint` |
+| Format | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
+| Lint | `eslint_d` for js/ts/jsx/tsx |
+
 ### `lang.python`
 
 Python with Pyright + Ruff + Black + isort.

@@ -40,7 +40,9 @@ lsp = {
 }
 ```
 
-Other servers ship via [language extras](/guide/extras/#languages): `ts_ls`, `eslint`, `pyright`, `ruff`, `rust_analyzer`, `taplo`, `gopls`, `marksman`.
+Other servers ship via [language extras](/guide/extras/#languages): `ts_ls`, `tsgo`, `eslint`, `pyright`, `ruff`, `rust_analyzer`, `taplo`, `gopls`, `marksman`.
+
+For TypeScript, use either `lang.typescript` for the stable `ts_ls` path or `lang.typescript-tsgo` for the experimental native `tsgo` language server.
 
 ## Adding a server
 

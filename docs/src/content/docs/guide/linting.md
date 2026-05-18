@@ -21,6 +21,7 @@ No linters are configured in core. Linters arrive via [language extras](/guide/e
 | Extra | Adds |
 | --- | --- |
 | `lang.typescript` | `eslint_d` for js/ts/jsx/tsx |
+| `lang.typescript-tsgo` | `eslint_d` for js/ts/jsx/tsx |
 | `lang.python` | `ruff` for python |
 | `lang.go` | `golangcilint` for go |
 | `lang.markdown` | `markdownlint` for markdown |

@@ -24,6 +24,7 @@ Language extras add to this list automatically:
 | Extra | Adds |
 | --- | --- |
 | `lang.typescript` | `javascript`, `typescript`, `tsx`, `jsdoc`, `json`, `jsonc` |
+| `lang.typescript-tsgo` | `javascript`, `typescript`, `tsx`, `jsdoc`, `json`, `jsonc` |
 | `lang.python` | `python` |
 | `lang.rust` | `rust`, `toml` |
 | `lang.go` | `go`, `gomod`, `gosum`, `gowork` |

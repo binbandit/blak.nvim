@@ -95,6 +95,8 @@ Extras are opt-in and reversible:
 :BlakExtras disable lang.python
 ```
 
+Use `lang.typescript-tsgo` instead of `lang.typescript` to try the experimental native TypeScript LSP.
+
 State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Enabling an extra applies its config to the current session; run `:BlakExtras sync` if the extra added plugin specs. Disabling persists immediately, but a restart is still the clean way to unload plugins, keymaps, and runtime hooks that already ran.
 
 Default vs. optional is deliberate:

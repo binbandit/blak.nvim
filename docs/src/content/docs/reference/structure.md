@@ -81,6 +81,7 @@ lua/blak/
 │   ├── lang/
 │   │   ├── lua.lua
 │   │   ├── typescript.lua
+│   │   ├── typescript_tsgo.lua
 │   │   ├── python.lua
 │   │   ├── rust.lua
 │   │   ├── go.lua

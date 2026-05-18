@@ -35,6 +35,7 @@ Language extras add to `formatters_by_ft`:
 | Extra | Adds |
 | --- | --- |
 | `lang.typescript` | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
+| `lang.typescript-tsgo` | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
 | `lang.python` | `isort` then `black` for python |
 | `lang.markdown` | `prettierd` (fallback `prettier`) for markdown |
 | `lang.go` | `goimports`, `gofumpt` for go |

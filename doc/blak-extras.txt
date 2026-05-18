@@ -27,6 +27,7 @@ AVAILABLE GROUPS
 
 lang.lua
 lang.typescript
+lang.typescript-tsgo
 lang.python
 lang.rust
 lang.go

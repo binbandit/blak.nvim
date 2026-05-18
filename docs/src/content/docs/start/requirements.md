@@ -28,7 +28,7 @@ Blak runs without these — pickers fall back to plain finds, icons drop to text
 | Tool | When |
 | --- | --- |
 | **lazygit** | `:BlakExtras enable git.lazygit` |
-| **node / npm** | TypeScript, language servers |
+| **node / npm** | TypeScript extras and language servers, including `lang.typescript-tsgo` |
 | **rustup** | `:BlakExtras enable lang.rust` |
 | **go** | `:BlakExtras enable lang.go` |
 
