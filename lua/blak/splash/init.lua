@@ -2,6 +2,7 @@ local M = {}
 
 local ns = vim.api.nvim_create_namespace("blak.splash")
 local highlights = {}
+local states = {}
 
 local function data()
   return require("blak.splash.frames.blackhole")
@@ -113,6 +114,21 @@ local function find_region(buf, frame)
   return nil
 end
 
+local function stop_state(buf)
+  local state = states[buf]
+  if state and state.timer and not state.timer:is_closing() then
+    state.timer:stop()
+    state.timer:close()
+  end
+  if state and state.autocmd then
+    pcall(vim.api.nvim_del_autocmd, state.autocmd)
+  end
+  states[buf] = nil
+  if vim.api.nvim_buf_is_valid(buf) then
+    vim.b[buf].blak_splash_playing = false
+  end
+end
+
 function M.header()
   local splash = data()
   local width = splash.cols or 0
@@ -128,13 +144,30 @@ end
 function M.play(buf, opts)
   opts = opts or {}
   local splash = data()
-  if not vim.api.nvim_buf_is_valid(buf) or vim.b[buf].blak_splash_playing then
+  if not vim.api.nvim_buf_is_valid(buf) then
     return
   end
 
   local width = splash.cols or 0
   local start, indent = find_region(buf, normalize_frame(splash.frames[1], width))
   if not start then
+    return
+  end
+
+  local existing = states[buf]
+  if existing then
+    existing.start = start
+    existing.indent = indent
+    existing.loop = opts.loop
+
+    if opts.animate == false then
+      stop_state(buf)
+      set_lines(buf, start, splash.frames[1], width, indent, splash.colors and splash.colors[1])
+      return
+    end
+
+    local frame_index = existing.frame_index or 1
+    set_lines(buf, start, splash.frames[frame_index], width, indent, splash.colors and splash.colors[frame_index])
     return
   end
 
@@ -153,19 +186,21 @@ function M.play(buf, opts)
 
   local uv = vim.uv or vim.loop
   local timer = uv.new_timer()
-  local index = 2
+  local state = {
+    frame_index = 1,
+    indent = indent,
+    index = 2,
+    loop = opts.loop,
+    start = start,
+    timer = timer,
+  }
+  states[buf] = state
 
   local function stop()
-    if timer and not timer:is_closing() then
-      timer:stop()
-      timer:close()
-    end
-    if vim.api.nvim_buf_is_valid(buf) then
-      vim.b[buf].blak_splash_playing = false
-    end
+    stop_state(buf)
   end
 
-  vim.api.nvim_create_autocmd({ "BufWipeout", "BufDelete" }, {
+  state.autocmd = vim.api.nvim_create_autocmd({ "BufWipeout", "BufDelete" }, {
     buffer = buf,
     once = true,
     callback = stop,
@@ -175,25 +210,31 @@ function M.play(buf, opts)
     splash.delays[1] or 40,
     splash.delays[1] or 40,
     vim.schedule_wrap(function()
-      if not vim.api.nvim_buf_is_valid(buf) then
+      state = states[buf]
+      if not state or not vim.api.nvim_buf_is_valid(buf) then
         stop()
         return
       end
-      set_lines(
+      local ok = set_lines(
         buf,
-        start,
-        splash.frames[index],
+        state.start,
+        splash.frames[state.index],
         width,
-        indent,
-        splash.colors and splash.colors[index]
+        state.indent,
+        splash.colors and splash.colors[state.index]
       )
-      index = index + 1
-      if index > #splash.frames then
-        if opts.loop == false then
+      if not ok then
+        stop()
+        return
+      end
+      state.frame_index = state.index
+      state.index = state.index + 1
+      if state.index > #splash.frames then
+        if state.loop == false then
           stop()
           return
         end
-        index = 1
+        state.index = 1
       end
     end)
   )
@@ -222,25 +263,41 @@ function M.attach_to_snacks(config)
   -- Snacks fires these once the dashboard buffer is fully rendered, so the
   -- anchor search reliably finds frame 1 and the post-update event lets us
   -- re-paint after resizes/refreshes that would otherwise clear our marks.
+  local function start_all()
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      start(buf)
+    end
+  end
+
+  local function stop_all()
+    local bufs = {}
+    for buf in pairs(states) do
+      table.insert(bufs, buf)
+    end
+    for _, buf in ipairs(bufs) do
+      if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == "snacks_dashboard" then
+        stop_state(buf)
+      end
+    end
+  end
+
+  vim.api.nvim_create_autocmd("User", {
+    group = group,
+    pattern = "SnacksDashboardUpdatePre",
+    callback = stop_all,
+  })
+
   vim.api.nvim_create_autocmd("User", {
     group = group,
     pattern = { "SnacksDashboardOpened", "SnacksDashboardUpdatePost" },
     callback = function()
-      vim.schedule(function()
-        start(vim.api.nvim_get_current_buf())
-      end)
+      vim.schedule(start_all)
     end,
   })
 
   -- Fallback for the cold-start case where the dashboard buffer already
   -- exists by the time this autocmd group is created.
-  vim.schedule(function()
-    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-      if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == "snacks_dashboard" then
-        start(buf)
-      end
-    end
-  end)
+  vim.schedule(start_all)
 end
 
 function M.setup(_)

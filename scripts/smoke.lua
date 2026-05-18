@@ -30,6 +30,7 @@ vim.g.blak_config = {
   mason = { automatic_install = false },
 }
 require("blak").setup()
+vim.opt.rtp:prepend(vim.fn.getcwd())
 assert(require("blak.config").get())
 assert(require("blak.config").get().editor.relative_number == false, "user.lua was not loaded")
 assert(require("blak.config").get().explorer.provider == "oil", "Oil should be the default explorer provider")
@@ -61,6 +62,52 @@ package.loaded.snacks = {
 require("blak.core.explorer").open({ explorer = { provider = "snacks" } })
 package.loaded.snacks = previous_snacks
 assert(called_snacks, "snacks explorer provider did not call Snacks.explorer")
+local splash = require("blak.splash")
+local splash_data = require("blak.splash.frames.blackhole")
+local splash_buf = vim.api.nvim_create_buf(false, true)
+vim.bo[splash_buf].filetype = "snacks_dashboard"
+local function splash_lines(indent)
+  return vim.tbl_map(function(line)
+    return string.rep(" ", indent) .. line
+  end, splash.header())
+end
+local function splash_frame_anchor(frame)
+  local best_index, best_anchor, best_column = 1, "", 1
+  for index, line in ipairs(frame) do
+    local anchor = vim.trim(line)
+    if #anchor > #best_anchor then
+      best_index, best_anchor, best_column = index, anchor, line:find("%S") or 1
+    end
+  end
+  return best_index, best_anchor, best_column
+end
+local function splash_frame_indent(buf)
+  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+  for _, frame in ipairs(splash_data.frames) do
+    local normalized = vim.tbl_map(function(line)
+      local padding = splash_data.cols - vim.api.nvim_strwidth(line)
+      return padding > 0 and (line .. string.rep(" ", padding)) or line
+    end, frame)
+    local anchor_index, anchor, anchor_column = splash_frame_anchor(normalized)
+    for index, line in ipairs(lines) do
+      local match_column = line:find(anchor, 1, true)
+      if match_column and vim.trim(line) == anchor then
+        return index - anchor_index, match_column - anchor_column
+      end
+    end
+  end
+end
+vim.api.nvim_buf_set_lines(splash_buf, 0, -1, false, splash_lines(2))
+splash.play(splash_buf, { loop = true })
+assert(vim.b[splash_buf].blak_splash_playing, "splash animation did not start")
+vim.api.nvim_buf_set_lines(splash_buf, 0, -1, false, splash_lines(8))
+splash.play(splash_buf, { loop = true })
+vim.wait(120, function()
+  return false
+end, 20)
+local _, refreshed_indent = splash_frame_indent(splash_buf)
+assert(refreshed_indent == 8, "running splash did not keep the refreshed dashboard indent")
+vim.api.nvim_buf_delete(splash_buf, { force = true })
 local lazy_plugins = require("lazy.core.config").plugins
 assert(lazy_plugins["tokyonight.nvim"], "tokyonight.nvim spec missing")
 assert(lazy_plugins["tokyonight.nvim"].lazy == false, "tokyonight.nvim must load eagerly")
