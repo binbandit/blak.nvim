@@ -5,6 +5,7 @@ This checkout was validated statically in the build container with:
 ```sh
 python3 scripts/validate.py
 sh -n install.sh
+sh -n scripts/smoke-install.sh
 grep -RIn '<legacy Black identifiers>' .
 ```
 
@@ -13,6 +14,7 @@ Result:
 ```text
 Validation passed: 64 Lua files, 19 extras
 install.sh syntax OK
+scripts/smoke-install.sh syntax OK
 stale name grep OK
 ```
 
@@ -30,8 +32,11 @@ Runtime validation is included:
 
 ```sh
 make smoke
+make smoke-install
 ```
 
 The smoke test starts Neovim headless with `NVIM_APPNAME=blak-test`, disables the splash and automatic Mason installation, loads `require("blak").setup()`, verifies config is present, runs `:checkhealth blak`, syncs plugins, runs the smoke script a second time against the synced install, exercises every public `:Blak` command, and checks directory startup.
 
-The included GitHub Actions workflow runs static validation and a Neovim smoke test using the official stable Neovim Linux tarball.
+The install smoke test runs the public installer into temporary XDG directories, verifies the sparse runtime checkout omits contributor-only directories, and boots that installed checkout headlessly.
+
+The included GitHub Actions workflow runs static validation, the Neovim smoke test, and the installer smoke test using the official stable Neovim Linux tarball.

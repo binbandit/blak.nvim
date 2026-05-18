@@ -9,6 +9,48 @@ BIN_DIR="${BLAK_BIN_DIR:-$HOME/.local/bin}"
 TARGET="$CONFIG_HOME/$APPNAME"
 LAUNCHER="$BIN_DIR/$APPNAME"
 
+clone_full() {
+  if [ -n "$BLAK_REF" ]; then
+    git clone --filter=blob:none --depth=1 --branch "$BLAK_REF" "$REPO_URL" "$TARGET"
+  else
+    git clone --filter=blob:none --depth=1 "$REPO_URL" "$TARGET"
+  fi
+}
+
+clone_no_checkout() {
+  if [ -n "$BLAK_REF" ]; then
+    git clone --filter=blob:none --depth=1 --no-checkout --branch "$BLAK_REF" "$REPO_URL" "$TARGET"
+  else
+    git clone --filter=blob:none --depth=1 --no-checkout "$REPO_URL" "$TARGET"
+  fi
+}
+
+checkout_runtime_files() {
+  git -C "$TARGET" sparse-checkout set --no-cone \
+    /.gitignore \
+    /init.lua \
+    /lua/ \
+    /doc/ \
+    /lazy-lock.json \
+    /NEWS.md \
+    /README.md \
+    /LICENSE \
+    /NOTICE \
+    /assets/blak-ascii.svg || return 1
+  git -C "$TARGET" checkout
+}
+
+install_repo() {
+  clone_no_checkout
+  if checkout_runtime_files; then
+    return 0
+  fi
+
+  echo "Could not create a sparse runtime checkout; falling back to a full clone." >&2
+  rm -rf "$TARGET"
+  clone_full
+}
+
 case "$APPNAME" in
   "" | */* | . | ..)
     echo "Invalid BLAK_APPNAME: $APPNAME" >&2
@@ -26,10 +68,13 @@ if ! command -v nvim >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! nvim --headless --clean +'lua if vim.fn.has("nvim-0.12") == 0 then vim.cmd("cq") end' +qa >/dev/null 2>&1; then
+nvim_check_output=$(nvim --headless --clean +'lua if vim.fn.has("nvim-0.12") == 0 then vim.cmd("cq") end' +qa 2>&1) || {
   echo "Blak requires Neovim 0.12 or newer." >&2
+  if [ -n "$nvim_check_output" ]; then
+    printf '%s\n' "$nvim_check_output" >&2
+  fi
   exit 1
-fi
+}
 
 if [ -e "$TARGET" ]; then
   echo "$TARGET already exists" >&2
@@ -37,11 +82,7 @@ if [ -e "$TARGET" ]; then
   exit 1
 fi
 
-if [ -n "$BLAK_REF" ]; then
-  git clone --filter=blob:none --depth=1 --branch "$BLAK_REF" "$REPO_URL" "$TARGET"
-else
-  git clone --filter=blob:none --depth=1 "$REPO_URL" "$TARGET"
-fi
+install_repo
 
 launcher_status=""
 if mkdir -p "$BIN_DIR" 2>/dev/null; then

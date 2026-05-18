@@ -15,9 +15,11 @@ blak
 That script:
 
 1. Verifies Git and Neovim 0.12+ are present.
-2. Clones the repo to `~/.config/blak`.
+2. Creates a sparse runtime checkout at `~/.config/blak`.
 3. Writes a launcher at `~/.local/bin/blak` that runs `NVIM_APPNAME=blak nvim`.
 4. Prints a one-line status with any caveats.
+
+The runtime checkout includes Blak's Lua runtime, Vim help files, lockfile, changelog, license, notice, README, and logo. It leaves out contributor-only files such as `docs/`, `scripts/`, `.github/`, and generated splash source assets.
 
 If `~/.local/bin` is not on your `PATH`, you'll see a hint to either add it or run `NVIM_APPNAME=blak nvim` directly. An optional shell alias does the same:
 
@@ -29,7 +31,7 @@ alias blak='NVIM_APPNAME=blak nvim'
 
 | Path | Purpose |
 | --- | --- |
-| `~/.config/blak/` | Clone of the repo |
+| `~/.config/blak/` | Sparse runtime checkout |
 | `~/.local/bin/blak` | Launcher that sets `NVIM_APPNAME=blak` |
 | `~/.local/share/blak/` | Plugin data (lazy.nvim) |
 | `~/.local/state/blak/` | State including the extras file |

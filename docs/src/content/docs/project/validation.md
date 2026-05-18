@@ -3,14 +3,16 @@ title: Validation & CI
 description: Static validation, the headless smoke test, and the Makefile targets that wrap them.
 ---
 
-Blak has two safety nets every contributor runs locally and CI runs on every push:
+Blak has three safety nets every contributor runs locally and CI runs on every push:
 
 - **Static validation** — no Neovim required, runs in seconds.
 - **Smoke test** — boots Neovim headless and asserts setup works end to end.
+- **Installer smoke test** — runs the public installer into temporary XDG directories and boots the sparse runtime checkout.
 
 ## `make validate`
 
 Runs [`scripts/validate.py`](https://github.com/binbandit/blak.nvim/blob/main/scripts/validate.py).
+It also syntax-checks `install.sh` and `scripts/smoke-install.sh`.
 
 ### What it checks
 
@@ -94,22 +96,31 @@ make smoke
 
 Uses `NVIM_APPNAME=blak-test` (configurable: `SMOKE_NVIM_APPNAME=foo make smoke`). The state dir is at `$XDG_DATA_HOME/blak-test/` — feel free to wipe between runs.
 
+## `make smoke-install`
+
+Runs [`scripts/smoke-install.sh`](https://github.com/binbandit/blak.nvim/blob/main/scripts/smoke-install.sh).
+
+The script creates temporary XDG directories, runs `install.sh` against the local checkout, asserts that the install contains runtime files and omits contributor-only directories, then starts Neovim with `NVIM_APPNAME=blak-install-smoke`.
+
+It specifically checks that `docs/`, `scripts/`, `.github/`, and `assets/blackhole.gif` do not land in the installed checkout, while `init.lua`, `lua/blak/`, `doc/`, `lazy-lock.json`, `NEWS.md`, `.gitignore`, and `assets/blak-ascii.svg` do.
+
 ## CI
 
-[`.github/workflows/ci.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/ci.yml) runs both targets on every push and PR.
+[`.github/workflows/ci.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/ci.yml) runs these checks on every push and PR.
 
 | Job | Runner | Step |
 | --- | --- | --- |
-| `validate` | `ubuntu-latest` | Run `python3 scripts/validate.py` |
-| `smoke` | `ubuntu-latest` | Install Neovim stable, run `make smoke` |
+| `validate` | `ubuntu-latest` | Run `make validate` |
+| `smoke` | `ubuntu-latest` | Install Neovim stable, run `make smoke` and `make smoke-install` |
 
 [`.github/workflows/docs.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/docs.yml) builds and deploys this documentation site to [getblak.dev](https://getblak.dev/) via GitHub Pages on every push to `main`.
 
 ## Makefile reference
 
 ```makefile
-make validate              # python3 scripts/validate.py
+make validate              # static validator + shell syntax checks
 make smoke                 # headless Neovim + Lazy sync + checkhealth
+make smoke-install         # install.sh into temp XDG dirs + headless boot
 make docs                  # alias for docs-dev
 make docs-install          # cd docs && npm install
 make docs-dev              # cd docs && npm run dev (http://localhost:4321/)
@@ -122,6 +133,7 @@ make zip                   # zip the repo for distribution (excludes git, node_m
 ```sh
 make validate              # < 100 ms
 make smoke                 # ~10 s (longer on cold lazy cache)
+make smoke-install         # verifies the public install path
 stylua --check .           # when stylua is installed; CI enforces it eventually
 ```
 

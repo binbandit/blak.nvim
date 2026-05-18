@@ -38,7 +38,7 @@ curl -fsSL https://getblak.dev/install.sh | sh
 blak
 ```
 
-The installer clones Blak to `~/.config/blak`, creates a small `~/.local/bin/blak` launcher, and uses `NVIM_APPNAME=blak`, so it does not overwrite an existing Neovim config.
+The installer creates a sparse runtime checkout at `~/.config/blak`, creates a small `~/.local/bin/blak` launcher, and uses `NVIM_APPNAME=blak`, so it does not overwrite an existing Neovim config. The checkout keeps the editor runtime, help files, lockfile, changelog, license, notice, README, and logo; development files such as `docs/`, `scripts/`, `.github/`, and generated splash assets are left out.
 
 For development from this checkout:
 
@@ -147,9 +147,10 @@ Stable updates must not silently swap major workflow components. `:BlakUpdate` c
 ```sh
 make validate
 make smoke
+make smoke-install
 ```
 
-`make validate` is static and works without Neovim. `make smoke` runs Neovim headless and should be run locally on a machine with Neovim 0.12+. GitHub Actions runs static validation and a Neovim smoke test on every push and pull request.
+`make validate` is static and works without Neovim. `make smoke` runs Neovim headless against the checkout, and `make smoke-install` runs the public installer into temporary XDG directories and boots that sparse install. GitHub Actions runs all three on every push and pull request.
 
 ## Documentation
 
