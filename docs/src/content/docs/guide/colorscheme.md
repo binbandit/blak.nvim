@@ -11,6 +11,8 @@ ui = {
 }
 ```
 
+In Blak docs, theme settings live here: `ui.colorscheme` picks the active colorscheme, and `ui.theme` passes options to TokyoNight.
+
 There is no Blak palette overlay. TokyoNight owns the colors and plugin highlight groups.
 
 ## Native Theme
