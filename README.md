@@ -86,6 +86,9 @@ Most Blak management shortcuts live under `<Space>l`: `<Space>le` opens extras,
 `<Space>lc` opens config, and `<Space>lk` shows registered keymaps. Run
 `:BlakKeys` for the full list.
 
+Window split shortcuts stay native and predictable: `<Space>ws` splits below
+and `<Space>wv` splits right when those keys are not already mapped.
+
 ## Extras
 
 Extras are opt-in and reversible:

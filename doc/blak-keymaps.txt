@@ -20,6 +20,12 @@ SAVE
   <C-s>            Save, in modes where Neovim leaves it free
   <D-s>            Save, where Command-s is forwarded by the UI
 
+WINDOWS
+  <Space>ws        Split window below
+  <Space>wv        Split window right
+  These use native :rightbelow split and :rightbelow vsplit, and only bind if
+  the keys are free.
+
 EXPLORER
   <Space>e         Configured explorer (Oil by default)
   Blak leaves Neovim's native - motion alone.

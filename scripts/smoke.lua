@@ -48,6 +48,8 @@ assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "<leader>/ grep mapping missing")
 assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal", "<leader>tt terminal mapping missing")
+assert(vim.fn.maparg("<leader>ws", "n", false, true).desc == "Split window below", "<leader>ws split mapping missing")
+assert(vim.fn.maparg("<leader>wv", "n", false, true).desc == "Split window right", "<leader>wv split mapping missing")
 local terminal_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
   terminal = { toggle_key = "<leader>to" },
 })

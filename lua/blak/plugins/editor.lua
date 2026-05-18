@@ -54,6 +54,7 @@ return function(config)
           { "<leader>q", group = "quit/session" },
           { "<leader>t", group = "terminal" },
           { "<leader>u", group = "toggle/update" },
+          { "<leader>w", group = "windows" },
           { "<leader>x", group = "diagnostics" },
         },
       },

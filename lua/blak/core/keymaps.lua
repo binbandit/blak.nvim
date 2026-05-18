@@ -155,6 +155,9 @@ function M.setup(config)
   map("n", "<leader>bn", "<cmd>bnext<cr>", "Next buffer")
   map("n", "<leader>bp", "<cmd>bprevious<cr>", "Previous buffer")
 
+  map_if_available("n", "<leader>ws", "<cmd>rightbelow split<cr>", "Split window below")
+  map_if_available("n", "<leader>wv", "<cmd>rightbelow vsplit<cr>", "Split window right")
+
   map("n", "<leader>e", open_explorer(config), require("blak.core.explorer").label(config))
 
   map_if_available({ "n", "i", "x", "s" }, "<C-s>", save_buffer, "Save")

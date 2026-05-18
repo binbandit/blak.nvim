@@ -31,7 +31,7 @@ Loaded with `priority = 1000` so its UI hooks beat other plugins. Spec: [`lua/bl
 
 ### which-key (`folke/which-key.nvim`)
 
-Pops up after the leader (or any prefix) showing the registered keymap groups. Blak pre-registers groups for `b` (buffers), `c` (code), `f` (find), `g` (git), `l` (lazy/blak), `q` (quit), `t` (terminal), `u` (toggles), `x` (diagnostics). Loaded on `VeryLazy`.
+Pops up after the leader (or any prefix) showing the registered keymap groups. Blak pre-registers groups for `b` (buffers), `c` (code), `f` (find), `g` (git), `l` (lazy/blak), `q` (quit), `t` (terminal), `u` (toggles), `w` (windows), `x` (diagnostics). Loaded on `VeryLazy`.
 
 ## Editor
 

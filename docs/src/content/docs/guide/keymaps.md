@@ -44,6 +44,17 @@ All dispatch through the picker provider — see [Pickers](/guide/pickers/).
 | `<leader>bn` | Next buffer |
 | `<leader>bp` | Previous buffer |
 
+## Windows
+
+| Mapping | Action |
+| --- | --- |
+| `<leader>ws` | Split window below |
+| `<leader>wv` | Split window right |
+
+These use Neovim's native `:rightbelow split` and `:rightbelow vsplit`. Blak
+only binds them when the left-hand side is still free, so an existing user or
+plugin mapping wins.
+
 ## Explorer
 
 | Mapping | Action |
@@ -157,6 +168,6 @@ See the [LSP guide](/guide/lsp/).
 ## Design notes
 
 - **No hidden chords.** If a mapping isn't in this page or in `:BlakKeys`, it doesn't exist in Blak core.
-- **Mnemonic grouping.** `<leader>f*` find, `<leader>b*` buffers, `<leader>g*` git, `<leader>c*` code, `<leader>x*` diagnostics, `<leader>l*` Lazy/Blak, `<leader>t*` terminal, `<leader>u*` UI toggles, `<leader>q*` quit.
+- **Mnemonic grouping.** `<leader>f*` find, `<leader>b*` buffers, `<leader>g*` git, `<leader>c*` code, `<leader>x*` diagnostics, `<leader>l*` Lazy/Blak, `<leader>t*` terminal, `<leader>u*` UI toggles, `<leader>w*` windows, `<leader>q*` quit.
 - **`map_if_available`.** Keys like `<C-s>` and `<D-s>` are only set when not already mapped — they yield to native bindings or another plugin's claim.
 - **Extras add to or retarget this list.** Run `:BlakKeys` to see what your enabled extras have registered.
