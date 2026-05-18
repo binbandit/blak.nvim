@@ -147,6 +147,14 @@ local function main()
   original_lock = util.read_file(lockfile)
   user_file = util.join(vim.fn.stdpath("config"), "lua", "blak", "user.lua")
   original_user_file = util.read_file(user_file)
+  local real_treesitter = package.loaded["blak.core.treesitter"]
+  local treesitter_install_seen = false
+  package.loaded["blak.core.treesitter"] = {
+    setup = real_treesitter and real_treesitter.setup or function() end,
+    install = function(_, opts)
+      treesitter_install_seen = opts and opts.notify == true
+    end,
+  }
 
   for _, name in ipairs(command_names) do
     assert(vim.fn.exists(":" .. name) == 2, ":" .. name .. " was not registered")
@@ -314,8 +322,21 @@ local function main()
   run("BlakExtras sync", "BlakExtras sync")
   assert(lazy_calls[#lazy_calls] == "sync", "BlakExtras sync did not run Lazy sync")
 
+  local real_tools = package.loaded["blak.core.tools"]
+  local tools_install_seen = false
+  package.loaded["blak.core.tools"] = {
+    ensure = function(_, opts)
+      tools_install_seen = opts and opts.force == true
+    end,
+  }
   run("BlakToolsInstall", "BlakToolsInstall")
+  assert(tools_install_seen, "BlakToolsInstall did not call tools.ensure with force")
+  package.loaded["blak.core.tools"] = real_tools
+
+  treesitter_install_seen = false
   run("BlakTreesitterInstall", "BlakTreesitterInstall")
+  assert(treesitter_install_seen, "BlakTreesitterInstall did not call treesitter.install with notify")
+  package.loaded["blak.core.treesitter"] = real_treesitter
 
   local formatted = false
   package.loaded.conform = {

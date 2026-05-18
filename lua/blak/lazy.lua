@@ -1,5 +1,25 @@
 local M = {}
 
+local function ensure_blak_package_path()
+  local source = debug.getinfo(1, "S").source
+  if source:sub(1, 1) ~= "@" then
+    return
+  end
+
+  local lua_dir = vim.fn.fnamemodify(source:sub(2), ":p:h:h")
+  local patterns = {
+    lua_dir .. "/?.lua",
+    lua_dir .. "/?/init.lua",
+  }
+
+  for index = #patterns, 1, -1 do
+    local pattern = patterns[index]
+    if not package.path:find(pattern, 1, true) then
+      package.path = pattern .. ";" .. package.path
+    end
+  end
+end
+
 local function bootstrap_lazy()
   local util = require("blak.util")
   local lazypath = util.join(vim.fn.stdpath("data"), "lazy", "lazy.nvim")
@@ -28,6 +48,7 @@ function M.setup(config)
   end
 
   bootstrap_lazy()
+  ensure_blak_package_path()
 
   local specs = require("blak.plugins").specs(config)
   require("lazy").setup(specs, {

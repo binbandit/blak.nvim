@@ -19,9 +19,19 @@ local function write_file(path, data)
   fd:close()
 end
 
-local runtime_dir = join(vim.fn.stdpath("state"), "blak-smoke-runtime")
-local user_file = join(runtime_dir, "lua", "blak", "user.lua")
-vim.fn.delete(runtime_dir, "rf")
+local function read_file(path)
+  local fd = io.open(path, "r")
+  if not fd then
+    return nil
+  end
+  local data = fd:read("*a")
+  fd:close()
+  return data
+end
+
+local user_file = join(vim.fn.stdpath("config"), "lua", "blak", "user.lua")
+local original_user_file = read_file(user_file)
+vim.fn.delete(user_file)
 write_file(user_file, [[
 return function(config)
   config.editor.relative_number = false
@@ -32,11 +42,12 @@ return function(config)
   end
 end
 ]])
-vim.opt.rtp:prepend(runtime_dir)
+vim.opt.rtp:prepend(vim.fn.stdpath("config"))
 
 vim.g.blak_config = {
   ui = { splash = { enabled = false } },
   mason = { automatic_install = false },
+  treesitter = { ensure_installed = {} },
 }
 require("blak").setup()
 vim.opt.rtp:prepend(vim.fn.getcwd())
@@ -316,4 +327,8 @@ assert(vim.g.blak_smoke_reload_hook, "user.lua after hook did not run during rel
 assert(require("blak.config").get().editor.relative_number == true, "saving user.lua did not reload config")
 assert(require("blak.config").get().picker.provider == "snacks", "saving user.lua did not refresh picker config")
 vim.cmd("checkhealth blak")
-vim.fn.delete(runtime_dir, "rf")
+if original_user_file then
+  write_file(user_file, original_user_file)
+else
+  vim.fn.delete(user_file)
+end
