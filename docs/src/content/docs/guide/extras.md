@@ -96,6 +96,7 @@ Rust with rust-analyzer and TOML support.
 | Mason | `codelldb` |
 | LSP | `rust_analyzer` (with `cargo.allFeatures` + Clippy), `taplo` |
 | Format | `rustfmt` (LSP fallback), `taplo` (LSP fallback) |
+| Plugins | `saecki/crates.nvim` |
 
 ### `lang.go`
 

@@ -189,6 +189,15 @@ local function main()
   config.mason.ensure_installed = {}
   config.treesitter.ensure_installed = {}
 
+  run("BlakExtras enable rust", "BlakExtras enable lang.rust")
+  assert(has_value(require("blak.extras.state").read(), "lang.rust"), "BlakExtras enable did not persist lang.rust")
+  assert(require("lazy.core.config").plugins["crates.nvim"], "lang.rust did not register crates.nvim")
+
+  run("BlakExtras disable rust", "BlakExtras disable lang.rust")
+  assert(not has_value(require("blak.extras.state").read(), "lang.rust"), "BlakExtras disable did not persist lang.rust")
+  config.mason.ensure_installed = {}
+  config.treesitter.ensure_installed = {}
+
   local extras = require("blak.extras")
   assert(has_value(extras.complete("en", "BlakExtras en"), "enable"), "BlakExtras action completion missed enable")
   assert(has_value(extras.complete("en", "BlackExtras en"), "enable"), "BlackExtras action completion missed enable")

@@ -1,7 +1,7 @@
 return {
   id = "lang.rust",
   label = "Rust",
-  description = "rust_analyzer, rustfmt fallback, Taplo, Rust/TOML Treesitter",
+  description = "rust_analyzer, crates.nvim, rustfmt fallback, Taplo, Rust/TOML Treesitter",
   treesitter = { "rust", "toml" },
   mason = { "codelldb" },
   lsp = {
@@ -21,6 +21,14 @@ return {
     formatters_by_ft = {
       rust = { "rustfmt", lsp_format = "fallback" },
       toml = { "taplo", lsp_format = "fallback" },
+    },
+  },
+  plugins = {
+    {
+      "saecki/crates.nvim",
+      event = { "BufRead Cargo.toml", "BufNewFile Cargo.toml" },
+      main = "crates",
+      opts = {},
     },
   },
 }
