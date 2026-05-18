@@ -159,6 +159,7 @@ function M.play(buf, opts)
     existing.start = start
     existing.indent = indent
     existing.loop = opts.loop
+    existing.paused = false
 
     if opts.animate == false then
       stop_state(buf)
@@ -167,7 +168,9 @@ function M.play(buf, opts)
     end
 
     local frame_index = existing.frame_index or 1
-    set_lines(buf, start, splash.frames[frame_index], width, indent, splash.colors and splash.colors[frame_index])
+    if not set_lines(buf, start, splash.frames[frame_index], width, indent, splash.colors and splash.colors[frame_index]) then
+      stop_state(buf)
+    end
     return
   end
 
@@ -191,6 +194,7 @@ function M.play(buf, opts)
     indent = indent,
     index = 2,
     loop = opts.loop,
+    paused = false,
     start = start,
     timer = timer,
   }
@@ -213,6 +217,9 @@ function M.play(buf, opts)
       state = states[buf]
       if not state or not vim.api.nvim_buf_is_valid(buf) then
         stop()
+        return
+      end
+      if state.paused then
         return
       end
       local ok = set_lines(
@@ -269,14 +276,10 @@ function M.attach_to_snacks(config)
     end
   end
 
-  local function stop_all()
-    local bufs = {}
-    for buf in pairs(states) do
-      table.insert(bufs, buf)
-    end
-    for _, buf in ipairs(bufs) do
+  local function pause_all()
+    for buf, state in pairs(states) do
       if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == "snacks_dashboard" then
-        stop_state(buf)
+        state.paused = true
       end
     end
   end
@@ -284,15 +287,13 @@ function M.attach_to_snacks(config)
   vim.api.nvim_create_autocmd("User", {
     group = group,
     pattern = "SnacksDashboardUpdatePre",
-    callback = stop_all,
+    callback = pause_all,
   })
 
   vim.api.nvim_create_autocmd("User", {
     group = group,
     pattern = { "SnacksDashboardOpened", "SnacksDashboardUpdatePost" },
-    callback = function()
-      vim.schedule(start_all)
-    end,
+    callback = start_all,
   })
 
   -- Fallback for the cold-start case where the dashboard buffer already
