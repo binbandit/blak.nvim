@@ -185,7 +185,11 @@ function M.setup(config)
     end,
   })
 
-  for _, item in ipairs(config._extra_keymaps or {}) do
+  M.apply_extra(config._extra_keymaps or {})
+end
+
+function M.apply_extra(keys)
+  for _, item in ipairs(keys or {}) do
     map(item.mode or "n", item.lhs, item.rhs, item.desc, item.opts)
   end
 end

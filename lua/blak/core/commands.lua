@@ -18,6 +18,14 @@ local function complete_picker()
   return pickers
 end
 
+local function extras_command(opts)
+  require("blak.extras").command(opts)
+end
+
+local function complete_extras(arglead, line)
+  return require("blak.extras").complete(arglead, line)
+end
+
 function M.setup(config)
   vim.api.nvim_create_user_command("Blak", function()
     require("blak.util").open_scratch("Blak", {
@@ -32,6 +40,7 @@ function M.setup(config)
       "  :BlakNews                  release notes",
       "  :BlakPick {kind}           picker entrypoint",
       "  :BlakExtras                list/enable/disable extras",
+      "  :BlackExtras               alias for :BlakExtras",
       "  :BlakUpdate                update plugins with lockfile backup",
       "  :BlakUpgrade               intentional bigger moves",
       "  :BlakRollback              restore last lockfile backup",
@@ -56,11 +65,17 @@ function M.setup(config)
     require("blak.providers.picker").pick(opts.args ~= "" and opts.args or "smart")
   end, { nargs = "?", complete = complete_picker, desc = "Run a Blak picker" })
 
-  vim.api.nvim_create_user_command("BlakExtras", function(opts)
-    require("blak.extras").command(opts)
-  end, { nargs = "*", complete = function(arglead, line)
-    return require("blak.extras").complete(arglead, line)
-  end, desc = "Manage Blak extras" })
+  vim.api.nvim_create_user_command("BlakExtras", extras_command, {
+    nargs = "*",
+    complete = complete_extras,
+    desc = "Manage Blak extras",
+  })
+
+  vim.api.nvim_create_user_command("BlackExtras", extras_command, {
+    nargs = "*",
+    complete = complete_extras,
+    desc = "Alias for :BlakExtras",
+  })
 
   vim.api.nvim_create_user_command("BlakUpdate", function()
     require("blak.core.update").update()

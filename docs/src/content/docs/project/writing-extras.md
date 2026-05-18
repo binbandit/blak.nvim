@@ -77,7 +77,6 @@ That's the entire registration. The registry caches results and looks up extras 
 blak-dev
 :BlakExtras list
 :BlakExtras enable lang.zig
-" restart blak-dev
 :Lazy sync                           " if plugins changed
 :BlakToolsInstall                    " if mason changed
 :BlakTreesitterInstall               " if parsers changed

@@ -59,12 +59,13 @@ These dispatch through [`lua/blak/providers/picker/`](https://github.com/binband
 
 ```vim
 :BlakExtras list                  " show available + which are enabled
+:BlackExtras list                 " alias for :BlakExtras
 :BlakExtras enable lang.rust      " turn on the rust extra
 :BlakExtras disable lang.rust     " turn it off
 :BlakExtras sync                  " run :Lazy sync to install/uninstall plugins
 ```
 
-State lives in `stdpath('state')/blak/extras.json`. Restart Blak after enable/disable to pick up plugin changes. See the [Extras guide](/guide/extras/) for the full list.
+State lives in `stdpath('state')/blak/extras.json`. Enabling applies config to the current session; disabling persists immediately but already-loaded runtime pieces may remain until restart. See the [Extras guide](/guide/extras/) for the full list.
 
 ## Update & rollback
 
@@ -139,6 +140,7 @@ Plays the black-hole animation in a scratch buffer. Useful for tweaking your ter
 :BlakNews                  release notes
 :BlakPick {kind}           picker entrypoint
 :BlakExtras list           optional modules
+:BlackExtras list          alias for :BlakExtras
 :BlakExtras enable {id}    turn on an extra
 :BlakExtras disable {id}   turn off an extra
 :BlakExtras sync           :Lazy sync after changes

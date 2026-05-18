@@ -32,7 +32,7 @@ Or enable a provider-loading extra:
 :BlakExtras enable editor.fzf-lua     " sets provider = fzf_lua and loads the plugin
 ```
 
-Restart Blak. Every `<leader>f*` mapping now uses the new backend.
+Run `:BlakExtras sync` if the plugin is not installed yet. Every `<leader>f*` mapping uses the new backend as soon as the provider is available.
 
 ## Fallback chain
 

@@ -26,6 +26,9 @@ COMMANDS                                                 *blak-commands*
 :BlakExtras [list|enable|disable|sync] [id]
     Manage optional extras. See |blak-extras|.
 
+:BlackExtras [list|enable|disable|sync] [id]
+    Alias for :BlakExtras.
+
 :BlakUpdate
     Create a lazy-lock rollback point and run |:Lazy update|.
 

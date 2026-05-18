@@ -69,6 +69,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 :BlakNews          release notes
 :BlakPick files    picker entrypoint
 :BlakExtras        list optional extras
+:BlackExtras       alias for :BlakExtras
 :BlakUpdate        update plugins with lockfile backup
 :BlakUpgrade       intentional bigger moves
 :BlakRollback      restore last lockfile backup and run Lazy restore
@@ -93,7 +94,7 @@ Extras are opt-in and reversible:
 :BlakExtras disable lang.python
 ```
 
-State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Restart Blak after changing extras, then run `:Lazy sync` if the enabled set added or removed plugins.
+State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Enabling an extra applies its config to the current session; run `:BlakExtras sync` if the extra added plugin specs. Disabling persists immediately, but a restart is still the clean way to unload plugins, keymaps, and runtime hooks that already ran.
 
 Default vs. optional is deliberate:
 

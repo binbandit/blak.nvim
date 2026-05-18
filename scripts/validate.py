@@ -297,7 +297,9 @@ def main() -> int:
         "checkhealth black",
         "vim.g.black",
         "vim.b.black",
-        ":Black",
+    ]
+    legacy_regexes = [
+        re.compile(r":Black(?!Extras\b)"),
     ]
     for path in ROOT.rglob("*"):
         if path.is_dir() or path.name == "blackhole.gif" or path == ROOT / "scripts" / "validate.py" or ".git" in path.parts:
@@ -309,6 +311,9 @@ def main() -> int:
         for pattern in legacy_patterns:
             if pattern in text:
                 errors.append(f"{path.relative_to(ROOT)}: legacy Black identifier remains: {pattern}")
+        for pattern in legacy_regexes:
+            if pattern.search(text):
+                errors.append(f"{path.relative_to(ROOT)}: legacy Black identifier remains: {pattern.pattern}")
 
     if errors:
         print("Validation failed:", file=sys.stderr)

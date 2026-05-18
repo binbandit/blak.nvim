@@ -25,6 +25,7 @@ When you disable an extra and restart, Blak stops registering that extra's plugi
 
 ```vim
 :BlakExtras list                  " show available + which are enabled
+:BlackExtras list                 " same command, typo-friendly
 :BlakExtras enable lang.rust
 :BlakExtras disable git.lazygit
 :BlakExtras sync                  " run :Lazy sync after changes
@@ -39,12 +40,14 @@ State persists outside the repo in `stdpath('state')/blak/extras.json`. That mea
 
 If an extra was renamed or removed, `:BlakDoctor` reports it as unknown. Run `:BlakExtras disable <id>` to remove that stale state entry.
 
-After enabling or disabling an extra:
+After enabling an extra:
 
-1. **Restart Blak** so the new spec set is loaded.
-2. **Run `:BlakExtras sync` or `:Lazy sync`** if plugins were added or removed.
+1. Blak applies its config to the current session.
+2. **Run `:BlakExtras sync` or `:Lazy sync`** if plugins were added.
 3. **Run `:BlakToolsInstall`** to install any new Mason tools required.
 4. **Run `:BlakDoctor`** to confirm everything resolved.
+
+After disabling an extra, the state file updates immediately. Restart Blak when you want already-loaded plugins, keymaps, and runtime hooks to disappear from the current session, then run `:BlakExtras sync` if plugin specs were removed.
 
 ## Languages
 

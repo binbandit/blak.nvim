@@ -8,6 +8,7 @@ local command_names = {
   "BlakNews",
   "BlakPick",
   "BlakExtras",
+  "BlackExtras",
   "BlakUpdate",
   "BlakUpgrade",
   "BlakRollback",
@@ -174,14 +175,23 @@ local function main()
   assert_contains(":BlakExtras list", current_text(), "editor.snacks-explorer")
   wipe_current()
 
-  run("BlakExtras enable", "BlakExtras enable lang.rust")
-  assert(has_value(require("blak.extras.state").read(), "lang.rust"), "BlakExtras enable did not persist state")
+  run("BlackExtras list", "BlackExtras list")
+  assert_contains(":BlackExtras list", current_text(), "lang.rust")
+  wipe_current()
 
-  run("BlakExtras disable", "BlakExtras disable lang.rust")
-  assert(not has_value(require("blak.extras.state").read(), "lang.rust"), "BlakExtras disable did not persist state")
+  run("BlackExtras enable", "BlackExtras enable editor.telescope")
+  assert(has_value(require("blak.extras.state").read(), "editor.telescope"), "BlackExtras enable did not persist state")
+  local config = require("blak.config").get()
+  assert(config.picker.provider == "telescope", "BlakExtras enable did not apply config in-session")
+
+  run("BlakExtras disable", "BlakExtras disable editor.telescope")
+  assert(not has_value(require("blak.extras.state").read(), "editor.telescope"), "BlakExtras disable did not persist state")
+  config.mason.ensure_installed = {}
+  config.treesitter.ensure_installed = {}
 
   local extras = require("blak.extras")
   assert(has_value(extras.complete("en", "BlakExtras en"), "enable"), "BlakExtras action completion missed enable")
+  assert(has_value(extras.complete("en", "BlackExtras en"), "enable"), "BlackExtras action completion missed enable")
   assert(has_value(extras.complete("lang.r", "BlakExtras enable lang.r"), "lang.rust"), "BlakExtras id completion missed lang.rust")
 
   local lazy_calls = {}

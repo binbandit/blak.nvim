@@ -1,31 +1,10 @@
-local function lsp_capabilities()
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-  local ok, blink = pcall(require, "blink.cmp")
-  if ok and blink.get_lsp_capabilities then
-    capabilities = blink.get_lsp_capabilities(capabilities)
-  end
-  return capabilities
-end
-
-local function setup_servers(config)
-  vim.diagnostic.config(config.lsp.diagnostics)
-
-  local capabilities = lsp_capabilities()
-  for name, server in pairs(config.lsp.servers or {}) do
-    local server_config = vim.tbl_deep_extend("force", {}, server, {
-      capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {}),
-    })
-    vim.lsp.config(name, server_config)
-  end
-end
-
 return function(config)
   return {
     {
       "neovim/nvim-lspconfig",
       lazy = false,
       config = function()
-        setup_servers(config)
+        require("blak.core.lsp").setup(config)
       end,
     },
     {
