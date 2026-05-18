@@ -23,6 +23,7 @@ cp ~/.config/blak/lua/blak/user.example.lua ~/.config/blak/lua/blak/user.lua
 Then edit it. The file returns a table that is deep-merged into the defaults:
 
 ```lua
+---@type blak.UserConfig
 return {
   picker = { provider = "fff" },
   ui = {
@@ -39,6 +40,11 @@ return {
 ```
 
 `user.lua` is gitignored by default so your local changes stay local. Use `:BlakConfig` when you want the direct route; Blak also ships picker ignore metadata so file tools can still find an existing config.
+
+The `---@type blak.UserConfig` annotation lets `lua_ls` complete Blak config keys
+from the type definitions shipped with the runtime. Blak's default `lua_ls`
+setup adds Neovim runtime files to the workspace library, so the annotation
+works without extra editor setup.
 
 ## Override patterns
 

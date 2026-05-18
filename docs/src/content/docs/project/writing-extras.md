@@ -107,10 +107,11 @@ Boots Neovim headless, calls `require("blak").setup()`, and runs `:checkhealth b
 
 ## Document it
 
-Two places, both in this repo:
+A few places, all in this repo:
 
-1. Add a row to the [Extras guide](/guide/extras/) (`docs/src/content/docs/guide/extras.md`).
-2. If the extra adds a keymap, mention it in the [Keymaps page](/guide/keymaps/) under "Keymaps added by extras."
+1. Add a dedicated page under `docs/src/content/docs/extras/<group>/<name>.md`.
+2. Link that page from the [Extras guide](/guide/extras/) and the docs sidebar in `docs/astro.config.mjs`.
+3. If the extra adds a keymap, mention it in the [Keymaps page](/guide/keymaps/) under "Keymaps added by extras."
 
 ## Open a PR
 

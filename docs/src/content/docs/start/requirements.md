@@ -31,6 +31,7 @@ Blak runs without these — pickers fall back to plain finds, icons drop to text
 | **node / npm** | TypeScript extras and language servers, including `lang.typescript-tsgo` |
 | **rustup** | `:BlakExtras enable lang.rust` |
 | **go** | `:BlakExtras enable lang.go` |
+| **AI CLI tools** | `:BlakExtras enable ai.sidekick` with Codex, Claude, Gemini, OpenCode, or another Sidekick-supported CLI |
 
 External tools required by an extra are listed in its source under `lua/blak/extras/<group>/<name>.lua`. Run `:BlakDoctor` after enabling extras — it surfaces anything missing.
 

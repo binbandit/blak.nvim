@@ -96,7 +96,8 @@ lua/blak/
 │   │   ├── lazygit.lua
 │   │   └── diffview.lua
 │   ├── ai/
-│   │   └── copilot.lua
+│   │   ├── copilot.lua
+│   │   └── sidekick.lua
 │   └── editor/
 │       ├── neotree.lua
 │       ├── snacks_explorer.lua

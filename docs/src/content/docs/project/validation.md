@@ -29,7 +29,7 @@ It also syntax-checks `install.sh` and `scripts/smoke-install.sh`.
 ### Output
 
 ```
-Validation passed: 64 Lua files, 19 extras
+Validation passed: 65 Lua files, 20 extras
 ```
 
 On failure, every problem is reported in one pass — fix them in a batch rather than running validate → fix → run → fix.

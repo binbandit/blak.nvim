@@ -25,7 +25,7 @@ Initial implementation. Complete enough to install, use, and share — young eno
 - UI: animations, image-preview, zen.
 - Git: lazygit, diffview.
 - Editor: neotree, snacks-explorer, telescope, fzf-lua.
-- AI: copilot.
+- AI: copilot, sidekick.
 
 **Distribution**
 

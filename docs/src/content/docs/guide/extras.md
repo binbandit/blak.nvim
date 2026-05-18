@@ -56,6 +56,19 @@ After enabling an extra:
 
 After disabling an extra, the state file updates immediately. Restart Blak when you want already-loaded plugins, keymaps, and runtime hooks to disappear from the current session, then run `:BlakExtras sync` if plugin specs were removed.
 
+## Dedicated pages
+
+Each supported extra has a dedicated page with its `user.lua` enable snippet,
+configuration examples, install notes, and verification path.
+
+| Group | Extras |
+| --- | --- |
+| Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/) |
+| UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
+| Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/) |
+| AI | [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/) |
+| Editor | [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
+
 ## Languages
 
 ### `lang.lua`
@@ -226,6 +239,68 @@ GitHub Copilot integration via [zbirenbaum/copilot.lua](https://github.com/zbire
 | Plugin | `zbirenbaum/copilot.lua` |
 
 > Never enabled by default. Opt in with `:BlakExtras enable ai.copilot`.
+
+### `ai.sidekick`
+
+[sidekick.nvim](https://github.com/folke/sidekick.nvim) AI CLI terminals and optional Copilot Next Edit Suggestions.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `folke/sidekick.nvim` |
+| Snacks | `picker.actions.sidekick_send` |
+| Keymap | `<C-.>` → focus the Sidekick CLI |
+| Keymap | `<leader>aa` → toggle the CLI |
+| Keymap | `<leader>as` → select an AI CLI |
+| Keymap | `<leader>ad` → detach the current CLI session |
+| Keymap | `<leader>af` → send the current file |
+| Keymap | `<leader>at` → send `{this}` context |
+| Keymap | `<leader>av` → send the visual selection |
+| Keymap | `<leader>ap` → pick a prompt |
+
+Enable it, sync plugins, then install at least one AI CLI supported by Sidekick, such as Codex, Claude, Gemini, or OpenCode:
+
+```vim
+:BlakExtras enable ai.sidekick
+:BlakExtras sync
+:checkhealth sidekick
+```
+
+Blak keeps `ai.sidekick.nes.enabled = false` by default so the extra remains a terminal-based AI workflow unless you opt into Copilot Next Edit Suggestions:
+
+```lua
+return {
+  extras = { enabled = { "ai.sidekick" } },
+  ai = {
+    sidekick = {
+      nes = { enabled = true },
+      cli = {
+        mux = { enabled = true, backend = "tmux" },
+      },
+    },
+  },
+}
+```
+
+The extra registers a Snacks picker action named `sidekick_send`. If you want a picker-local key for sending file/search selections to Sidekick, add it yourself so it remains part of your visible config:
+
+```lua
+return {
+  extras = { enabled = { "ai.sidekick" } },
+  snacks = {
+    picker = {
+      win = {
+        input = {
+          keys = {
+            ["<a-a>"] = { "sidekick_send", mode = { "n", "i" } },
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+> Never enabled by default. Disable it, restart Blak, then run `:BlakExtras sync` to remove the plugin spec.
 
 ## Editor
 

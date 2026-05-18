@@ -17,6 +17,7 @@ All required.
 | `ui` | `table` | See below |
 | `picker` | `table` | See below |
 | `explorer` | `table` | See below |
+| `ai` | `table` | See below |
 | `lsp` | `table` | See below |
 | `extras` | `table` | See below |
 
@@ -50,6 +51,28 @@ Switching providers swaps the implementation behind `:BlakPick` without changing
 | `provider` | `string` | `"oil"` or `"snacks"` |
 
 Switching providers swaps the implementation behind `<leader>e` and directory-buffer takeover. The usual path is `:BlakExtras enable editor.snacks-explorer`, which sets this option and enables the Snacks explorer module for you.
+
+## `ai`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `sidekick` | `table` | Options passed to `folke/sidekick.nvim` when `ai.sidekick` is enabled. Blak sets `nes.enabled = false` by default. |
+
+Use this table for Sidekick CLI and NES configuration:
+
+```lua
+return {
+  extras = { enabled = { "ai.sidekick" } },
+  ai = {
+    sidekick = {
+      nes = { enabled = true },
+      cli = {
+        mux = { enabled = true, backend = "tmux" },
+      },
+    },
+  },
+}
+```
 
 ## `extras`
 

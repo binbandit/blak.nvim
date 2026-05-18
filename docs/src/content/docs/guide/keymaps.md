@@ -137,6 +137,14 @@ See the [LSP guide](/guide/lsp/).
 | `git.lazygit` | `<leader>gg` | LazyGit float |
 | `git.diffview` | `<leader>gD` | DiffviewOpen |
 | `git.diffview` | `<leader>gH` | File history |
+| `ai.sidekick` | `<C-.>` | Focus Sidekick CLI |
+| `ai.sidekick` | `<leader>aa` | Toggle Sidekick CLI |
+| `ai.sidekick` | `<leader>as` | Select Sidekick CLI |
+| `ai.sidekick` | `<leader>ad` | Detach Sidekick CLI session |
+| `ai.sidekick` | `<leader>af` | Send file to Sidekick |
+| `ai.sidekick` | `<leader>at` | Send current context to Sidekick |
+| `ai.sidekick` | `<leader>av` | Send visual selection to Sidekick |
+| `ai.sidekick` | `<leader>ap` | Pick Sidekick prompt |
 | `editor.neotree` | `<leader>E` | Toggle Neo-tree |
 | `editor.snacks-explorer` | `<leader>e` | Snacks explorer |
 

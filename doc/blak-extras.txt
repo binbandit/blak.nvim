@@ -53,6 +53,7 @@ editor.telescope
 editor.fzf-lua
 
 ai.copilot
+ai.sidekick
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:
