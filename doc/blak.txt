@@ -62,6 +62,8 @@ COMMANDS                                                 *blak-commands*
 :BlakSplash
     Preview the black-hole splash animation.
 
+See |blak-keymaps| for the matching <Leader>l shortcuts.
+
 CONFIGURATION                                            *blak-config*
 
 Run >

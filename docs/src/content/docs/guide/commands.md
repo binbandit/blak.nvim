@@ -5,6 +5,8 @@ description: Every :Blak command, what it does, and where in the source it lives
 
 Blak's surface area is small. Every command starts with `:Blak`. Every command with a keymap also shows up in `:BlakKeys`.
 
+Most Blak management commands also have `<leader>l*` shortcuts; see [Keymaps](/guide/keymaps/#blak--lazy).
+
 All commands are defined in [`lua/blak/core/commands.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/commands.lua).
 
 ## Core

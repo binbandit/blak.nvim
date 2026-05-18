@@ -38,6 +38,20 @@ assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "<leader>/ grep mapping missing")
 assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal", "<leader>tt terminal mapping missing")
+local blak_keymaps = {
+  ["<leader>lc"] = "Blak config",
+  ["<leader>le"] = "Extras",
+  ["<leader>lk"] = "Blak keymaps",
+  ["<leader>ln"] = "Blak news",
+  ["<leader>lo"] = "Blak overview",
+  ["<leader>ls"] = "Blak splash",
+  ["<leader>lt"] = "Install Blak tools",
+  ["<leader>lT"] = "Install Treesitter parsers",
+  ["<leader>lU"] = "Upgrade Blak",
+}
+for lhs, desc in pairs(blak_keymaps) do
+  assert(vim.fn.maparg(lhs, "n", false, true).desc == desc, lhs .. " mapping missing")
+end
 assert(vim.fn.maparg("-", "n") == "", "Blak should leave native - unmapped")
 local previous_oil = package.loaded.oil
 local called_oil = false

@@ -82,6 +82,10 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 :BlakSplash        preview the black-hole animation
 ```
 
+Most Blak management shortcuts live under `<Space>l`: `<Space>le` opens extras,
+`<Space>lc` opens config, and `<Space>lk` shows registered keymaps. Run
+`:BlakKeys` for the full list.
+
 ## Extras
 
 Extras are opt-in and reversible:

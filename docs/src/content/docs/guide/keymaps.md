@@ -107,10 +107,18 @@ See the [LSP guide](/guide/lsp/).
 | Mapping | Action |
 | --- | --- |
 | `<leader>ll` | `:Lazy` |
+| `<leader>lo` | `:Blak` |
+| `<leader>lc` | `:BlakConfig` |
 | `<leader>lu` | `:BlakUpdate` |
+| `<leader>lU` | `:BlakUpgrade` |
 | `<leader>lr` | `:BlakRollback` |
 | `<leader>ld` | `:BlakDoctor` |
 | `<leader>le` | `:BlakExtras` |
+| `<leader>lk` | `:BlakKeys` |
+| `<leader>ln` | `:BlakNews` |
+| `<leader>ls` | `:BlakSplash` |
+| `<leader>lt` | `:BlakToolsInstall` |
+| `<leader>lT` | `:BlakTreesitterInstall` |
 | `<leader>?` | `:BlakKeys` |
 
 ## Toggles

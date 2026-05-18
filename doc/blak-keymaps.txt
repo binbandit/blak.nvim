@@ -56,10 +56,18 @@ DIAGNOSTICS
 BLAK
   <Space>?         Show Blak keymaps
   <Space>ll        Lazy
+  <Space>lo        Blak overview
+  <Space>lc        Blak config
   <Space>lu        Blak update
+  <Space>lU        Blak upgrade
   <Space>lr        Blak rollback
   <Space>ld        Blak doctor
   <Space>le        Blak extras
+  <Space>lk        Blak keymaps
+  <Space>ln        Blak news
+  <Space>ls        Blak splash
+  <Space>lt        Install Blak tools
+  <Space>lT        Install Treesitter parsers
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:
