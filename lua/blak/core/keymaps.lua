@@ -63,10 +63,9 @@ local function delete_buffer()
   end
 end
 
-local function open_explorer()
-  local oil = require("blak.util").load_plugin("oil.nvim", "oil")
-  if oil then
-    oil.open()
+local function open_explorer(config)
+  return function()
+    require("blak.core.explorer").open(config)
   end
 end
 
@@ -130,7 +129,7 @@ function M.setup(config)
   map("n", "<leader>bn", "<cmd>bnext<cr>", "Next buffer")
   map("n", "<leader>bp", "<cmd>bprevious<cr>", "Previous buffer")
 
-  map("n", "<leader>e", open_explorer, "Explorer")
+  map("n", "<leader>e", open_explorer(config), require("blak.core.explorer").label(config))
 
   map_if_available({ "n", "i", "x", "s" }, "<C-s>", save_buffer, "Save")
   map_if_available({ "n", "i", "x", "s" }, "<D-s>", save_buffer, "Save")

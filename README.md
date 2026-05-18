@@ -89,6 +89,7 @@ Extras are opt-in and reversible:
 :BlakExtras enable lang.typescript
 :BlakExtras enable lang.python
 :BlakExtras enable git.lazygit
+:BlakExtras enable editor.snacks-explorer
 :BlakExtras disable lang.python
 ```
 

@@ -16,6 +16,7 @@ All required.
 | `package` | `table` | See below |
 | `ui` | `table` | See below |
 | `picker` | `table` | See below |
+| `explorer` | `table` | See below |
 | `lsp` | `table` | See below |
 | `extras` | `table` | See below |
 
@@ -41,6 +42,14 @@ Blak config validation failed:
 | `provider` | `string` | `"fff"`, `"snacks"`, `"telescope"`, or `"fzf_lua"` |
 
 Switching providers swaps the implementation behind `:BlakPick` without changing the keymaps. If you want a provider that doesn't exist yet, add it under `lua/blak/providers/picker.lua` and submit a PR.
+
+## `explorer`
+
+| Key | Type | Allowed |
+| --- | --- | --- |
+| `provider` | `string` | `"oil"` or `"snacks"` |
+
+Switching providers swaps the implementation behind `<leader>e` and directory-buffer takeover. The usual path is `:BlakExtras enable editor.snacks-explorer`, which sets this option and enables the Snacks explorer module for you.
 
 ## `extras`
 
@@ -70,7 +79,8 @@ The error message is verbose on purpose:
 Blak config validation failed:
 - package.channel must be stable, edge, or nightly
 - picker.provider must be fff, snacks, telescope, or fzf_lua
+- explorer.provider must be oil or snacks
 - extras.enabled entries must be strings
 ```
 
-Three problems are reported in one pass so you don't fix one and immediately hit the next.
+Multiple problems are reported in one pass so you don't fix one and immediately hit the next.

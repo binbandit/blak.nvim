@@ -23,7 +23,7 @@ return function(config)
       "stevearc/oil.nvim",
       lazy = false,
       opts = {
-        default_file_explorer = true,
+        default_file_explorer = config.explorer.provider == "oil",
         columns = { "icon" },
         delete_to_trash = false,
         skip_confirm_for_simple_edits = true,

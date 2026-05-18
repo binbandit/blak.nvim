@@ -35,6 +35,7 @@ git.lazygit
 git.diffview
 
 editor.neotree
+editor.snacks-explorer
 editor.telescope
 editor.fzf-lua
 

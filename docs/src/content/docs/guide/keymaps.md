@@ -48,7 +48,7 @@ All dispatch through the picker provider — see [Pickers](/guide/pickers/).
 
 | Mapping | Action |
 | --- | --- |
-| `<leader>e` | Oil explorer at the current buffer's directory |
+| `<leader>e` | Configured explorer (Oil by default; Snacks when `editor.snacks-explorer` is enabled) |
 
 Blak leaves Neovim's native `-` motion alone.
 
@@ -121,7 +121,7 @@ See the [LSP guide](/guide/lsp/).
 
 `:BlakFormatToggle!` toggles it globally. See [Formatting](/guide/formatting/).
 
-## Keymaps added by extras
+## Keymaps added or changed by extras
 
 | Extra | Mapping | Action |
 | --- | --- | --- |
@@ -130,10 +130,11 @@ See the [LSP guide](/guide/lsp/).
 | `git.diffview` | `<leader>gD` | DiffviewOpen |
 | `git.diffview` | `<leader>gH` | File history |
 | `editor.neotree` | `<leader>E` | Toggle Neo-tree |
+| `editor.snacks-explorer` | `<leader>e` | Snacks explorer |
 
 ## Design notes
 
 - **No hidden chords.** If a mapping isn't in this page or in `:BlakKeys`, it doesn't exist in Blak core.
 - **Mnemonic grouping.** `<leader>f*` find, `<leader>b*` buffers, `<leader>g*` git, `<leader>c*` code, `<leader>x*` diagnostics, `<leader>l*` Lazy/Blak, `<leader>t*` terminal, `<leader>u*` UI toggles, `<leader>q*` quit.
 - **`map_if_available`.** Keys like `<C-s>` and `<D-s>` are only set when not already mapped — they yield to native bindings or another plugin's claim.
-- **Extras add to this list.** Run `:BlakKeys` to see what your enabled extras have registered.
+- **Extras add to or retarget this list.** Run `:BlakKeys` to see what your enabled extras have registered.

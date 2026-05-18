@@ -49,6 +49,7 @@ lua/blak/
 │   ├── options.lua         vim.opt.* applied at startup
 │   ├── autocmds.lua        Yank highlight, cursor restore, FT close-on-q, …
 │   ├── commands.lua        Every :Blak* user command
+│   ├── explorer.lua        Configured explorer dispatcher
 │   ├── keymaps.lua         All keymaps + :BlakKeys
 │   ├── terminal.lua        Native terminal split used by :BlakTerminal
 │   ├── treesitter.lua      Parser install, FileType activation
@@ -95,6 +96,7 @@ lua/blak/
 │   │   └── copilot.lua
 │   └── editor/
 │       ├── neotree.lua
+│       ├── snacks_explorer.lua
 │       ├── telescope.lua
 │       └── fzf_lua.lua
 │

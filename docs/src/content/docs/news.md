@@ -24,7 +24,7 @@ Initial implementation. Complete enough to install, use, and share — young eno
 - Languages: lua, typescript, python, rust, go, markdown.
 - UI: animations, image-preview, zen.
 - Git: lazygit, diffview.
-- Editor: neotree, telescope, fzf-lua.
+- Editor: neotree, snacks-explorer, telescope, fzf-lua.
 - AI: copilot.
 
 **Distribution**

@@ -15,6 +15,7 @@ return {
       -- "lang.typescript",
       -- "lang.python",
       -- "git.lazygit",
+      -- "editor.snacks-explorer",
       -- "ui.zen",
     },
   },

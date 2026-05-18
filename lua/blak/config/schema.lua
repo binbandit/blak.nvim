@@ -2,6 +2,7 @@ local M = {}
 
 local valid_channels = { stable = true, edge = true, nightly = true }
 local valid_pickers = { fff = true, snacks = true, telescope = true, fzf_lua = true }
+local valid_explorers = { oil = true, snacks = true }
 
 local function kind(value)
   if type(value) ~= "table" then
@@ -26,6 +27,7 @@ function M.validate(config)
   local has_package = expect(errors, "package", config.package, "table")
   expect(errors, "ui", config.ui, "table")
   local has_picker = expect(errors, "picker", config.picker, "table")
+  local has_explorer = expect(errors, "explorer", config.explorer, "table")
   expect(errors, "lsp", config.lsp, "table")
   local has_extras = expect(errors, "extras", config.extras, "table")
 
@@ -35,6 +37,10 @@ function M.validate(config)
 
   if has_picker and not valid_pickers[config.picker.provider] then
     table.insert(errors, "picker.provider must be fff, snacks, telescope, or fzf_lua")
+  end
+
+  if has_explorer and not valid_explorers[config.explorer.provider] then
+    table.insert(errors, "explorer.provider must be oil or snacks")
   end
 
   if has_extras then

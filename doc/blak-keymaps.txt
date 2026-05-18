@@ -21,7 +21,7 @@ SAVE
   <D-s>            Save, where Command-s is forwarded by the UI
 
 EXPLORER
-  <Space>e         Oil explorer at the current buffer's directory
+  <Space>e         Configured explorer (Oil by default)
   Blak leaves Neovim's native - motion alone.
 
 TERMINAL

@@ -192,6 +192,19 @@ GitHub Copilot integration via [zbirenbaum/copilot.lua](https://github.com/zbire
 | Deps | `plenary.nvim`, `mini.icons`, `nui.nvim` |
 | Keymap | `<leader>E` → toggle Neo-tree |
 
+### `editor.snacks-explorer`
+
+[Snacks explorer](https://github.com/folke/snacks.nvim/blob/main/docs/explorer.md) as the configured file explorer.
+
+| Adds | Value |
+| --- | --- |
+| Config | sets `explorer.provider = "snacks"` |
+| Snacks | `explorer.enabled = true` |
+| Mason | `fd` |
+| Keymap | `<leader>e` → Snacks explorer |
+
+Snacks already ships in core for dashboard/input/notifier/picker support, so this extra enables the explorer module instead of adding a new plugin.
+
 ### `editor.telescope`
 
 [nvim-telescope/telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) as the picker backend.

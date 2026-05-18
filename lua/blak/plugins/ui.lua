@@ -24,7 +24,9 @@ return function(config)
                   icon = "󰙅 ",
                   key = "e",
                   desc = "Explorer",
-                  action = ":lua require('oil').open()",
+                  action = function()
+                    require("blak.core.explorer").open(config)
+                  end,
                 },
                 { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
                 { icon = "󰊳 ", key = "d", desc = "Doctor", action = ":BlakDoctor" },
@@ -45,6 +47,9 @@ return function(config)
           indent = { enabled = false },
           scroll = { enabled = false },
         }
+        if config.explorer.provider == "snacks" then
+          opts.explorer = { enabled = true }
+        end
         return vim.tbl_deep_extend("force", opts, config.snacks or {})
       end,
       config = function(_, opts)

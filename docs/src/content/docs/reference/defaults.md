@@ -48,6 +48,10 @@ return {
     provider = "fff", -- fff | snacks | telescope | fzf_lua
   },
 
+  explorer = {
+    provider = "oil", -- oil | snacks
+  },
+
   snacks = {},
 
   treesitter = {

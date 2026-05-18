@@ -43,6 +43,21 @@ return {
 }
 ```
 
+### Switch explorer
+
+```vim
+:BlakExtras enable editor.snacks-explorer
+```
+
+Or set the provider directly if you are already managing Snacks options yourself:
+
+```lua
+return {
+  explorer = { provider = "snacks" }, -- oil | snacks
+  snacks = { explorer = { enabled = true } },
+}
+```
+
 ### Disable the splash animation
 
 ```lua

@@ -27,7 +27,7 @@ Runs [`scripts/validate.py`](https://github.com/binbandit/blak.nvim/blob/main/sc
 ### Output
 
 ```
-Validation passed: 54 Lua files, 15 extras
+Validation passed: 57 Lua files, 16 extras
 ```
 
 On failure, every problem is reported in one pass — fix them in a batch rather than running validate → fix → run → fix.
@@ -61,6 +61,8 @@ assert(vim.fn.exists(":BlakTerminal") == 2, ":BlakTerminal missing")
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep")
 assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal")
 assert(vim.fn.maparg("-", "n") == "")
+assert(require("blak.config").get().explorer.provider == "oil")
+require("blak.core.explorer").open({ explorer = { provider = "snacks" } })
 local lazy_plugins = require("lazy.core.config").plugins
 assert(lazy_plugins["oil.nvim"].lazy == false)
 assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true)
@@ -74,6 +76,7 @@ Translation:
 - Confirm the merged config exists.
 - Confirm lazy.nvim's `:Lazy` command is registered.
 - Confirm Blak's terminal command and core keymaps are registered.
+- Confirm the explorer dispatcher defaults to Oil and can target Snacks.
 - Confirm Oil is eager and owns directory buffers.
 - Run `:checkhealth blak` — any error or warning in the health module shows up in output.
 
