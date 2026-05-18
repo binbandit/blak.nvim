@@ -6,6 +6,9 @@
 ---@alias blak.TerminalProvider "native"|"snacks"
 ---@alias blak.WinBorder "none"|"single"|"double"|"rounded"|"solid"|"shadow"|string
 ---@alias blak.LspFormatMode "never"|"fallback"|"prefer"|"first"|string
+---@alias blak.PluginSpec string|table
+---@alias blak.UserHook fun(config: blak.Config, blak: blak.UserContext)
+---@alias blak.UserConfigLoader blak.UserConfig|fun(config: blak.Config, blak: blak.UserContext): blak.UserConfig?
 
 ---@class blak.UserConfig
 ---@field version? string
@@ -19,6 +22,9 @@
 ---@field picker? blak.PickerConfig
 ---@field explorer? blak.ExplorerConfig
 ---@field terminal? blak.TerminalConfig
+---@field keymaps? blak.KeymapSpec[]
+---@field plugins? blak.PluginConfig
+---@field hooks? blak.HooksConfig
 ---@field ai? blak.AiConfig
 ---@field mini? blak.MiniConfig
 ---@field snacks? table
@@ -30,6 +36,10 @@
 ---@field extras? blak.ExtrasConfig
 
 ---@alias blak.Config blak.UserConfig
+
+---@class blak.UserContext
+---@field defaults blak.Config
+---@field util table
 
 ---@class blak.PackageConfig
 ---@field backend? "lazy"|string
@@ -73,6 +83,24 @@
 ---@class blak.TerminalConfig
 ---@field provider? blak.TerminalProvider
 ---@field toggle_key? string|false
+
+---@class blak.KeymapSpec
+---@field mode? string|string[]
+---@field key? string
+---@field action? string|function|false
+---@field description? string
+---@field disable? boolean
+---@field lhs? string
+---@field rhs? string|function|false
+---@field desc? string
+---@field opts? table
+
+---@class blak.PluginConfig
+---@field specs? blak.PluginSpec[]
+
+---@class blak.HooksConfig
+---@field before? blak.UserHook|blak.UserHook[]
+---@field after? blak.UserHook|blak.UserHook[]
 
 ---@class blak.AiConfig
 ---@field sidekick? blak.SidekickConfig

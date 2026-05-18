@@ -144,9 +144,10 @@ From a shell, the same setup is:
 cp ~/.config/blak/lua/blak/user.example.lua ~/.config/blak/lua/blak/user.lua
 ```
 
-Then edit `lua/blak/user.lua`:
+Then edit `lua/blak/user.lua`. Most customization should stay this small:
 
 ```lua
+---@type blak.UserConfig
 return {
   picker = { provider = "fff" },
   completion = { super_tab = true },
@@ -154,6 +155,33 @@ return {
     enabled = { "lang.typescript", "git.lazygit" },
   },
 }
+```
+
+Custom keymaps registered through `user.lua` require a description and appear in
+`:BlakKeys`. Use `disable = true` when you want Blak to leave one of its default
+mappings unbound.
+
+Personal lazy.nvim specs live under `plugins.specs`:
+
+```lua
+return {
+  plugins = {
+    specs = {
+      { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+    },
+  },
+}
+```
+
+When you need full Lua control, `user.lua` can return a function that receives
+the config table Blak is building before validation:
+
+```lua
+---@param config blak.Config
+return function(config)
+  config.picker.provider = "snacks"
+  table.insert(config.extras.enabled, "lang.typescript")
+end
 ```
 
 When Blak is already running, saving `lua/blak/user.lua` reloads the merged

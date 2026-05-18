@@ -96,6 +96,7 @@ function M.reload(opts)
   local ok, result = pcall(function()
     local config = require("blak.config").reload()
     refresh_runtime(config)
+    require("blak.config").run_hooks(config, "after")
     vim.api.nvim_exec_autocmds("User", {
       pattern = "BlakConfigReloaded",
       modeline = false,

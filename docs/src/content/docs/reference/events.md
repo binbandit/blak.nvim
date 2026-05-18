@@ -3,7 +3,9 @@ title: User events
 description: The User autocmds Blak emits and how to hook them from your config.
 ---
 
-Blak fires user autocmds at well-defined points so your `user.lua` can integrate without monkey-patching internals.
+Blak fires user autocmds at well-defined points so your config can integrate
+without monkey-patching internals. For ordinary `user.lua` tweaks, prefer
+`hooks.after`; use events when external files or plugins need a stable signal.
 
 ## `BlakReady`
 
@@ -59,7 +61,21 @@ vim.api.nvim_create_autocmd("User", {
 })
 ```
 
-Or in an `apply` hook on an [extra](/project/writing-extras/), which runs at config-merge time.
+For the same tweak directly in `user.lua`, use `hooks.after`:
+
+```lua
+return {
+  hooks = {
+    after = function()
+      vim.opt.cursorline = false
+      vim.keymap.set("n", "<leader>oo", "<cmd>Oil .<cr>", { desc = "Oil cwd" })
+    end,
+  },
+}
+```
+
+Or use an `apply` hook on an [extra](/project/writing-extras/), which runs at
+config-merge time.
 
 ## Snacks events Blak reacts to
 

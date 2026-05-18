@@ -53,6 +53,17 @@ return {
     toggle_key = "<leader>tt",
   },
 
+  keymaps = {},
+
+  plugins = {
+    specs = {},
+  },
+
+  hooks = {
+    before = {},
+    after = {},
+  },
+
   ai = {
     sidekick = {
       nes = { enabled = false },

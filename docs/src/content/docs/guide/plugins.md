@@ -3,7 +3,7 @@ title: Plugins
 description: The fourteen plugin specs that ship by default — what they do and why each one is core.
 ---
 
-Blak ships with fourteen default plugin specs out of the box, plus `lazy.nvim` as the package backend. Anything beyond this list is an [extra](/guide/extras/).
+Blak ships with fourteen default plugin specs out of the box, plus `lazy.nvim` as the package backend. Reusable optional behavior belongs in an [extra](/guide/extras/); personal plugins can live in `plugins.specs` in `user.lua`.
 
 All base specs live under [`lua/blak/plugins/`](https://github.com/binbandit/blak.nvim/tree/main/lua/blak/plugins).
 

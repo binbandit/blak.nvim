@@ -22,7 +22,16 @@ end
 local runtime_dir = join(vim.fn.stdpath("state"), "blak-smoke-runtime")
 local user_file = join(runtime_dir, "lua", "blak", "user.lua")
 vim.fn.delete(runtime_dir, "rf")
-write_file(user_file, "return { editor = { relative_number = false }, picker = { provider = 'fff' } }\n")
+write_file(user_file, [[
+return function(config)
+  config.editor.relative_number = false
+  config.picker.provider = "fff"
+  table.insert(config.plugins.specs, { "folke/trouble.nvim", enabled = false })
+  config.hooks.after = function()
+    vim.g.blak_smoke_after_hook = (vim.g.blak_smoke_after_hook or 0) + 1
+  end
+end
+]])
 vim.opt.rtp:prepend(runtime_dir)
 
 vim.g.blak_config = {
@@ -32,7 +41,12 @@ vim.g.blak_config = {
 require("blak").setup()
 vim.opt.rtp:prepend(vim.fn.getcwd())
 assert(require("blak.config").get())
+assert(vim.g.blak_smoke_after_hook == 1, "user.lua after hook did not run during startup")
 assert(require("blak.config").get().editor.relative_number == false, "user.lua was not loaded")
+assert(
+  require("blak.config").get().plugins.specs[1][1] == "folke/trouble.nvim",
+  "user.lua plugin specs were not loaded"
+)
 assert(require("blak.config").get().explorer.provider == "oil", "Oil should be the default explorer provider")
 assert(require("blak.config").get().terminal.provider == "native", "native should be the default terminal provider")
 assert(require("blak.config").get().terminal.toggle_key == "<leader>tt", "<leader>tt should be the default terminal key")
@@ -66,6 +80,19 @@ local terminal_config = vim.tbl_deep_extend("force", {}, require("blak.config").
 require("blak.core.keymaps").setup(terminal_config)
 assert(vim.fn.maparg("<leader>to", "n", false, true).desc == "Terminal", "custom terminal mapping missing")
 assert(vim.fn.maparg("<leader>tt", "n", false, true).desc ~= "Terminal", "old terminal mapping should be removed")
+require("blak.core.keymaps").setup(require("blak.config").get())
+local user_keymaps_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
+  keymaps = {
+    { key = "<leader>/", disable = true },
+    { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Search grep" },
+    { key = "<leader>ff", action = "<cmd>BlakPick recent<cr>", description = "Recent override" },
+  },
+})
+require("blak.config.schema").validate(user_keymaps_config)
+require("blak.core.keymaps").setup(user_keymaps_config)
+assert(vim.fn.maparg("<leader>/", "n") == "", "disabled user keymap should be removed")
+assert(vim.fn.maparg("<leader>sg", "n", false, true).desc == "Search grep", "custom user keymap missing")
+assert(vim.fn.maparg("<leader>ff", "n", false, true).desc == "Recent override", "user keymap override missing")
 require("blak.core.keymaps").setup(require("blak.config").get())
 local blak_keymaps = {
   ["<leader>lc"] = "Blak config",
@@ -226,13 +253,20 @@ vim.api.nvim_create_autocmd("User", {
 })
 vim.cmd.edit(vim.fn.fnameescape(user_file))
 vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-  "return { editor = { relative_number = true }, picker = { provider = 'snacks' } }",
+  "return {",
+  "  editor = { relative_number = true },",
+  "  picker = { provider = 'snacks' },",
+  "  hooks = {",
+  "    after = function() vim.g.blak_smoke_reload_hook = true end,",
+  "  },",
+  "}",
 })
 vim.cmd.write()
 vim.wait(1000, function()
-  return reload_seen and require("blak.config").get().picker.provider == "snacks"
+  return reload_seen and vim.g.blak_smoke_reload_hook and require("blak.config").get().picker.provider == "snacks"
 end)
 assert(reload_seen, "saving user.lua did not emit BlakConfigReloaded")
+assert(vim.g.blak_smoke_reload_hook, "user.lua after hook did not run during reload")
 assert(require("blak.config").get().editor.relative_number == true, "saving user.lua did not reload config")
 assert(require("blak.config").get().picker.provider == "snacks", "saving user.lua did not refresh picker config")
 vim.cmd("checkhealth blak")

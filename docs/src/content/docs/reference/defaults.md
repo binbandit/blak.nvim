@@ -3,7 +3,7 @@ title: Defaults
 description: The full default configuration as it ships, in one place.
 ---
 
-This is the canonical default config. It lives at `lua/blak/config/defaults.lua` in the repo. Anything you put in `user.lua` is deep-merged on top of these values.
+This is the canonical default config. It lives at `lua/blak/config/defaults.lua` in the repo. Table-form `user.lua` values are deep-merged on top of these defaults; function-form `user.lua` receives the config table Blak is building.
 
 ```lua
 return {
@@ -59,6 +59,17 @@ return {
   terminal = {
     provider = "native", -- native | snacks
     toggle_key = "<leader>tt",
+  },
+
+  keymaps = {},
+
+  plugins = {
+    specs = {},
+  },
+
+  hooks = {
+    before = {},
+    after = {},
   },
 
   ai = {

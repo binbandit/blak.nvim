@@ -23,6 +23,7 @@ function M.specs(config)
     append(specs, require(module)(config))
   end
   append(specs, config._extra_plugin_specs or {})
+  append(specs, vim.tbl_get(config, "plugins", "specs") or {})
   return specs
 end
 

@@ -19,6 +19,9 @@ All required.
 | `picker` | `table` | See below |
 | `explorer` | `table` | See below |
 | `terminal` | `table` | See below |
+| `keymaps` | `table` | List of user keymap specs |
+| `plugins` | `table` | Personal lazy.nvim specs |
+| `hooks` | `table` | Lua hooks for pre-validation and post-setup customization |
 | `ai` | `table` | See below |
 | `mini` | `table` | See below |
 | `lsp` | `table` | See below |
@@ -70,7 +73,7 @@ Switching providers swaps the implementation behind `<leader>e` and directory-bu
 | Key | Type | Allowed |
 | --- | --- | --- |
 | `provider` | `string` | `"native"` or `"snacks"` |
-| `toggle_key` | `string` or `false` | Any key lhs accepted by `vim.keymap.set()`, or `false` to skip the keymap |
+| `toggle_key` | `string` or `false` | Any key accepted by `vim.keymap.set()`, or `false` to skip the keymap |
 
 The usual path for Snacks terminal is `:BlakExtras enable editor.snacks-terminal`,
 which sets `terminal.provider = "snacks"` and enables the Snacks terminal module
@@ -84,6 +87,76 @@ return {
   },
 }
 ```
+
+## `keymaps`
+
+`keymaps` is a list of user mappings applied after core and enabled extras.
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `mode` | `string` or `string[]` | Optional; defaults to `"n"` |
+| `key` | `string` | Required key to map |
+| `action` | `string`, `function`, or `false` | Required action; `false` disables this key |
+| `description` | `string` | Required for active mappings so `:BlakKeys` can show it |
+| `disable` | `boolean` | Set `true` to remove this key from Blak |
+| `opts` | `table` | Optional `vim.keymap.set()` options |
+
+```lua
+return {
+  keymaps = {
+    { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+    { key = "<leader>/", disable = true },
+  },
+}
+```
+
+To move a default action, disable the old key and add the new one.
+This keeps user muscle memory explicit without hiding mappings from
+`:BlakKeys`.
+
+Blak still accepts `lhs`, `rhs`, and `desc` as aliases for users already
+familiar with Vim terminology, but the documented `user.lua` shape uses the
+more direct names above.
+
+## `plugins`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `specs` | `table` | List of lazy.nvim specs appended after Blak core and enabled extras |
+
+```lua
+return {
+  plugins = {
+    specs = {
+      { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+    },
+  },
+}
+```
+
+Use this for personal plugins. If the behavior is broadly useful and
+reversible, prefer a documented extra so other users can enable and disable it
+through `:BlakExtras`.
+
+## `hooks`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `before` | `function` or `function[]` | Runs after merge, before validation and extras |
+| `after` | `function` or `function[]` | Runs after startup and after successful `user.lua` reloads |
+
+```lua
+return {
+  hooks = {
+    after = function(config)
+      vim.opt.cursorline = false
+    end,
+  },
+}
+```
+
+Hooks receive `(config, blak)`. `config` is the merged Blak config table, and
+`blak.util` is available on the second argument.
 
 ## `ai`
 
@@ -138,13 +211,23 @@ The runtime warning gives you a chance to keep using your config after renaming 
 
 ## Deep merge semantics
 
-`user.lua` returns a table that is **deep-merged** into the defaults via `vim.tbl_deep_extend("force", defaults, user)`:
+The simple `user.lua` form returns a table that is **deep-merged** into the
+defaults via `vim.tbl_deep_extend("force", defaults, user)`:
 
 - Scalars in your table replace defaults.
 - Tables are merged key by key.
 - **Lists are replaced wholesale.** If you write `treesitter = { ensure_installed = { "rust" } }`, you lose the entire default list.
 
-To extend the default list instead, copy it from [the defaults page](/reference/defaults/) and add your entries — or use an extra, which is designed exactly for this use case.
+To append to default lists, use an extra or return a function:
+
+```lua
+return function(config)
+  table.insert(config.treesitter.ensure_installed, "rust")
+end
+```
+
+The function form receives the config table Blak is building. Mutate it in
+place and return nothing, or return a table of final overrides.
 
 ## Error handling
 

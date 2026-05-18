@@ -1,55 +1,46 @@
 ---
 title: Customize
-description: A user.lua override file is the entire customization surface.
+description: Simple user.lua config first, full Lua control when you need it.
 ---
 
-Blak's customization model is intentionally small. There is **one place** to override defaults — `lua/blak/user.lua` — and one command to manage optional modules — `:BlakExtras`.
-
-## The user.lua override
-
-Open the file from Blak:
+Blak has one config file and one optional-module command:
 
 ```vim
 :BlakConfig
+:BlakExtras
 ```
 
-That creates `lua/blak/user.lua` from the example when it does not exist yet.
-From a shell, you can do the same thing manually:
+`:BlakConfig` opens `lua/blak/user.lua`. If it does not exist yet, Blak creates
+it from a small example. From a shell, the same setup is:
 
 ```sh
 cp ~/.config/blak/lua/blak/user.example.lua ~/.config/blak/lua/blak/user.lua
 ```
 
-Then edit it. The file returns a table that is deep-merged into the defaults:
+## The easy path
+
+Most customization should be this boring:
 
 ```lua
 ---@type blak.UserConfig
 return {
   picker = { provider = "fff" },
   completion = { super_tab = true },
-  ui = {
-    splash = {
-      enabled = true,
-      animate = true,
-      loop = true,
-    },
-  },
-  extras = {
-    enabled = { "lang.typescript", "git.lazygit" },
-  },
+  terminal = { toggle_key = "<C-/>" },
+  extras = { enabled = { "lang.typescript", "git.lazygit" } },
 }
 ```
 
-`user.lua` is gitignored by default so your local changes stay local. Use `:BlakConfig` when you want the direct route; Blak also ships picker ignore metadata so file tools can still find an existing config.
+That table is deep-merged into Blak's defaults. You only keep the keys you want
+to change, and the `---@type blak.UserConfig` annotation gives `lua_ls`
+completion for Blak config keys.
 
-The `---@type blak.UserConfig` annotation lets `lua_ls` complete Blak config keys
-from the type definitions shipped with the runtime. Blak's default `lua_ls`
-setup adds Neovim runtime files to the workspace library, so the annotation
-works without extra editor setup.
+`user.lua` is gitignored by default so your local setup stays local. Blak also
+ships picker ignore metadata so file tools can still find the file.
 
-## Override patterns
+## Common changes
 
-### Switch picker
+Switch picker:
 
 ```lua
 return {
@@ -57,59 +48,37 @@ return {
 }
 ```
 
-### Switch explorer
+Switch explorer:
 
 ```vim
 :BlakExtras enable editor.snacks-explorer
 ```
 
-Or set the provider directly if you are already managing Snacks options yourself:
+Or set the provider directly if you are already managing Snacks options:
 
 ```lua
 return {
-  explorer = { provider = "snacks" }, -- oil | snacks
+  explorer = { provider = "snacks" },
   snacks = { explorer = { enabled = true } },
 }
 ```
 
-### Switch terminal
-
-```vim
-:BlakExtras enable editor.snacks-terminal
-```
-
-Change the toggle key without changing providers:
+Add or override keymaps:
 
 ```lua
 return {
-  terminal = {
-    toggle_key = "<C-/>",
+  keymaps = {
+    { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+    { key = "<leader>/", disable = true },
   },
 }
 ```
 
-### Use SuperTab completion
+Every active mapping needs `description` so it appears in `:BlakKeys`. Use
+`disable = true` to remove one of Blak's default mappings before adding your
+replacement.
 
-```lua
-return {
-  completion = { super_tab = true },
-}
-```
-
-This keeps `blink.cmp` as the completion engine and switches to its
-SuperTab-style keymap preset where Blak can delegate that behavior.
-
-### Disable the splash animation
-
-```lua
-return {
-  ui = {
-    splash = { animate = false }, -- or { enabled = false } to remove entirely
-  },
-}
-```
-
-### Add Mason tools or treesitter parsers
+Add Mason tools or Treesitter parsers:
 
 ```lua
 return {
@@ -122,7 +91,7 @@ return {
 }
 ```
 
-### Tune LSP diagnostics
+Tune LSP diagnostics:
 
 ```lua
 return {
@@ -135,22 +104,89 @@ return {
 }
 ```
 
-See the [config schema](/reference/schema/) for the full list of valid keys and the [defaults reference](/reference/defaults/) for what you're overriding.
+## Personal plugins
 
-## Extras over config
+Use `plugins.specs` for personal lazy.nvim specs that do not belong in Blak
+core or a reusable extra:
 
-If you find yourself adding plugins inside `user.lua`, consider whether it should be an extra instead:
-
-```vim
-:BlakExtras
-:BlakExtras enable lang.python
-:BlakExtras disable git.lazygit
+```lua
+return {
+  plugins = {
+    specs = {
+      { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+    },
+  },
+}
 ```
 
-State is stored in `stdpath('state')/blak/extras.json`, not in the repo. A fresh clone with the same `NVIM_APPNAME` reuses that state; a fresh install under a new `NVIM_APPNAME` starts from your config defaults.
+Blak appends these specs after core and enabled extras, so you can also use
+them to tune or disable a default plugin through normal lazy.nvim spec rules.
 
-Need an extra that doesn't exist yet? See the [Contributing guide](/contributing/#adding-an-extra) — they're small and self-contained.
+If the plugin is a broadly useful, reversible feature, consider writing an
+[extra](/project/writing-extras/) instead. Extras are the shareable path;
+`plugins.specs` is the personal path.
+
+## Lua hooks
+
+Use hooks when a setting is clearer as code than as config:
+
+```lua
+return {
+  hooks = {
+    after = function(config)
+      vim.opt.cursorline = false
+    end,
+  },
+}
+```
+
+`hooks.before` runs after Blak merges defaults, globals, `user.lua`, and
+`setup(opts)`, but before validation and extras apply. Use it to adjust the
+merged config before Blak consumes it.
+
+`hooks.after` runs after Blak finishes setup and after each successful
+`user.lua` reload. If you create autocmds there, use your own augroup with
+`clear = true` so reloads stay clean.
+
+## Full control form
+
+When a table starts fighting you, return a function instead. Blak passes the
+config table it is building directly:
+
+```lua
+---@param config blak.Config
+---@param blak blak.UserContext
+return function(config, blak)
+  config.picker.provider = "snacks"
+  table.insert(config.extras.enabled, "lang.typescript")
+  table.insert(config.plugins.specs, { "folke/trouble.nvim", cmd = "Trouble", opts = {} })
+
+  config.hooks.after = function()
+    vim.opt.cursorline = false
+  end
+end
+```
+
+This is still plain Lua. There is no Blak-specific DSL: `config` starts with
+Blak defaults plus `vim.g.blak_config`, then Blak applies any `setup(opts)`,
+validates, and applies extras. `blak.util` is available on the second argument
+for path, file, notification, and safe-require helpers.
+
+## Merge semantics
+
+Blak deep-merges config tables via `vim.tbl_deep_extend("force", defaults, user)`.
+
+- Scalars in your table replace defaults.
+- Tables are merged key by key.
+- Lists are replaced by index, so prefer extras or the function form when you
+  want to append to defaults.
+
+See the [config schema](/reference/schema/) for valid keys and the
+[defaults reference](/reference/defaults/) for what you are overriding.
 
 ## When to fork
 
-The fork test is simple: if you want to change the *contract* — different picker by default, different completion engine, custom splash — fork. If you want to change *your* setup, use `user.lua` or an extra.
+Fork when you want to change Blak's public contract for everyone: a different
+default picker, completion engine, explorer strategy, splash, or upgrade path.
+Use `user.lua`, `plugins.specs`, hooks, or an extra when you want to change your
+own setup.

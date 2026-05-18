@@ -20,6 +20,7 @@ function M.setup(opts)
     require("blak.core.update").setup(config)
     require("blak.splash").setup(config)
     require("blak.lazy").setup(config)
+    require("blak.config").run_hooks(config, "after")
 
     vim.api.nvim_exec_autocmds("User", { pattern = "BlakReady", modeline = false })
   end)

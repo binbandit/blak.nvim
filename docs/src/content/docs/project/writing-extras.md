@@ -11,7 +11,7 @@ Use the [philosophy](/guide/philosophy/) rules:
 
 - **Most users benefit?** → core (`lua/blak/plugins/` or `lua/blak/core/`).
 - **Some users benefit, and the cost of carrying it is non-zero?** → extra.
-- **Just personal taste?** → your own `user.lua`.
+- **Just personal taste?** → your own `user.lua` or `plugins.specs`.
 
 ## Anatomy
 

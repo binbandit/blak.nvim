@@ -14,7 +14,7 @@ COMMANDS                                                 *blak-commands*
     Run |:checkhealth| for Blak.
 
 :BlakKeys
-    Show keymaps registered by Blak core and enabled extras.
+    Show keymaps registered by Blak core, enabled extras, and user.lua.
 
 :BlakNews
     Open the Blak release notes.
@@ -73,12 +73,30 @@ or copy >
   lua/blak/user.example.lua
 < to >
   lua/blak/user.lua
-< and return a table of overrides.
+< and return a table of overrides, or a function for full Lua control.
 
 For example, to use SuperTab-style completion where Blak can delegate to the
 completion engine: >
   return { completion = { super_tab = true } }
 <
+Personal lazy.nvim specs can be added under plugins.specs: >
+  return {
+    plugins = {
+      specs = {
+        { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+      },
+    },
+  }
+<
+For full Lua control, return a function. Blak passes the config table it is
+building before validation and extras apply: >
+  return function(config)
+    config.picker.provider = "snacks"
+    table.insert(config.extras.enabled, "lang.typescript")
+  end
+<
+Use hooks.after for Lua that should run after Blak setup and after successful
+user.lua reloads.
 
 Saving lua/blak/user.lua while Blak is running reloads the merged config and
 refreshes the current session. Run :BlakExtras sync or :Lazy sync after adding

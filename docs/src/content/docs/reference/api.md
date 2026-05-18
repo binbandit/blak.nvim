@@ -40,6 +40,22 @@ Clears the cached `blak.user` module, reapplies the original setup opts, and
 returns the refreshed merged config. Blak calls this automatically when
 `lua/blak/user.lua` changes.
 
+### `run_hooks(config, phase)`
+
+Runs `hooks.before` or `hooks.after` from a config table. Blak calls
+`hooks.before` during config build and `hooks.after` after startup/reload, so
+most users should set hooks in `user.lua` instead of calling this directly:
+
+```lua
+return {
+  hooks = {
+    after = function(config)
+      vim.opt.cursorline = false
+    end,
+  },
+}
+```
+
 ## `require("blak.util")`
 
 A grab bag of helpers Blak's own modules use. Stable enough for your config.

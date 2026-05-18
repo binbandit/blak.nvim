@@ -1,14 +1,10 @@
--- Copy this file to lua/blak/user.lua and edit it.
--- Returning a table keeps your local changes small and easy to review.
+-- This file is yours. Keep only the values you want to change.
+-- Run :BlakExtras to enable optional language, UI, Git, AI, and editor modules.
 
 ---@type blak.UserConfig
 return {
-  package = {
-    channel = "stable", -- stable | edge | nightly
-  },
-
   picker = {
-    provider = "fff",
+    provider = "fff", -- fff | snacks | telescope | fzf_lua
   },
 
   completion = {
@@ -16,63 +12,46 @@ return {
   },
 
   terminal = {
-    toggle_key = "<leader>tt",
-  },
-
-  ai = {
-    sidekick = {
-      nes = { enabled = false },
-      -- cli = { mux = { enabled = true, backend = "tmux" } },
-    },
-  },
-
-  mini = {
-    modules = {
-      -- "ai",
-      -- "surround",
-      -- "pairs",
-      -- "splitjoin",
-    },
-    opts = {
-      -- surround = { n_lines = 80 },
-    },
+    toggle_key = "<leader>tt", -- false disables the terminal mapping
   },
 
   extras = {
     enabled = {
-      -- Languages
-      -- "lang.lua",
       -- "lang.typescript",
-      -- "lang.typescript-tsgo",
-      -- "lang.python",
-      -- "lang.rust",
-      -- "lang.go",
-      -- "lang.markdown",
-
-      -- UI
-      -- "ui.animations",
-      -- "ui.base46",
-      -- "ui.comfy-line-numbers",
-      -- "ui.dim",
-      -- "ui.image-preview",
-      -- "ui.lualine",
-      -- "ui.zen",
-
-      -- Git
       -- "git.lazygit",
-      -- "git.diffview",
+    },
+  },
 
-      -- AI
-      -- "ai.copilot",
-      -- "ai.sidekick",
+  keymaps = {
+    -- Every active mapping needs a description so it appears in :BlakKeys.
+    -- { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+    -- { key = "<leader>/", disable = true },
+  },
 
-      -- Editor
-      -- "editor.mini",
-      -- "editor.neotree",
-      -- "editor.snacks-explorer",
-      -- "editor.snacks-terminal",
-      -- "editor.telescope",
-      -- "editor.fzf-lua",
+  plugins = {
+    specs = {
+      -- Add lazy.nvim specs here when a personal plugin is not a Blak extra.
+      -- { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+    },
+  },
+
+  hooks = {
+    after = {
+      -- Runs after Blak finishes setup and after each successful user.lua reload.
+      -- function(config)
+      --   vim.opt.cursorline = false
+      -- end,
     },
   },
 }
+
+-- Advanced: own the config table directly instead of returning a table.
+-- Remove the table above and use this form when you want full Lua control:
+--
+-- ---@param config blak.Config
+-- ---@param blak blak.UserContext
+-- return function(config, blak)
+--   config.picker.provider = "snacks"
+--   table.insert(config.extras.enabled, "lang.typescript")
+--   table.insert(config.plugins.specs, { "folke/trouble.nvim", cmd = "Trouble", opts = {} })
+-- end
