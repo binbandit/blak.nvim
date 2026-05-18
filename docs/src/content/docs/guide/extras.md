@@ -247,7 +247,7 @@ GitHub Copilot integration via [zbirenbaum/copilot.lua](https://github.com/zbire
 | --- | --- |
 | Config | sets `explorer.provider = "snacks"` |
 | Snacks | `explorer.enabled = true` |
-| Mason | `fd` |
+| Binary | `fd` on `$PATH` for fast file discovery |
 | Keymap | `<leader>e` → Snacks explorer |
 
 Snacks already ships in core for dashboard/input/notifier/picker support, so this extra enables the explorer module instead of adding a new plugin.

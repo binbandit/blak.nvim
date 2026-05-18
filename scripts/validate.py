@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 LUA = sorted(ROOT.rglob("*.lua"))
 REQUIRE_RE = re.compile(r"require\(['\"](blak(?:\.[A-Za-z0-9_\-]+)*)['\"]\)")
 ID_RE = re.compile(r"id\s*=\s*['\"]([^'\"]+)['\"]")
+MASON_LIST_RE = re.compile(r"\bmason\s*=\s*\{([^}]*)\}", re.S)
+LUA_STRING_RE = re.compile(r"['\"]([^'\"]+)['\"]")
 KEYWORD_RE = re.compile(r"\b(function|if|for|while|repeat|do|end|until)\b")
 DOCS_LINK_RE = re.compile(
     r"\]\(/blak\.nvim/([^)\s#]*)(?:#[^) \t]*)?\)"
@@ -243,6 +245,22 @@ def check_docs_links() -> list[str]:
     return errors
 
 
+def check_extra_mason_lists() -> list[str]:
+    path_tools = {"fd", "git", "rg"}
+    errors: list[str] = []
+    for path in (ROOT / "lua" / "blak" / "extras").rglob("*.lua"):
+        if path.name in {"init.lua", "state.lua"}:
+            continue
+        text = path.read_text(encoding="utf-8")
+        for match in MASON_LIST_RE.finditer(text):
+            for package in LUA_STRING_RE.findall(match.group(1)):
+                if package in path_tools:
+                    errors.append(
+                        f"{path.relative_to(ROOT)}: {package!r} is a PATH binary, not a Blak-managed Mason package"
+                    )
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -274,6 +292,7 @@ def main() -> int:
 
     errors.extend(check_blackhole_frames())
     errors.extend(check_docs_links())
+    errors.extend(check_extra_mason_lists())
 
     for rel in [
         "README.md",
