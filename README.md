@@ -97,7 +97,11 @@ Extras are opt-in and reversible:
 :BlakExtras enable lang.python
 :BlakExtras enable git.lazygit
 :BlakExtras enable ui.base46
+:BlakExtras enable ui.comfy-line-numbers
+:BlakExtras enable ui.dim
 :BlakExtras enable ui.lualine
+:BlakExtras enable ai.sidekick
+:BlakExtras enable editor.mini
 :BlakExtras enable editor.snacks-explorer
 :BlakExtras enable editor.snacks-terminal
 :BlakExtras disable lang.python
@@ -115,8 +119,8 @@ State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Enablin
 Default vs. optional is deliberate:
 
 - Language stacks are extras because most users do not need every server, formatter, linter, and parser.
-- Alternative pickers and explorers are extras because they replace muscle-memory surfaces.
-- LazyGit, Diffview, Copilot, Snacks terminal, image preview, theme collections, statuslines, zen mode, and animations are extras because they are valuable but preference-heavy.
+- Alternative pickers, explorers, and Mini modules are extras because they replace or add muscle-memory surfaces.
+- LazyGit, Diffview, Copilot, Sidekick, Snacks terminal, comfy line numbers, image preview, theme collections, statuslines, dimming, zen mode, and animations are extras because they are valuable but preference-heavy.
 
 ## Customization
 
@@ -138,6 +142,7 @@ Then edit `lua/blak/user.lua`:
 ```lua
 return {
   picker = { provider = "fff" },
+  completion = { super_tab = true },
   extras = {
     enabled = { "lang.typescript", "git.lazygit" },
   },

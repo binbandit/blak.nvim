@@ -11,6 +11,10 @@ return {
     provider = "fff",
   },
 
+  completion = {
+    super_tab = false,
+  },
+
   terminal = {
     toggle_key = "<leader>tt",
   },
@@ -19,6 +23,18 @@ return {
     sidekick = {
       nes = { enabled = false },
       -- cli = { mux = { enabled = true, backend = "tmux" } },
+    },
+  },
+
+  mini = {
+    modules = {
+      -- "ai",
+      -- "surround",
+      -- "pairs",
+      -- "splitjoin",
+    },
+    opts = {
+      -- surround = { n_lines = 80 },
     },
   },
 
@@ -36,6 +52,8 @@ return {
       -- UI
       -- "ui.animations",
       -- "ui.base46",
+      -- "ui.comfy-line-numbers",
+      -- "ui.dim",
       -- "ui.image-preview",
       -- "ui.lualine",
       -- "ui.zen",
@@ -49,6 +67,7 @@ return {
       -- "ai.sidekick",
 
       -- Editor
+      -- "editor.mini",
       -- "editor.neotree",
       -- "editor.snacks-explorer",
       -- "editor.snacks-terminal",

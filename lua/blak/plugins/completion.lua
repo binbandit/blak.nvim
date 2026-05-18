@@ -1,12 +1,13 @@
 return function(config)
   local stable = config.package.channel == "stable"
+  local keymap_preset = config.completion.super_tab and "super-tab" or "default"
   local spec = {
     "saghen/blink.cmp",
     event = { "InsertEnter", "CmdlineEnter" },
     version = stable and "1.*" or false,
     opts_extend = { "sources.default" },
     opts = {
-      keymap = { preset = "default" },
+      keymap = { preset = keymap_preset },
       appearance = {
         nerd_font_variant = "mono",
       },

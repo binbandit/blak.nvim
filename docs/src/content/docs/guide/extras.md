@@ -64,10 +64,10 @@ configuration examples, install notes, and verification path.
 | Group | Extras |
 | --- | --- |
 | Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/) |
-| UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
+| UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
 | Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/) |
 | AI | [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/) |
-| Editor | [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
+| Editor | [`editor.mini`](/extras/editor/mini/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
 
@@ -175,6 +175,28 @@ Smooth scroll and cursor animations via Snacks.
 | Plugin | `AvengeMedia/base46` |
 
 Enable the extra, sync plugins, then set `ui.colorscheme` to a Base46 scheme such as `base46-gruvchad`.
+
+### `ui.comfy-line-numbers`
+
+[mluders/comfy-line-numbers.nvim](https://github.com/mluders/comfy-line-numbers.nvim) shows relative line labels using left-hand digits and maps those labels back to vertical motions.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `mluders/comfy-line-numbers.nvim` |
+| Keymap | label + `j` or `k` motions |
+| Keymap | label + `<Down>` or `<Up>` motions |
+
+Enable the extra, sync plugins, then use the displayed labels with `j`, `k`, `<Down>`, or `<Up>`. For example, `11j` and `11<Down>` both move to the line whose comfy label is `11`.
+
+### `ui.dim`
+
+[Snacks dim](https://github.com/folke/snacks.nvim/blob/main/docs/dim.md) highlights the active scope by dimming the surrounding lines.
+
+| Adds | Value |
+| --- | --- |
+| Snacks | `dim.enabled = true` |
+
+Snacks already ships in core, so this extra enables the dim module without adding a plugin spec.
 
 ### `ui.image-preview`
 
@@ -303,6 +325,18 @@ return {
 > Never enabled by default. Disable it, restart Blak, then run `:BlakExtras sync` to remove the plugin spec.
 
 ## Editor
+
+### `editor.mini`
+
+[nvim-mini](https://github.com/nvim-mini/mini.nvim) modules as opt-in editor pieces.
+
+| Adds | Value |
+| --- | --- |
+| Plugins | one `nvim-mini/mini.<module>` spec for each configured `mini.modules` entry |
+| Config | calls `require("mini.<module>").setup(mini.opts.<module> or {})` |
+
+This extra does not enable any Mini module by default. Put the modules you want
+in `mini.modules`, enable `editor.mini`, then run `:BlakExtras sync`.
 
 ### `editor.neotree`
 

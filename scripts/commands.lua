@@ -170,7 +170,9 @@ local function main()
   vim.fn.delete(user_file)
   run("BlakConfig", "BlakConfig")
   assert(vim.api.nvim_buf_get_name(0) == user_file, "BlakConfig did not edit lua/blak/user.lua")
-  assert_contains(":BlakConfig", util.read_file(user_file) or "", "return")
+  local user_config = util.read_file(user_file) or ""
+  assert_contains(":BlakConfig", user_config, "return")
+  assert_contains(":BlakConfig", user_config, "blak.UserConfig")
   wipe_current()
 
   package.loaded["blak.providers.picker.fff"] = nil

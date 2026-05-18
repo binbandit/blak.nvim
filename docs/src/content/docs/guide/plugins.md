@@ -59,7 +59,7 @@ See [Pickers](/guide/pickers/) for swapping the backend.
 
 ### blink.cmp (`saghen/blink.cmp`)
 
-Native completion engine. On the `stable` channel it pins to the `1.*` release; on `edge`/`nightly` it builds from source via `cargo build --release`. Provides LSP, path, snippet, and buffer sources. Ghost text on, documentation auto-show at 250 ms, auto-brackets, rounded borders. Spec: [`lua/blak/plugins/completion.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/completion.lua).
+Native completion engine. On the `stable` channel it pins to the `1.*` release; on `edge`/`nightly` it builds from source via `cargo build --release`. Provides LSP, path, snippet, and buffer sources. Ghost text on, documentation auto-show at 250 ms, auto-brackets, rounded borders. The default keymap preset stays `default`; set `completion.super_tab = true` to use blink.cmp's `super-tab` preset. Spec: [`lua/blak/plugins/completion.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/completion.lua).
 
 ## LSP
 

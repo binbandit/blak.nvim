@@ -1,3 +1,16 @@
+local function enable_manual_snacks(opts)
+  for _, name in ipairs({ "dim" }) do
+    if vim.tbl_get(opts, name, "enabled") then
+      local ok, module = pcall(function()
+        return require("snacks")[name]
+      end)
+      if ok and module.enable then
+        pcall(module.enable)
+      end
+    end
+  end
+end
+
 return function(config)
   return {
     {
@@ -55,6 +68,7 @@ return function(config)
       end,
       config = function(_, opts)
         require("snacks").setup(opts)
+        enable_manual_snacks(opts)
         require("blak.splash").attach_to_snacks(config)
       end,
     },

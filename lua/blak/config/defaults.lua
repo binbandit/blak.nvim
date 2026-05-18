@@ -31,6 +31,10 @@ return {
     expandtab = true,
   },
 
+  completion = {
+    super_tab = false,
+  },
+
   performance = {
     bigfile_size = 1.5 * 1024 * 1024,
     max_treesitter_lines = 10000,
@@ -53,6 +57,11 @@ return {
     sidekick = {
       nes = { enabled = false },
     },
+  },
+
+  mini = {
+    modules = {},
+    opts = {},
   },
 
   snacks = {},

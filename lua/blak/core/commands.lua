@@ -39,7 +39,7 @@ local function create_user_config(path)
     end
   end
 
-  util.write_file(path, "return {}\n")
+  util.write_file(path, "---@type blak.UserConfig\nreturn {}\n")
   return true
 end
 

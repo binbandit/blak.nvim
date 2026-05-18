@@ -136,6 +136,8 @@ See the [LSP guide](/guide/lsp/).
 
 | Extra | Mapping | Action |
 | --- | --- | --- |
+| `ui.comfy-line-numbers` | label + `j` / `k` | Comfy vertical motions |
+| `ui.comfy-line-numbers` | label + `<Down>` / `<Up>` | Comfy vertical motions |
 | `ui.zen` | `<leader>uz` | Zen mode |
 | `git.lazygit` | `<leader>gg` | LazyGit float |
 | `git.diffview` | `<leader>gD` | DiffviewOpen |

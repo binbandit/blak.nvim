@@ -26,6 +26,7 @@ Then edit it. The file returns a table that is deep-merged into the defaults:
 ---@type blak.UserConfig
 return {
   picker = { provider = "fff" },
+  completion = { super_tab = true },
   ui = {
     splash = {
       enabled = true,
@@ -86,6 +87,17 @@ return {
   },
 }
 ```
+
+### Use SuperTab completion
+
+```lua
+return {
+  completion = { super_tab = true },
+}
+```
+
+This keeps `blink.cmp` as the completion engine and switches to its
+SuperTab-style keymap preset where Blak can delegate that behavior.
 
 ### Disable the splash animation
 

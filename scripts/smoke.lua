@@ -36,6 +36,14 @@ assert(require("blak.config").get().editor.relative_number == false, "user.lua w
 assert(require("blak.config").get().explorer.provider == "oil", "Oil should be the default explorer provider")
 assert(require("blak.config").get().terminal.provider == "native", "native should be the default terminal provider")
 assert(require("blak.config").get().terminal.toggle_key == "<leader>tt", "<leader>tt should be the default terminal key")
+assert(require("blak.config").get().completion.super_tab == false, "SuperTab should be opt-in")
+local completion_specs = require("blak.plugins.completion")(require("blak.config").get())
+assert(completion_specs[1].opts.keymap.preset == "default", "default completion keymap preset should be unchanged")
+local super_tab_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
+  completion = { super_tab = true },
+})
+completion_specs = require("blak.plugins.completion")(super_tab_config)
+assert(completion_specs[1].opts.keymap.preset == "super-tab", "SuperTab config should use blink.cmp super-tab")
 assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "<leader>/ grep mapping missing")
@@ -108,6 +116,15 @@ local extra_config = vim.deepcopy(require("blak.config.defaults"))
 require("blak.extras").apply_one(extra_config, "editor.snacks-terminal")
 assert(extra_config.terminal.provider == "snacks", "snacks terminal extra did not set terminal provider")
 assert(vim.tbl_get(extra_config, "snacks", "terminal", "enabled") == true, "snacks terminal extra did not enable Snacks terminal")
+local mini_config = vim.deepcopy(require("blak.config.defaults"))
+mini_config.mini.modules = { "ai", "mini.surround", "ai", "icons" }
+mini_config.mini.opts = { surround = { n_lines = 80 } }
+require("blak.extras").apply_one(mini_config, "editor.mini")
+local mini_specs = mini_config._extra_plugin_specs or {}
+assert(#mini_specs == 2, "mini extra should create one spec per unique configured module and skip mini.icons")
+assert(mini_specs[1][1] == "nvim-mini/mini.ai", "mini extra missed mini.ai spec")
+assert(mini_specs[2][1] == "nvim-mini/mini.surround", "mini extra missed mini.surround spec")
+assert(vim.tbl_get(mini_specs[2], "opts", "n_lines") == 80, "mini extra did not pass module opts")
 local splash = require("blak.splash")
 local splash_data = require("blak.splash.frames.blackhole")
 local splash_buf = vim.api.nvim_create_buf(false, true)

@@ -4,6 +4,7 @@ local valid_channels = { stable = true, edge = true, nightly = true }
 local valid_pickers = { fff = true, snacks = true, telescope = true, fzf_lua = true }
 local valid_explorers = { oil = true, snacks = true }
 local valid_terminals = { native = true, snacks = true }
+local valid_mini_module = "^[%w_%-]+$"
 
 local function kind(value)
   if type(value) ~= "table" then
@@ -27,10 +28,12 @@ function M.validate(config)
   expect(errors, "localleader", config.localleader, "string")
   local has_package = expect(errors, "package", config.package, "table")
   expect(errors, "ui", config.ui, "table")
+  local has_completion = expect(errors, "completion", config.completion, "table")
   local has_picker = expect(errors, "picker", config.picker, "table")
   local has_explorer = expect(errors, "explorer", config.explorer, "table")
   local has_terminal = expect(errors, "terminal", config.terminal, "table")
   local has_ai = expect(errors, "ai", config.ai, "table")
+  local has_mini = expect(errors, "mini", config.mini, "table")
   expect(errors, "lsp", config.lsp, "table")
   local has_extras = expect(errors, "extras", config.extras, "table")
 
@@ -40,6 +43,10 @@ function M.validate(config)
 
   if has_picker and not valid_pickers[config.picker.provider] then
     table.insert(errors, "picker.provider must be fff, snacks, telescope, or fzf_lua")
+  end
+
+  if has_completion and config.completion.super_tab ~= nil then
+    expect(errors, "completion.super_tab", config.completion.super_tab, "boolean")
   end
 
   if has_explorer and not valid_explorers[config.explorer.provider] then
@@ -57,6 +64,25 @@ function M.validate(config)
 
   if has_ai then
     expect(errors, "ai.sidekick", config.ai.sidekick, "table")
+  end
+
+  if has_mini then
+    if type(config.mini.modules) ~= "table" then
+      table.insert(errors, "mini.modules must be a list")
+    else
+      for _, module in ipairs(config.mini.modules) do
+        if type(module) ~= "string" then
+          table.insert(errors, "mini.modules entries must be strings")
+          break
+        end
+        local name = module:gsub("^mini%.", "")
+        if name == "" or not name:match(valid_mini_module) then
+          table.insert(errors, "mini.modules entries must be mini module names like ai, surround, or mini.ai")
+          break
+        end
+      end
+    end
+    expect(errors, "mini.opts", config.mini.opts, "table")
   end
 
   if has_extras then

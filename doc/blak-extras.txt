@@ -40,6 +40,8 @@ lang.markdown
 
 ui.animations
 ui.base46
+ui.comfy-line-numbers
+ui.dim
 ui.image-preview
 ui.lualine
 ui.zen
@@ -47,6 +49,7 @@ ui.zen
 git.lazygit
 git.diffview
 
+editor.mini
 editor.neotree
 editor.snacks-explorer
 editor.snacks-terminal

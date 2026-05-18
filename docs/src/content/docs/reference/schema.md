@@ -15,10 +15,12 @@ All required.
 | `localleader` | `string` | Default `"\\"` |
 | `package` | `table` | See below |
 | `ui` | `table` | See below |
+| `completion` | `table` | See below |
 | `picker` | `table` | See below |
 | `explorer` | `table` | See below |
 | `terminal` | `table` | See below |
 | `ai` | `table` | See below |
+| `mini` | `table` | See below |
 | `lsp` | `table` | See below |
 | `extras` | `table` | See below |
 
@@ -44,6 +46,16 @@ Blak config validation failed:
 | `provider` | `string` | `"fff"`, `"snacks"`, `"telescope"`, or `"fzf_lua"` |
 
 Switching providers swaps the implementation behind `:BlakPick` without changing the keymaps. If you want a provider that doesn't exist yet, add it under `lua/blak/providers/picker.lua` and submit a PR.
+
+## `completion`
+
+| Key | Type | Allowed |
+| --- | --- | --- |
+| `super_tab` | `boolean` | `true` or `false` |
+
+Set `completion.super_tab = true` to use the completion engine's SuperTab-style
+keymap preset where Blak can delegate to one. The default is `false`, so stable
+updates do not change completion muscle memory.
 
 ## `explorer`
 
@@ -95,6 +107,27 @@ return {
 }
 ```
 
+## `mini`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `modules` | `string[]` | Mini module slugs to install and set up when `editor.mini` is enabled. Use `ai`, `surround`, or `mini.ai`; `mini.icons` is already a Blak core plugin. |
+| `opts` | `table<string, table>` | Per-module options passed to `require("mini.<module>").setup()` |
+
+The Mini extra is intentionally inert until you choose modules:
+
+```lua
+return {
+  extras = { enabled = { "editor.mini" } },
+  mini = {
+    modules = { "ai", "surround", "pairs" },
+    opts = {
+      surround = { n_lines = 80 },
+    },
+  },
+}
+```
+
 ## `extras`
 
 | Key | Type | Notes |
@@ -125,6 +158,7 @@ The error message is verbose on purpose:
 Blak config validation failed:
 - package.channel must be stable, edge, or nightly
 - picker.provider must be fff, snacks, telescope, or fzf_lua
+- completion.super_tab must be boolean, got string
 - explorer.provider must be oil or snacks
 - terminal.provider must be native or snacks
 - extras.enabled entries must be strings

@@ -89,6 +89,8 @@ lua/blak/
 │   ├── ui/
 │   │   ├── animations.lua
 │   │   ├── base46.lua
+│   │   ├── comfy_line_numbers.lua
+│   │   ├── dim.lua
 │   │   ├── image_preview.lua
 │   │   ├── lualine.lua
 │   │   └── zen.lua

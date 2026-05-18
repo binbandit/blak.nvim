@@ -75,6 +75,11 @@ or copy >
   lua/blak/user.lua
 < and return a table of overrides.
 
+For example, to use SuperTab-style completion where Blak can delegate to the
+completion engine: >
+  return { completion = { super_tab = true } }
+<
+
 Saving lua/blak/user.lua while Blak is running reloads the merged config and
 refreshes the current session. Run :BlakExtras sync or :Lazy sync after adding
 or removing plugin-backed extras; restart to unload runtime hooks that already

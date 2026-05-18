@@ -70,5 +70,9 @@ BLAK
   <Space>lt        Install Blak tools
   <Space>lT        Install Treesitter parsers
 
+EXTRAS
+  ui.comfy-line-numbers maps displayed labels with j/k and Up/Down motions.
+  Example: 11j and 11<Down> both use the comfy label 11.
+
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:
