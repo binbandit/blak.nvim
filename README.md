@@ -38,7 +38,7 @@ curl -fsSL https://getblak.dev/install.sh | sh
 blak
 ```
 
-The installer creates a sparse runtime checkout at `~/.config/blak`, creates a small `~/.local/bin/blak` launcher, and uses `NVIM_APPNAME=blak`, so it does not overwrite an existing Neovim config. The checkout keeps the editor runtime, help files, lockfile, changelog, license, notice, README, and logo; development files such as `docs/`, `scripts/`, `.github/`, and generated splash assets are left out.
+The installer creates a sparse runtime checkout at `~/.config/blak`, creates a small `~/.local/bin/blak` launcher, and uses `NVIM_APPNAME=blak`, so it does not overwrite an existing Neovim config. The checkout keeps the editor runtime, help files, picker ignore metadata, lockfile, changelog, license, notice, README, and logo; development files such as `docs/`, `scripts/`, `.github/`, and generated splash assets are left out.
 
 For development from this checkout:
 

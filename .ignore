@@ -1,0 +1,2 @@
+# Keep Blak's local override searchable in file tools while Git still ignores it.
+!/lua/blak/user.lua

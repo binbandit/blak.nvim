@@ -12,7 +12,7 @@ function M.open(config)
   if name == "snacks" then
     local snacks = util.load_plugin("snacks.nvim", "snacks")
     if snacks and snacks.explorer then
-      return snacks.explorer()
+      return snacks.explorer({ cwd = util.git_root() })
     end
     return nil
   end

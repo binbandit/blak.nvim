@@ -19,7 +19,7 @@ That script:
 3. Writes a launcher at `~/.local/bin/blak` that runs `NVIM_APPNAME=blak nvim`.
 4. Prints a one-line status with any caveats.
 
-The runtime checkout includes Blak's Lua runtime, Vim help files, lockfile, changelog, license, notice, README, and logo. It leaves out contributor-only files such as `docs/`, `scripts/`, `.github/`, and generated splash source assets.
+The runtime checkout includes Blak's Lua runtime, Vim help files, picker ignore metadata, lockfile, changelog, license, notice, README, and logo. It leaves out contributor-only files such as `docs/`, `scripts/`, `.github/`, and generated splash source assets.
 
 If `~/.local/bin` is not on your `PATH`, you'll see a hint to either add it or run `NVIM_APPNAME=blak nvim` directly. An optional shell alias does the same:
 

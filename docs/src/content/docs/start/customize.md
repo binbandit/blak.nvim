@@ -31,7 +31,7 @@ return {
 }
 ```
 
-`user.lua` is gitignored by default — your local changes stay local.
+`user.lua` is gitignored by default so your local changes stay local, but Blak ships a picker ignore override so file tools can still find it.
 
 ## Override patterns
 

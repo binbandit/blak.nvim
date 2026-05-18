@@ -7,6 +7,23 @@ local providers = {
   fzf_lua = "blak.providers.picker.fzf_lua",
 }
 
+local project_kinds = {
+  smart = true,
+  files = true,
+  grep = true,
+}
+
+local function with_project_cwd(kind, opts)
+  opts = opts or {}
+  if not project_kinds[kind] or opts.cwd then
+    return opts
+  end
+
+  local copy = vim.tbl_extend("force", {}, opts)
+  copy.cwd = require("blak.util").git_root()
+  return copy
+end
+
 local function order(primary)
   local config = require("blak.config").get()
   primary = primary or config.picker.provider or "fff"
@@ -23,7 +40,7 @@ end
 
 function M.pick(kind, opts)
   kind = kind or "smart"
-  opts = opts or {}
+  opts = with_project_cwd(kind, opts)
 
   for _, name in ipairs(order(opts.provider)) do
     local module = providers[name]

@@ -35,6 +35,7 @@ BLAK_BIN_DIR="$BIN_DIR" \
 sh "$ROOT/install.sh"
 
 test -f "$TARGET/.gitignore"
+test -f "$TARGET/.ignore"
 test -f "$TARGET/init.lua"
 test -d "$TARGET/lua/blak"
 test -d "$TARGET/doc"

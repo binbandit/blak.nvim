@@ -102,7 +102,7 @@ Runs [`scripts/smoke-install.sh`](https://github.com/binbandit/blak.nvim/blob/ma
 
 The script creates temporary XDG directories, runs `install.sh` against the local checkout, asserts that the install contains runtime files and omits contributor-only directories, then starts Neovim with `NVIM_APPNAME=blak-install-smoke`.
 
-It specifically checks that `docs/`, `scripts/`, `.github/`, and `assets/blackhole.gif` do not land in the installed checkout, while `init.lua`, `lua/blak/`, `doc/`, `lazy-lock.json`, `NEWS.md`, `.gitignore`, and `assets/blak-ascii.svg` do.
+It specifically checks that `docs/`, `scripts/`, `.github/`, and `assets/blackhole.gif` do not land in the installed checkout, while `init.lua`, `lua/blak/`, `doc/`, `lazy-lock.json`, `NEWS.md`, `.gitignore`, `.ignore`, and `assets/blak-ascii.svg` do.
 
 ## CI
 

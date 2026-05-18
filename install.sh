@@ -28,6 +28,7 @@ clone_no_checkout() {
 checkout_runtime_files() {
   git -C "$TARGET" sparse-checkout set --no-cone \
     /.gitignore \
+    /.ignore \
     /init.lua \
     /lua/ \
     /doc/ \
