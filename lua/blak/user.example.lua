@@ -3,7 +3,7 @@
 
 return {
   package = {
-    channel = "stable",
+    channel = "stable", -- stable | edge | nightly
   },
 
   picker = {
@@ -12,11 +12,34 @@ return {
 
   extras = {
     enabled = {
+      -- Languages
+      -- "lang.lua",
       -- "lang.typescript",
+      -- "lang.typescript-tsgo",
       -- "lang.python",
-      -- "git.lazygit",
-      -- "editor.snacks-explorer",
+      -- "lang.rust",
+      -- "lang.go",
+      -- "lang.markdown",
+
+      -- UI
+      -- "ui.animations",
+      -- "ui.base46",
+      -- "ui.image-preview",
+      -- "ui.lualine",
       -- "ui.zen",
+
+      -- Git
+      -- "git.lazygit",
+      -- "git.diffview",
+
+      -- AI
+      -- "ai.copilot",
+
+      -- Editor
+      -- "editor.neotree",
+      -- "editor.snacks-explorer",
+      -- "editor.telescope",
+      -- "editor.fzf-lua",
     },
   },
 }
