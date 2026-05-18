@@ -154,6 +154,7 @@ function M.setup(config)
   map("n", "<leader>bd", delete_buffer, "Delete buffer")
   map("n", "<leader>bn", "<cmd>bnext<cr>", "Next buffer")
   map("n", "<leader>bp", "<cmd>bprevious<cr>", "Previous buffer")
+  map_if_available("n", "<leader>`", "<C-^>", "Toggle last file")
 
   map_if_available("n", "<leader>ws", "<cmd>rightbelow split<cr>", "Split window below")
   map_if_available("n", "<leader>wv", "<cmd>rightbelow vsplit<cr>", "Split window right")

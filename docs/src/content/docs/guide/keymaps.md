@@ -40,6 +40,7 @@ All dispatch through the picker provider — see [Pickers](/guide/pickers/).
 
 | Mapping | Action |
 | --- | --- |
+| <code>&lt;leader&gt;&#96;</code> | Toggle last file (native alternate file) |
 | `<leader>bd` | Delete buffer (via Snacks `bufdelete` if available) |
 | `<leader>bn` | Next buffer |
 | `<leader>bp` | Previous buffer |

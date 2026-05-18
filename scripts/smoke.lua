@@ -48,8 +48,18 @@ assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "<leader>/ grep mapping missing")
 assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal", "<leader>tt terminal mapping missing")
+assert(vim.fn.maparg("<leader>`", "n", false, true).desc == "Toggle last file", "<leader>` alternate file mapping missing")
 assert(vim.fn.maparg("<leader>ws", "n", false, true).desc == "Split window below", "<leader>ws split mapping missing")
 assert(vim.fn.maparg("<leader>wv", "n", false, true).desc == "Split window right", "<leader>wv split mapping missing")
+vim.keymap.set("n", "<leader>`", "<cmd>echo 'user alternate'<cr>", { desc = "User alternate file" })
+require("blak.core.keymaps").setup(require("blak.config").get())
+assert(
+  vim.fn.maparg("<leader>`", "n", false, true).desc == "User alternate file",
+  "<leader>` should not replace an existing user mapping"
+)
+pcall(vim.keymap.del, "n", "<leader>`")
+require("blak.core.keymaps").setup(require("blak.config").get())
+assert(vim.fn.maparg("<leader>`", "n", false, true).desc == "Toggle last file", "<leader>` alternate file mapping missing after restore")
 local terminal_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
   terminal = { toggle_key = "<leader>to" },
 })
