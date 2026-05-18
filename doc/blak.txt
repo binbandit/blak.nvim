@@ -19,6 +19,9 @@ COMMANDS                                                 *blak-commands*
 :BlakNews
     Open the Blak release notes.
 
+:BlakDocs
+    Open the Blak docs site at https://getblak.dev/start/why/.
+
 :BlakConfig
     Open lua/blak/user.lua. If it does not exist, create it from
     lua/blak/user.example.lua first.

@@ -5,6 +5,10 @@ BLAK KEYMAPS                                            *blak-keymaps*
 The rule: common operations get memorable mappings; uncommon operations get
 commands and pickers.
 
+User mappings from lua/blak/user.lua use the same registry. Add entries to
+keymaps with key, action, and description; use disable = true to disable a
+Blak mapping.
+
 FIND
   <Space><Space>   Smart file find
   <Space>/         Grep
@@ -39,6 +43,18 @@ EXPLORER
 TERMINAL
   <Space>tt        Configured terminal provider
   Set terminal.toggle_key in lua/blak/user.lua to change this mapping.
+
+CUSTOM
+  lua/blak/user.lua can add or override mappings:
+>
+  return {
+    keymaps = {
+      { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+      { key = "<leader>/", disable = true },
+    },
+  }
+<
+  Active custom mappings require description so they appear in :BlakKeys.
 
 GIT
   [h               Previous git hunk

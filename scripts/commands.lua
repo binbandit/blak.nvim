@@ -6,6 +6,7 @@ local command_names = {
   "BlakDoctor",
   "BlakKeys",
   "BlakNews",
+  "BlakDocs",
   "BlakConfig",
   "BlakPick",
   "BlakExtras",
@@ -166,6 +167,14 @@ local function main()
   run("BlakNews", "BlakNews")
   assert_contains(":BlakNews", current_text(), "Blak")
   wipe_current()
+
+  local original_ui_open = vim.ui.open
+  vim.ui.open = function(target)
+    vim.g.blak_command_test_docs_url = target
+  end
+  run("BlakDocs", "BlakDocs")
+  vim.ui.open = original_ui_open
+  assert(vim.g.blak_command_test_docs_url == "https://getblak.dev/start/why/", "BlakDocs did not open the docs URL")
 
   vim.fn.delete(user_file)
   run("BlakConfig", "BlakConfig")

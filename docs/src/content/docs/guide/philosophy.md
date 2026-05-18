@@ -33,7 +33,7 @@ The rule of thumb: a user should be able to predict a keymap from the category a
 
 ### 3. Do not add hidden keymaps.
 
-Every keymap registered by Blak core or an enabled extra has a description and appears in `:BlakKeys`. If you can't see it there, it doesn't exist in Blak. Plugins that add their own un-described mappings are wrapped to give them descriptions.
+Every keymap registered by Blak core, an enabled extra, or `user.lua` has a description and appears in `:BlakKeys`. If you can't see it there, it doesn't exist in Blak. Plugins that add their own un-described mappings are wrapped to give them descriptions.
 
 ### 4. Stable updates must not silently change a user's picker, completion engine, explorer, or LSP strategy.
 

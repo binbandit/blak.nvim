@@ -1,5 +1,7 @@
 local M = {}
 
+local docs_url = "https://getblak.dev/start/why/"
+
 local pickers = {
   "smart",
   "files",
@@ -64,6 +66,15 @@ local function open_user_config()
   end
 end
 
+local function open_docs()
+  local ok, result, err = pcall(vim.ui.open, docs_url)
+  if not ok then
+    require("blak.util").warn("Could not open Blak docs: " .. tostring(result))
+  elseif err then
+    require("blak.util").warn("Could not open Blak docs: " .. tostring(err))
+  end
+end
+
 function M.setup(config)
   vim.api.nvim_create_user_command("Blak", function()
     require("blak.util").open_scratch("Blak", {
@@ -76,6 +87,7 @@ function M.setup(config)
       "  :BlakDoctor                health checks",
       "  :BlakKeys                  show keymaps",
       "  :BlakNews                  release notes",
+      "  :BlakDocs                  open the docs site",
       "  :BlakConfig                edit lua/blak/user.lua",
       "  :BlakPick {kind}           picker entrypoint",
       "  :BlakExtras                extras UI",
@@ -131,6 +143,8 @@ function M.setup(config)
   vim.api.nvim_create_user_command("BlakNews", function()
     require("blak.core.update").news()
   end, { desc = "Open Blak release notes" })
+
+  vim.api.nvim_create_user_command("BlakDocs", open_docs, { desc = "Open the Blak docs site" })
 
   vim.api.nvim_create_user_command("BlakConfig", open_user_config, { desc = "Edit lua/blak/user.lua" })
 

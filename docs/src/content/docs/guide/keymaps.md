@@ -7,7 +7,24 @@ The rule: **common operations get memorable mappings; uncommon operations get co
 
 The leader is `<Space>`. Local leader is `\`.
 
-All core keymaps are defined in [`lua/blak/core/keymaps.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/keymaps.lua). Extras can add more — they show up in `:BlakKeys` too.
+All core keymaps are defined in [`lua/blak/core/keymaps.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/keymaps.lua). Extras and `user.lua` can add more — they show up in `:BlakKeys` too.
+
+## Custom keymaps
+
+Add or override mappings from `lua/blak/user.lua` with the `keymaps` list:
+
+```lua
+return {
+  keymaps = {
+    { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+    { key = "<leader>/", disable = true },
+  },
+}
+```
+
+Active entries require `description` so they stay discoverable through `:BlakKeys`.
+Use `disable = true` to disable a Blak mapping. To move a default action, disable
+the old key and add the new one.
 
 ## Edit & navigation
 
@@ -53,8 +70,8 @@ All dispatch through the picker provider — see [Pickers](/guide/pickers/).
 | `<leader>wv` | Split window right |
 
 These use Neovim's native `:rightbelow split` and `:rightbelow vsplit`. Blak
-only binds them when the left-hand side is still free, so an existing user or
-plugin mapping wins.
+only binds them when those keys are still free, so an existing user or plugin
+mapping wins.
 
 ## Explorer
 
@@ -169,7 +186,7 @@ See the [LSP guide](/guide/lsp/).
 
 ## Design notes
 
-- **No hidden chords.** If a mapping isn't in this page or in `:BlakKeys`, it doesn't exist in Blak core.
+- **No hidden chords.** If a Blak mapping isn't in this page or in `:BlakKeys`, it doesn't exist in core, enabled extras, or `user.lua`.
 - **Mnemonic grouping.** `<leader>f*` find, `<leader>b*` buffers, `<leader>g*` git, `<leader>c*` code, `<leader>x*` diagnostics, `<leader>l*` Lazy/Blak, `<leader>t*` terminal, `<leader>u*` UI toggles, `<leader>w*` windows, `<leader>q*` quit.
 - **`map_if_available`.** Keys like `<C-s>` and `<D-s>` are only set when not already mapped — they yield to native bindings or another plugin's claim.
-- **Extras add to or retarget this list.** Run `:BlakKeys` to see what your enabled extras have registered.
+- **Extras and user config add to or retarget this list.** Run `:BlakKeys` to see what your enabled extras and `user.lua` have registered.

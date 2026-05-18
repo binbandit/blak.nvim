@@ -27,11 +27,15 @@ The health checks live in [`lua/blak/core/health.lua`](https://github.com/binban
 
 ### `:BlakKeys`
 
-Opens a scratch buffer listing every keymap registered by Blak core and enabled extras, sorted by left-hand side and annotated with mode + description. The "did I bind this myself or did Blak?" question, answered.
+Opens a scratch buffer listing every keymap registered by Blak core, enabled extras, and `user.lua`, sorted by key and annotated with mode + description. The "did I bind this myself or did Blak?" question, answered.
 
 ### `:BlakNews`
 
 Opens Blak's release notes (`NEWS.md` from the repo) in a scratch buffer. Use this after `:BlakUpdate` to see what changed.
+
+### `:BlakDocs`
+
+Opens the docs site at [`https://getblak.dev/start/why/`](https://getblak.dev/start/why/) through Neovim's native `vim.ui.open()`.
 
 ### `:BlakConfig`
 
@@ -145,6 +149,7 @@ Plays the black-hole animation in a scratch buffer. Useful for tweaking your ter
 :BlakDoctor                health checks
 :BlakKeys                  registered keymaps
 :BlakNews                  release notes
+:BlakDocs                  docs site
 :BlakConfig                edit lua/blak/user.lua
 :BlakPick {kind}           picker entrypoint
 :BlakExtras                extras UI

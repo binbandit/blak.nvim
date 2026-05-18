@@ -67,6 +67,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 :BlakDoctor        health checks
 :BlakKeys          keymaps registered by Blak
 :BlakNews          release notes
+:BlakDocs          open https://getblak.dev/start/why/
 :BlakConfig        open or create lua/blak/user.lua
 :BlakPick files    picker entrypoint
 :BlakExtras        extras UI
