@@ -2,6 +2,7 @@ local M = {}
 
 local registered = {}
 local registered_lookup = {}
+local terminal_lhs
 
 -- Built-in commands do not appear in maparg(), so optional keys need a small
 -- reserved list when Blak would otherwise shadow native editing behavior.
@@ -67,6 +68,31 @@ local function open_explorer(config)
   return function()
     require("blak.core.explorer").open(config)
   end
+end
+
+local function clear_terminal_keymap(lhs)
+  local keymap = vim.fn.maparg(lhs, "n", false, true)
+  if type(keymap) == "table" and keymap.desc == "Terminal" then
+    pcall(vim.keymap.del, "n", lhs)
+  end
+end
+
+local function map_terminal(config)
+  local lhs = vim.tbl_get(config, "terminal", "toggle_key")
+  if lhs == false or lhs == "" then
+    if terminal_lhs then
+      clear_terminal_keymap(terminal_lhs)
+    end
+    terminal_lhs = nil
+    return
+  end
+
+  lhs = lhs or "<leader>tt"
+  if terminal_lhs and terminal_lhs ~= lhs then
+    clear_terminal_keymap(terminal_lhs)
+  end
+  terminal_lhs = lhs
+  map("n", lhs, "<cmd>BlakTerminal<cr>", "Terminal")
 end
 
 local function gitsigns()
@@ -165,7 +191,7 @@ function M.setup(config)
   map("n", "<leader>lt", "<cmd>BlakToolsInstall<cr>", "Install Blak tools")
   map("n", "<leader>lT", "<cmd>BlakTreesitterInstall<cr>", "Install Treesitter parsers")
 
-  map("n", "<leader>tt", "<cmd>BlakTerminal<cr>", "Terminal")
+  map_terminal(config)
   map("n", "<leader>uf", "<cmd>BlakFormatToggle<cr>", "Toggle format on save")
   map("n", "<leader>?", "<cmd>BlakKeys<cr>", "Blak keymaps")
 

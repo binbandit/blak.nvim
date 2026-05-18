@@ -34,10 +34,19 @@ vim.opt.rtp:prepend(vim.fn.getcwd())
 assert(require("blak.config").get())
 assert(require("blak.config").get().editor.relative_number == false, "user.lua was not loaded")
 assert(require("blak.config").get().explorer.provider == "oil", "Oil should be the default explorer provider")
+assert(require("blak.config").get().terminal.provider == "native", "native should be the default terminal provider")
+assert(require("blak.config").get().terminal.toggle_key == "<leader>tt", "<leader>tt should be the default terminal key")
 assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "<leader>/ grep mapping missing")
 assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal", "<leader>tt terminal mapping missing")
+local terminal_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
+  terminal = { toggle_key = "<leader>to" },
+})
+require("blak.core.keymaps").setup(terminal_config)
+assert(vim.fn.maparg("<leader>to", "n", false, true).desc == "Terminal", "custom terminal mapping missing")
+assert(vim.fn.maparg("<leader>tt", "n", false, true).desc ~= "Terminal", "old terminal mapping should be removed")
+require("blak.core.keymaps").setup(require("blak.config").get())
 local blak_keymaps = {
   ["<leader>lc"] = "Blak config",
   ["<leader>le"] = "Extras",
@@ -76,6 +85,29 @@ package.loaded.snacks = {
 require("blak.core.explorer").open({ explorer = { provider = "snacks" } })
 package.loaded.snacks = previous_snacks
 assert(called_snacks, "snacks explorer provider did not call Snacks.explorer")
+local snack_terminal_called = false
+previous_snacks = package.loaded.snacks
+package.loaded.snacks = {
+  terminal = {
+    toggle = function(cmd, opts)
+      snack_terminal_called = cmd == "printf blak" and opts and opts.win and opts.win.position == "right"
+    end,
+  },
+}
+require("blak.core.terminal").toggle({
+  terminal = {
+    provider = "snacks",
+  },
+  snacks = {
+    terminal = { win = { position = "right" } },
+  },
+}, { cmd = "printf blak" })
+package.loaded.snacks = previous_snacks
+assert(snack_terminal_called, "snacks terminal provider did not call Snacks.terminal.toggle")
+local extra_config = vim.deepcopy(require("blak.config.defaults"))
+require("blak.extras").apply_one(extra_config, "editor.snacks-terminal")
+assert(extra_config.terminal.provider == "snacks", "snacks terminal extra did not set terminal provider")
+assert(vim.tbl_get(extra_config, "snacks", "terminal", "enabled") == true, "snacks terminal extra did not enable Snacks terminal")
 local splash = require("blak.splash")
 local splash_data = require("blak.splash.frames.blackhole")
 local splash_buf = vim.api.nvim_create_buf(false, true)

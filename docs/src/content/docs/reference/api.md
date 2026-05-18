@@ -110,7 +110,9 @@ require("blak.core.terminal").toggle()
 require("blak.core.terminal").toggle({ cmd = "lazygit" })
 ```
 
-Opens or closes Blak's native terminal split. This is what `:BlakTerminal` and `<leader>tt` call.
+Opens or closes the configured terminal provider. Native terminal splits are
+the default; when `terminal.provider = "snacks"`, the same API dispatches to
+`Snacks.terminal.toggle()`.
 
 ### UI
 

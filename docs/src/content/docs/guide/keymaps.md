@@ -56,7 +56,10 @@ Blak leaves Neovim's native `-` motion alone.
 
 | Mapping | Action |
 | --- | --- |
-| `<leader>tt` | Toggle a native terminal split |
+| `<leader>tt` | Toggle the configured terminal provider |
+
+Change this mapping with `terminal.toggle_key` in `lua/blak/user.lua`. Set it
+to `false` to leave terminal toggling command-only.
 
 ## Git (gitsigns)
 
@@ -147,6 +150,7 @@ See the [LSP guide](/guide/lsp/).
 | `ai.sidekick` | `<leader>ap` | Pick Sidekick prompt |
 | `editor.neotree` | `<leader>E` | Toggle Neo-tree |
 | `editor.snacks-explorer` | `<leader>e` | Snacks explorer |
+| `editor.snacks-terminal` | `terminal.toggle_key` | Snacks terminal |
 
 ## Design notes
 

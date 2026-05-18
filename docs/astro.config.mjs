@@ -228,6 +228,7 @@ export default defineConfig({
             { label: "Sidekick", slug: "extras/ai/sidekick" },
             { label: "Neo-tree", slug: "extras/editor/neotree" },
             { label: "Snacks explorer", slug: "extras/editor/snacks-explorer" },
+            { label: "Snacks terminal", slug: "extras/editor/snacks-terminal" },
             { label: "Telescope", slug: "extras/editor/telescope" },
             { label: "fzf-lua", slug: "extras/editor/fzf-lua" },
           ],

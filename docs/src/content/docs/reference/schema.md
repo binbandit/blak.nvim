@@ -17,6 +17,7 @@ All required.
 | `ui` | `table` | See below |
 | `picker` | `table` | See below |
 | `explorer` | `table` | See below |
+| `terminal` | `table` | See below |
 | `ai` | `table` | See below |
 | `lsp` | `table` | See below |
 | `extras` | `table` | See below |
@@ -51,6 +52,26 @@ Switching providers swaps the implementation behind `:BlakPick` without changing
 | `provider` | `string` | `"oil"` or `"snacks"` |
 
 Switching providers swaps the implementation behind `<leader>e` and directory-buffer takeover. The usual path is `:BlakExtras enable editor.snacks-explorer`, which sets this option and enables the Snacks explorer module for you.
+
+## `terminal`
+
+| Key | Type | Allowed |
+| --- | --- | --- |
+| `provider` | `string` | `"native"` or `"snacks"` |
+| `toggle_key` | `string` or `false` | Any key lhs accepted by `vim.keymap.set()`, or `false` to skip the keymap |
+
+The usual path for Snacks terminal is `:BlakExtras enable editor.snacks-terminal`,
+which sets `terminal.provider = "snacks"` and enables the Snacks terminal module
+for you. Set `terminal.toggle_key` when you want a different toggle mapping:
+
+```lua
+return {
+  extras = { enabled = { "editor.snacks-terminal" } },
+  terminal = {
+    toggle_key = "<C-/>",
+  },
+}
+```
 
 ## `ai`
 
@@ -105,6 +126,7 @@ Blak config validation failed:
 - package.channel must be stable, edge, or nightly
 - picker.provider must be fff, snacks, telescope, or fzf_lua
 - explorer.provider must be oil or snacks
+- terminal.provider must be native or snacks
 - extras.enabled entries must be strings
 ```
 

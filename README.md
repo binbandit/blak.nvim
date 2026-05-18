@@ -76,7 +76,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 :BlakRollback      restore last lockfile backup and run Lazy restore
 :BlakToolsInstall  install Mason tools required by enabled extras
 :BlakTreesitterInstall install configured Treesitter parsers
-:BlakTerminal [cmd] toggle a native terminal split
+:BlakTerminal [cmd] toggle the configured terminal
 :BlakFormat        format current buffer
 :BlakFormatToggle  toggle format-on-save
 :BlakSplash        preview the black-hole animation
@@ -99,6 +99,7 @@ Extras are opt-in and reversible:
 :BlakExtras enable ui.base46
 :BlakExtras enable ui.lualine
 :BlakExtras enable editor.snacks-explorer
+:BlakExtras enable editor.snacks-terminal
 :BlakExtras disable lang.python
 ```
 
@@ -115,7 +116,7 @@ Default vs. optional is deliberate:
 
 - Language stacks are extras because most users do not need every server, formatter, linter, and parser.
 - Alternative pickers and explorers are extras because they replace muscle-memory surfaces.
-- LazyGit, Diffview, Copilot, image preview, theme collections, statuslines, zen mode, and animations are extras because they are valuable but preference-heavy.
+- LazyGit, Diffview, Copilot, Snacks terminal, image preview, theme collections, statuslines, zen mode, and animations are extras because they are valuable but preference-heavy.
 
 ## Customization
 

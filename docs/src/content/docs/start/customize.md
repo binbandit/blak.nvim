@@ -71,6 +71,22 @@ return {
 }
 ```
 
+### Switch terminal
+
+```vim
+:BlakExtras enable editor.snacks-terminal
+```
+
+Change the toggle key without changing providers:
+
+```lua
+return {
+  terminal = {
+    toggle_key = "<C-/>",
+  },
+}
+```
+
 ### Disable the splash animation
 
 ```lua

@@ -51,7 +51,7 @@ lua/blak/
 │   ├── commands.lua        Every :Blak* user command
 │   ├── explorer.lua        Configured explorer dispatcher
 │   ├── keymaps.lua         All keymaps + :BlakKeys
-│   ├── terminal.lua        Native terminal split used by :BlakTerminal
+│   ├── terminal.lua        Configured terminal provider used by :BlakTerminal
 │   ├── treesitter.lua      Parser install, FileType activation
 │   ├── tools.lua           Mason install orchestration
 │   ├── update.lua          :BlakUpdate / :BlakRollback / :BlakNews
@@ -101,6 +101,7 @@ lua/blak/
 │   └── editor/
 │       ├── neotree.lua
 │       ├── snacks_explorer.lua
+│       ├── snacks_terminal.lua
 │       ├── telescope.lua
 │       └── fzf_lua.lua
 │

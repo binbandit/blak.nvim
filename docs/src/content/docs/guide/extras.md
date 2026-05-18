@@ -67,7 +67,7 @@ configuration examples, install notes, and verification path.
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
 | Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/) |
 | AI | [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/) |
-| Editor | [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
+| Editor | [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
 
@@ -326,6 +326,19 @@ return {
 | Keymap | `<leader>e` → Snacks explorer |
 
 Snacks already ships in core for dashboard/input/notifier/picker support, so this extra enables the explorer module instead of adding a new plugin.
+
+### `editor.snacks-terminal`
+
+[Snacks terminal](https://github.com/folke/snacks.nvim/blob/main/docs/terminal.md) as the configured terminal provider.
+
+| Adds | Value |
+| --- | --- |
+| Config | sets `terminal.provider = "snacks"` |
+| Snacks | `terminal.enabled = true` |
+| Command | `:BlakTerminal [cmd]` uses `Snacks.terminal.toggle()` |
+| Keymap | `terminal.toggle_key` toggles Snacks terminal |
+
+Snacks already ships in core, so this extra enables the terminal module and keeps the existing Blak command and keymap surface.
 
 ### `editor.telescope`
 

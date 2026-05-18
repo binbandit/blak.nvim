@@ -49,6 +49,7 @@ git.diffview
 
 editor.neotree
 editor.snacks-explorer
+editor.snacks-terminal
 editor.telescope
 editor.fzf-lua
 

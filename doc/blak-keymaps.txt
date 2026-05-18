@@ -25,7 +25,8 @@ EXPLORER
   Blak leaves Neovim's native - motion alone.
 
 TERMINAL
-  <Space>tt        Native terminal split
+  <Space>tt        Configured terminal provider
+  Set terminal.toggle_key in lua/blak/user.lua to change this mapping.
 
 GIT
   [h               Previous git hunk

@@ -52,6 +52,11 @@ return {
     provider = "oil", -- oil | snacks
   },
 
+  terminal = {
+    provider = "native", -- native | snacks
+    toggle_key = "<leader>tt",
+  },
+
   ai = {
     sidekick = {
       nes = { enabled = false },

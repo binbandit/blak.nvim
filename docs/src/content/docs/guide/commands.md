@@ -113,9 +113,9 @@ Blak can install `tree-sitter-cli` through Mason on first launch (it's in the de
 
 ### `:BlakTerminal [cmd]`
 
-Toggles a bottom split backed by Neovim's native terminal. Without an argument it opens your shell; with an argument it runs that command.
+Toggles the configured terminal provider. Blak uses a bottom split backed by Neovim's native terminal by default; `editor.snacks-terminal` retargets the command to `Snacks.terminal.toggle()`.
 
-The keymap `<leader>tt` calls the no-argument form.
+Without an argument it opens your shell; with an argument it runs that command. The keymap from `terminal.toggle_key` calls the no-argument form and defaults to `<leader>tt`.
 
 ## Formatting
 
@@ -157,7 +157,7 @@ Plays the black-hole animation in a scratch buffer. Useful for tweaking your ter
 :BlakUpgrade               explicit bigger moves
 :BlakToolsInstall          install Mason tools
 :BlakTreesitterInstall     install parsers
-:BlakTerminal [cmd]        native terminal split
+:BlakTerminal [cmd]        configured terminal
 :BlakFormat                format current buffer
 :BlakFormatToggle[!]       toggle format-on-save
 :BlakSplash                preview splash animation
