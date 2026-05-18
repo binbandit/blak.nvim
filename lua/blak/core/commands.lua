@@ -26,6 +26,44 @@ local function complete_extras(arglead, line)
   return require("blak.extras").complete(arglead, line)
 end
 
+local function user_config_path()
+  local util = require("blak.util")
+  return util.join(vim.fn.stdpath("config"), "lua", "blak", "user.lua")
+end
+
+local function create_user_config(path)
+  local util = require("blak.util")
+  for _, example in ipairs(vim.api.nvim_get_runtime_file("lua/blak/user.example.lua", false)) do
+    if util.copy_file(example, path) then
+      return true
+    end
+  end
+
+  util.write_file(path, "return {}\n")
+  return true
+end
+
+local function refresh_file_indexes()
+  local fff = package.loaded.fff
+  if fff and type(fff.scan_files) == "function" then
+    pcall(fff.scan_files)
+  end
+end
+
+local function open_user_config()
+  local path = user_config_path()
+  local created = false
+  if vim.fn.filereadable(path) == 0 then
+    created = create_user_config(path)
+  end
+
+  vim.cmd.edit(vim.fn.fnameescape(path))
+  refresh_file_indexes()
+  if created then
+    require("blak.util").notify("Created lua/blak/user.lua")
+  end
+end
+
 function M.setup(config)
   vim.api.nvim_create_user_command("Blak", function()
     require("blak.util").open_scratch("Blak", {
@@ -38,6 +76,7 @@ function M.setup(config)
       "  :BlakDoctor                health checks",
       "  :BlakKeys                  show keymaps",
       "  :BlakNews                  release notes",
+      "  :BlakConfig                edit lua/blak/user.lua",
       "  :BlakPick {kind}           picker entrypoint",
       "  :BlakExtras                extras UI",
       "  :BlackExtras               alias for :BlakExtras",
@@ -92,6 +131,8 @@ function M.setup(config)
   vim.api.nvim_create_user_command("BlakNews", function()
     require("blak.core.update").news()
   end, { desc = "Open Blak release notes" })
+
+  vim.api.nvim_create_user_command("BlakConfig", open_user_config, { desc = "Edit lua/blak/user.lua" })
 
   vim.api.nvim_create_user_command("BlakToolsInstall", function()
     require("blak.core.tools").ensure(config, { force = true })

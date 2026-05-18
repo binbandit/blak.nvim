@@ -67,6 +67,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 :BlakDoctor        health checks
 :BlakKeys          keymaps registered by Blak
 :BlakNews          release notes
+:BlakConfig        open or create lua/blak/user.lua
 :BlakPick files    picker entrypoint
 :BlakExtras        extras UI
 :BlackExtras       alias for :BlakExtras
@@ -114,7 +115,14 @@ Default vs. optional is deliberate:
 
 ## Customization
 
-Copy the example:
+Open your config from inside Blak:
+
+```vim
+:BlakConfig
+```
+
+That creates `lua/blak/user.lua` from the example when it does not exist yet.
+From a shell, the same setup is:
 
 ```sh
 cp ~/.config/blak/lua/blak/user.example.lua ~/.config/blak/lua/blak/user.lua

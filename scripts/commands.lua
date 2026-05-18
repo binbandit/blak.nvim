@@ -6,6 +6,7 @@ local command_names = {
   "BlakDoctor",
   "BlakKeys",
   "BlakNews",
+  "BlakConfig",
   "BlakPick",
   "BlakExtras",
   "BlackExtras",
@@ -86,6 +87,8 @@ end
 
 local original_lock
 local lockfile
+local original_user_file
+local user_file
 
 local function fail(message)
   error(message, 2)
@@ -139,6 +142,8 @@ local function main()
   local util = require("blak.util")
   lockfile = util.join(vim.fn.stdpath("config"), "lazy-lock.json")
   original_lock = util.read_file(lockfile)
+  user_file = util.join(vim.fn.stdpath("config"), "lua", "blak", "user.lua")
+  original_user_file = util.read_file(user_file)
 
   for _, name in ipairs(command_names) do
     assert(vim.fn.exists(":" .. name) == 2, ":" .. name .. " was not registered")
@@ -160,6 +165,12 @@ local function main()
 
   run("BlakNews", "BlakNews")
   assert_contains(":BlakNews", current_text(), "Blak")
+  wipe_current()
+
+  vim.fn.delete(user_file)
+  run("BlakConfig", "BlakConfig")
+  assert(vim.api.nvim_buf_get_name(0) == user_file, "BlakConfig did not edit lua/blak/user.lua")
+  assert_contains(":BlakConfig", util.read_file(user_file) or "", "return")
   wipe_current()
 
   package.loaded["blak.providers.picker.fff"] = nil
@@ -277,6 +288,9 @@ local ok, err = xpcall(main, debug.traceback)
 
 if lockfile then
   restore_file(lockfile, original_lock)
+end
+if user_file then
+  restore_file(user_file, original_user_file)
 end
 restore_file(extras_state, original_extras_state)
 

@@ -31,6 +31,10 @@ Opens a scratch buffer listing every keymap registered by Blak core and enabled 
 
 Opens Blak's release notes (`NEWS.md` from the repo) in a scratch buffer. Use this after `:BlakUpdate` to see what changed.
 
+### `:BlakConfig`
+
+Opens `lua/blak/user.lua` directly. If the file does not exist yet, Blak creates it from `lua/blak/user.example.lua` first, then opens it for editing.
+
 ## Pickers
 
 ### `:BlakPick {kind}`
@@ -139,6 +143,7 @@ Plays the black-hole animation in a scratch buffer. Useful for tweaking your ter
 :BlakDoctor                health checks
 :BlakKeys                  registered keymaps
 :BlakNews                  release notes
+:BlakConfig                edit lua/blak/user.lua
 :BlakPick {kind}           picker entrypoint
 :BlakExtras                extras UI
 :BlackExtras list          alias for :BlakExtras

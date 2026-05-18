@@ -19,6 +19,10 @@ COMMANDS                                                 *blak-commands*
 :BlakNews
     Open the Blak release notes.
 
+:BlakConfig
+    Open lua/blak/user.lua. If it does not exist, create it from
+    lua/blak/user.example.lua first.
+
 :BlakPick {kind}
     Run a picker. Kinds include: files, grep, buffers, recent, commands,
     keymaps, help, diagnostics, lsp_symbols, workspace_symbols.
@@ -60,7 +64,10 @@ COMMANDS                                                 *blak-commands*
 
 CONFIGURATION                                            *blak-config*
 
-Copy >
+Run >
+  :BlakConfig
+<
+or copy >
   lua/blak/user.example.lua
 < to >
   lua/blak/user.lua

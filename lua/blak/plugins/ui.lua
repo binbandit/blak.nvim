@@ -20,6 +20,7 @@ return function(config)
                 { icon = " ", key = "r", desc = "Recent files", action = ":BlakPick recent" },
                 { icon = "󰱼 ", key = "g", desc = "Grep", action = ":BlakPick grep" },
                 { icon = "󰈔 ", key = "n", desc = "New file", action = ":ene | startinsert" },
+                { icon = " ", key = "c", desc = "Config", action = ":BlakConfig" },
                 {
                   icon = "󰙅 ",
                   key = "e",

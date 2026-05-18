@@ -7,7 +7,14 @@ Blak's customization model is intentionally small. There is **one place** to ove
 
 ## The user.lua override
 
-Copy the example file:
+Open the file from Blak:
+
+```vim
+:BlakConfig
+```
+
+That creates `lua/blak/user.lua` from the example when it does not exist yet.
+From a shell, you can do the same thing manually:
 
 ```sh
 cp ~/.config/blak/lua/blak/user.example.lua ~/.config/blak/lua/blak/user.lua
@@ -31,7 +38,7 @@ return {
 }
 ```
 
-`user.lua` is gitignored by default so your local changes stay local, but Blak ships a picker ignore override so file tools can still find it.
+`user.lua` is gitignored by default so your local changes stay local. Use `:BlakConfig` when you want the direct route; Blak also ships picker ignore metadata so file tools can still find an existing config.
 
 ## Override patterns
 
