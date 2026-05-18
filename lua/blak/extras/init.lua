@@ -17,8 +17,10 @@ local modules = {
   "blak.extras.git.lazygit",
   "blak.extras.git.diffview",
   "blak.extras.ai.copilot",
+  "blak.extras.ai.sidekick",
   "blak.extras.editor.neotree",
   "blak.extras.editor.snacks_explorer",
+  "blak.extras.editor.snacks_terminal",
   "blak.extras.editor.telescope",
   "blak.extras.editor.fzf_lua",
 }

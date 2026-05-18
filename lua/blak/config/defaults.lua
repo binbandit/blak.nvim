@@ -44,6 +44,12 @@ return {
     provider = "oil", -- oil | snacks
   },
 
+  ai = {
+    sidekick = {
+      nes = { enabled = false },
+    },
+  },
+
   snacks = {},
 
   treesitter = {
