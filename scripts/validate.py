@@ -22,6 +22,7 @@ DOCS_LINK_RE = re.compile(
     r"\]\(/blak\.nvim/([^)\s#]*)(?:#[^) \t]*)?\)"
     r"|href=[\"']/blak\.nvim/([^\"'#]*)(?:#[^\"']*)?[\"']"
 )
+EXTRA_ID_ALIAS_RE = re.compile(r"---@alias\s+blak\.ExtraId\s*\n((?:---\|[^\n]*\n)+)")
 
 
 def strip_lua(text: str) -> str:
@@ -261,6 +262,24 @@ def check_extra_mason_lists() -> list[str]:
     return errors
 
 
+def check_extra_id_type_alias(extra_ids: set[str]) -> list[str]:
+    path = ROOT / "lua" / "blak" / "config" / "types.lua"
+    text = path.read_text(encoding="utf-8")
+    match = EXTRA_ID_ALIAS_RE.search(text)
+    if not match:
+        return [f"{path.relative_to(ROOT)}: missing blak.ExtraId alias"]
+
+    typed_ids = set(LUA_STRING_RE.findall(match.group(1)))
+    errors: list[str] = []
+    missing = sorted(extra_ids - typed_ids)
+    stale = sorted(typed_ids - extra_ids)
+    if missing:
+        errors.append(f"{path.relative_to(ROOT)}: blak.ExtraId missing {', '.join(missing)}")
+    if stale:
+        errors.append(f"{path.relative_to(ROOT)}: blak.ExtraId has stale ids {', '.join(stale)}")
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -293,6 +312,7 @@ def main() -> int:
     errors.extend(check_blackhole_frames())
     errors.extend(check_docs_links())
     errors.extend(check_extra_mason_lists())
+    errors.extend(check_extra_id_type_alias(set(seen)))
 
     for rel in [
         "README.md",

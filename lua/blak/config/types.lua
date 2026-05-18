@@ -7,6 +7,32 @@
 ---@alias blak.WinBorder "none"|"single"|"double"|"rounded"|"solid"|"shadow"|string
 ---@alias blak.LspFormatMode "never"|"fallback"|"prefer"|"first"|string
 ---@alias blak.PluginSpec string|table
+---@alias blak.ExtraId
+---| "ai.copilot"
+---| "ai.sidekick"
+---| "editor.fzf-lua"
+---| "editor.mini"
+---| "editor.neotree"
+---| "editor.snacks-explorer"
+---| "editor.snacks-terminal"
+---| "editor.telescope"
+---| "editor.window-navigation"
+---| "git.diffview"
+---| "git.lazygit"
+---| "lang.go"
+---| "lang.lua"
+---| "lang.markdown"
+---| "lang.python"
+---| "lang.rust"
+---| "lang.typescript"
+---| "lang.typescript-tsgo"
+---| "ui.animations"
+---| "ui.base46"
+---| "ui.comfy-line-numbers"
+---| "ui.dim"
+---| "ui.image-preview"
+---| "ui.lualine"
+---| "ui.zen"
 ---@alias blak.UserHook fun(config: blak.Config, blak: blak.UserContext)
 ---@alias blak.UserConfigLoader blak.UserConfig|fun(config: blak.Config, blak: blak.UserContext): blak.UserConfig?
 
@@ -153,6 +179,6 @@
 ---@field linters_by_ft? table<string, string[]>
 
 ---@class blak.ExtrasConfig
----@field enabled? string[]
+---@field enabled? blak.ExtraId[]
 
 return {}

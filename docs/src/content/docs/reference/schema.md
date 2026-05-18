@@ -205,7 +205,7 @@ return {
 
 | Key | Type | Notes |
 | --- | --- | --- |
-| `enabled` | `string[]` | List of extra IDs. Validation only checks that entries are strings — unknown IDs surface as a warning at runtime, not a hard error. |
+| `enabled` | `blak.ExtraId[]` | List of extra IDs. `lua_ls` completes known IDs like `lang.typescript`, `editor.mini`, and `git.lazygit`. Validation only checks that entries are strings — unknown IDs surface as a warning at runtime, not a hard error. |
 
 The runtime warning gives you a chance to keep using your config after renaming an extra in the repo.
 
