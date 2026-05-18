@@ -39,7 +39,7 @@ function M.setup(config)
       "  :BlakKeys                  show keymaps",
       "  :BlakNews                  release notes",
       "  :BlakPick {kind}           picker entrypoint",
-      "  :BlakExtras                list/enable/disable extras",
+      "  :BlakExtras                extras UI",
       "  :BlackExtras               alias for :BlakExtras",
       "  :BlakUpdate                update plugins with lockfile backup",
       "  :BlakUpgrade               intentional bigger moves",

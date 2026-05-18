@@ -6,12 +6,16 @@ Extras are optional modules. They can add Treesitter parsers, LSP servers,
 Mason tools, formatters, linters, keymaps, Snacks modules, or plugin specs.
 
 Commands: >
+  :BlakExtras
   :BlakExtras list
   :BlackExtras list
   :BlakExtras enable lang.typescript
   :BlakExtras disable lang.typescript
   :BlakExtras sync
 <
+
+:BlakExtras opens a floating extras UI. Press x or <CR> on an extra to toggle
+it, s to run :BlakExtras sync, r to refresh, and q to close.
 
 State is stored outside the repository in:
   stdpath('state')/blak/extras.json
@@ -21,7 +25,8 @@ BlackExtras is an alias for BlakExtras.
 Enabling an extra applies its config to the current session. Run :BlakExtras
 sync or :Lazy sync if the enabled set added or removed plugin specs. Disabling
 persists immediately, but restart Blak to unload plugins, keymaps, and runtime
-hooks that already ran.
+hooks that already ran. Extras enabled in lua/blak/user.lua are marked as
+config-managed in the UI; remove them there to disable them.
 
 AVAILABLE GROUPS
 

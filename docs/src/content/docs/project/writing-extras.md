@@ -23,7 +23,7 @@ The file returns a single table:
 return {
   id = "lang.zig",                          -- unique, dotted, matches path
   label = "Zig",                            -- short human label
-  description = "zls + treesitter",         -- one line shown by :BlakExtras list
+  description = "zls + treesitter",         -- one line shown in :BlakExtras
 
   -- Any of these are optional; include only the ones your extra needs.
   treesitter = { "zig" },                   -- merged into ensure_installed
@@ -75,7 +75,7 @@ That's the entire registration. The registry caches results and looks up extras 
 ```sh
 ./dev-install.sh
 blak-dev
-:BlakExtras list
+:BlakExtras
 :BlakExtras enable lang.zig
 :Lazy sync                           " if plugins changed
 :BlakToolsInstall                    " if mason changed

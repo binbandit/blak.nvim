@@ -118,7 +118,7 @@ Opens or closes Blak's native terminal split. This is what `:BlakTerminal` and `
 require("blak.util").open_scratch("Title", { "line 1", "line 2" })
 ```
 
-Opens a read-only, unlisted scratch buffer in a split. Used by `:Blak`, `:BlakKeys`, `:BlakExtras list`, and `:BlakNews`.
+Opens a read-only, unlisted scratch buffer in a split. Used by `:Blak`, `:BlakKeys`, and `:BlakNews`. `:BlakExtras` has a dedicated floating UI.
 
 ## `require("blak.extras")`
 

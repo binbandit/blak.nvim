@@ -1,4 +1,5 @@
 local M = {}
+local extras_view = require("blak.extras_view")
 
 local modules = {
   "blak.extras.lang.lua",
@@ -204,52 +205,49 @@ function M.activate(id, config)
   return extra ~= nil
 end
 
-local function lines(config)
-  local enabled_lookup = {}
-  for _, id in ipairs(M.enabled(config or require("blak.config").get())) do
-    enabled_lookup[id] = true
-  end
-
-  local out = { "# Blak extras", "", "Use :BlakExtras enable <id> or :BlakExtras disable <id>. :BlackExtras also works.", "" }
-  local ids = require("blak.util").tbl_keys(registry())
-  for _, id in ipairs(ids) do
-    local extra = registry()[id]
-    local mark = enabled_lookup[id] and "●" or "○"
-    table.insert(out, string.format("%s %-26s %s", mark, id, extra.description or extra.label or ""))
-  end
-  for _, id in ipairs(require("blak.util").tbl_keys(enabled_lookup)) do
-    if not M.is_known(id) then
-      table.insert(out, string.format("! %-26s Unknown extra; disable it to remove stale state", id))
-    end
+function M.all()
+  local out = {}
+  for _, id in ipairs(require("blak.util").tbl_keys(registry())) do
+    table.insert(out, registry()[id])
   end
   return out
 end
 
-function M.command(opts)
-  local util = require("blak.util")
-  local args = vim.split(opts.args or "", "%s+", { trimempty = true })
-  local action, id = args[1], args[2]
-  local config = require("blak.config").get()
+function M.get(id)
+  return registry()[id]
+end
 
-  if not action or action == "list" then
-    util.open_scratch("Blak extras", lines(config))
-    return
+function M.set_enabled(action, id, config, opts)
+  opts = opts or {}
+  if opts.notify == nil then
+    opts.notify = true
+  end
+
+  local util = require("blak.util")
+  config = config or require("blak.config").get()
+  config.extras = config.extras or { enabled = {} }
+
+  if not id then
+    if opts.notify then
+      util.warn("Unknown extra: " .. tostring(id))
+    end
+    return false
   end
 
   if action == "enable" or action == "disable" then
-    if not id then
-      util.warn("Unknown extra: " .. tostring(id))
-      return
-    end
     local current = require("blak.extras.state").read()
     local known = M.is_known(id)
     if action == "enable" and not known then
-      util.warn("Unknown extra: " .. id)
-      return
+      if opts.notify then
+        util.warn("Unknown extra: " .. id)
+      end
+      return false
     end
-    if action == "disable" and not known and not contains(current, id) and not contains(config.extras.enabled, id) then
-      util.warn("Unknown extra: " .. id)
-      return
+    if action == "disable" and not known and not contains(current, id) and not contains(config.extras.enabled or {}, id) then
+      if opts.notify then
+        util.warn("Unknown extra: " .. id)
+      end
+      return false
     end
 
     local next_ids = {}
@@ -268,22 +266,59 @@ function M.command(opts)
       table.insert(next_ids, id)
     end
     require("blak.extras.state").write(next_ids)
-    if action == "disable" and contains(config.extras.enabled, id) then
-      util.warn(id .. " is still enabled in lua/blak/user.lua. Remove it there to disable it.")
-      return
-    end
-    if action == "disable" and not known then
-      util.notify("Removed stale extra " .. id .. " from state. Restart Blak, then run :Lazy sync if plugins changed.")
-    elseif action == "enable" then
-      local active = M.activate(id, config)
-      local suffix = active and " Applied to this session." or " Already active in this session."
-      if registry()[id].plugins then
-        suffix = suffix .. " Run :BlakExtras sync if plugins need installing."
+    if action == "disable" and contains(config.extras.enabled or {}, id) then
+      if opts.notify then
+        util.warn(id .. " is still enabled in lua/blak/user.lua. Remove it there to disable it.")
       end
-      util.notify("Enabled " .. id .. "." .. suffix)
-    else
-      util.notify("Disabled " .. id .. ". Restart Blak to unload anything already active, then run :Lazy sync if plugins changed.")
+      return false
     end
+
+    local active
+    if action == "enable" then
+      active = M.activate(id, config)
+    end
+
+    if opts.notify then
+      if action == "disable" and not known then
+        util.notify("Removed stale extra " .. id .. " from state. Restart Blak, then run :Lazy sync if plugins changed.")
+      elseif action == "enable" then
+        local suffix = active and " Applied to this session." or " Already active in this session."
+        if registry()[id].plugins then
+          suffix = suffix .. " Run :BlakExtras sync if plugins need installing."
+        end
+        util.notify("Enabled " .. id .. "." .. suffix)
+      else
+        util.notify("Disabled " .. id .. ". Restart Blak to unload anything already active, then run :Lazy sync if plugins changed.")
+      end
+    end
+    return true
+  end
+
+  if opts.notify then
+    util.warn("Unknown BlakExtras action: " .. tostring(action))
+  end
+  return false
+end
+
+function M.toggle(id, config, opts)
+  config = config or require("blak.config").get()
+  local enabled = contains(M.enabled(config), id)
+  return M.set_enabled(enabled and "disable" or "enable", id, config, opts)
+end
+
+function M.command(opts)
+  local util = require("blak.util")
+  local args = vim.split(opts.args or "", "%s+", { trimempty = true })
+  local action, id = args[1], args[2]
+  local config = require("blak.config").get()
+
+  if not action or action == "list" then
+    extras_view.open(config)
+    return
+  end
+
+  if action == "enable" or action == "disable" then
+    M.set_enabled(action, id, config)
     return
   end
 

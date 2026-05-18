@@ -24,7 +24,8 @@ COMMANDS                                                 *blak-commands*
     keymaps, help, diagnostics, lsp_symbols, workspace_symbols.
 
 :BlakExtras [list|enable|disable|sync] [id]
-    Manage optional extras. See |blak-extras|.
+    Manage optional extras. With no args or "list", opens the extras UI.
+    See |blak-extras|.
 
 :BlackExtras [list|enable|disable|sync] [id]
     Alias for :BlakExtras.

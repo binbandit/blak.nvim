@@ -68,7 +68,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 :BlakKeys          keymaps registered by Blak
 :BlakNews          release notes
 :BlakPick files    picker entrypoint
-:BlakExtras        list optional extras
+:BlakExtras        extras UI
 :BlackExtras       alias for :BlakExtras
 :BlakUpdate        update plugins with lockfile backup
 :BlakUpgrade       intentional bigger moves
@@ -86,6 +86,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 Extras are opt-in and reversible:
 
 ```vim
+:BlakExtras
 :BlakExtras list
 :BlakExtras enable lang.typescript
 :BlakExtras enable lang.python
@@ -95,6 +96,11 @@ Extras are opt-in and reversible:
 :BlakExtras enable editor.snacks-explorer
 :BlakExtras disable lang.python
 ```
+
+The `:BlakExtras` UI shows enabled and available extras in sections. Press `x`
+or `<CR>` on an extra to toggle it, `s` to run `:Lazy sync`, and `q` to close.
+Extras listed in `lua/blak/user.lua` are shown as config-managed and should be
+removed there when you want them disabled.
 
 Use `lang.typescript-tsgo` instead of `lang.typescript` to try the experimental native TypeScript LSP.
 

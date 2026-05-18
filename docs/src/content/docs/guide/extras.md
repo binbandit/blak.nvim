@@ -24,12 +24,19 @@ When you disable an extra and restart, Blak stops registering that extra's plugi
 ## Managing extras
 
 ```vim
-:BlakExtras list                  " show available + which are enabled
+:BlakExtras                       " open the extras UI
+:BlakExtras list                  " same UI, explicit
 :BlackExtras list                 " same command, typo-friendly
 :BlakExtras enable lang.rust
 :BlakExtras disable git.lazygit
 :BlakExtras sync                  " run :Lazy sync after changes
 ```
+
+The UI groups enabled extras and available extras, shows the tools and plugins
+each one contributes, and lets you toggle the row under the cursor with `x` or
+`<CR>`. Press `s` to sync lazy.nvim, `r` to refresh, and `q` to close. Extras
+from `lua/blak/user.lua` are marked `[config]`; remove them there when you want
+the UI to stop treating them as enabled.
 
 State persists outside the repo in `stdpath('state')/blak/extras.json`. That means:
 

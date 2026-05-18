@@ -101,7 +101,7 @@ See the [config schema](/reference/schema/) for the full list of valid keys and 
 If you find yourself adding plugins inside `user.lua`, consider whether it should be an extra instead:
 
 ```vim
-:BlakExtras list
+:BlakExtras
 :BlakExtras enable lang.python
 :BlakExtras disable git.lazygit
 ```

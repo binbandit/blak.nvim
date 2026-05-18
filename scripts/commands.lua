@@ -170,13 +170,21 @@ local function main()
     assert(vim.g.blak_command_test_picker_kind == kind, "BlakPick did not dispatch " .. kind)
   end
 
+  run("BlakExtras", "BlakExtras")
+  assert(vim.bo.filetype == "blak-extras", "BlakExtras did not open the extras UI")
+  assert_contains(":BlakExtras", current_text(), "Enable or disable extras with x")
+  wipe_current()
+
   run("BlakExtras list", "BlakExtras list")
+  assert(vim.bo.filetype == "blak-extras", "BlakExtras list did not open the extras UI")
+  assert_contains(":BlakExtras list", current_text(), "Enable or disable extras with x")
   assert_contains(":BlakExtras list", current_text(), "lang.rust")
   assert_contains(":BlakExtras list", current_text(), "ui.lualine")
   assert_contains(":BlakExtras list", current_text(), "editor.snacks-explorer")
   wipe_current()
 
   run("BlackExtras list", "BlackExtras list")
+  assert(vim.bo.filetype == "blak-extras", "BlackExtras list did not open the extras UI")
   assert_contains(":BlackExtras list", current_text(), "lang.rust")
   wipe_current()
 
