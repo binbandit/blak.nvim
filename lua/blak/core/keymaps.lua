@@ -2,6 +2,8 @@ local M = {}
 
 local registered = {}
 local registered_lookup = {}
+local disabled_keymaps = {}
+local owned_keymaps = {}
 local terminal_lhs
 
 -- Built-in commands do not appear in maparg(), so optional keys need a small
@@ -13,34 +15,211 @@ local nvim_builtin_keys = {
 }
 
 local function mode_list(mode)
-  return type(mode) == "table" and mode or { mode }
-end
-
-local function has_keymap(mode, lhs)
-  local keymap = vim.fn.maparg(lhs, mode, false, true)
-  return type(keymap) == "table" and next(keymap) ~= nil
+  return type(mode) == "table" and mode or { mode or "n" }
 end
 
 local function is_nvim_builtin_key(mode, lhs)
   return nvim_builtin_keys[mode] and nvim_builtin_keys[mode][lhs]
 end
 
-local function map(mode, lhs, rhs, desc, opts)
-  opts = vim.tbl_extend("force", { silent = true, desc = desc }, opts or {})
-  vim.keymap.set(mode, lhs, rhs, opts)
+local function registry_key(mode, lhs)
+  return tostring(mode) .. "|" .. tostring(lhs)
+end
 
-  local mode_label = type(mode) == "table" and table.concat(mode, ",") or mode
-  local key = mode_label .. "|" .. lhs .. "|" .. (desc or "")
-  if not registered_lookup[key] then
-    registered_lookup[key] = true
-    table.insert(registered, { mode = mode, lhs = lhs, desc = desc or "" })
+local function rebuild_registered_lookup()
+  registered_lookup = {}
+  for index, item in ipairs(registered) do
+    registered_lookup[registry_key(item.mode, item.lhs)] = index
   end
+end
+
+local function register(mode, lhs, desc)
+  for _, item in ipairs(mode_list(mode)) do
+    local key = registry_key(item, lhs)
+    local index = registered_lookup[key]
+    if index then
+      registered[index].desc = desc or ""
+    else
+      table.insert(registered, { mode = item, lhs = lhs, desc = desc or "" })
+      registered_lookup[key] = #registered
+    end
+  end
+end
+
+local function unregister(mode, lhs)
+  local modes = {}
+  for _, item in ipairs(mode_list(mode)) do
+    modes[item] = true
+  end
+
+  local changed = false
+  for index = #registered, 1, -1 do
+    local item = registered[index]
+    if modes[item.mode] and item.lhs == lhs then
+      table.remove(registered, index)
+      changed = true
+    end
+  end
+  if changed then
+    rebuild_registered_lookup()
+  end
+end
+
+local function is_disabled(mode, lhs)
+  return disabled_keymaps[registry_key(mode, lhs)] == true
+end
+
+local function enabled_modes(mode, lhs, force)
+  local modes = {}
+  for _, item in ipairs(mode_list(mode)) do
+    if force or not is_disabled(item, lhs) then
+      table.insert(modes, item)
+    end
+  end
+  return modes
+end
+
+local function keymap_del_opts(opts)
+  if type(opts) == "table" and opts.buffer ~= nil then
+    return { buffer = opts.buffer }
+  end
+end
+
+local function ownable_keymap_opts(opts)
+  -- Buffer-local maps are owned by their buffer event, such as LspAttach.
+  return not (type(opts) == "table" and opts.buffer ~= nil)
+end
+
+local function keymap_matches_owner(owner)
+  local keymap = vim.fn.maparg(owner.lhs, owner.mode, false, true)
+  if type(keymap) ~= "table" or next(keymap) == nil then
+    return false
+  end
+  if (keymap.desc or "") ~= owner.desc then
+    return false
+  end
+  if owner.callback ~= nil then
+    return keymap.callback == owner.callback
+  end
+  if owner.rhs ~= nil and owner.rhs ~= "" then
+    return keymap.rhs == owner.rhs
+  end
+  return true
+end
+
+local function remember_keymap(mode, lhs, opts)
+  if not ownable_keymap_opts(opts) then
+    return
+  end
+
+  for _, item in ipairs(mode_list(mode)) do
+    local keymap = vim.fn.maparg(lhs, item, false, true)
+    if type(keymap) == "table" and next(keymap) ~= nil then
+      owned_keymaps[registry_key(item, lhs)] = {
+        mode = item,
+        lhs = lhs,
+        desc = keymap.desc or "",
+        rhs = keymap.rhs,
+        callback = keymap.callback,
+      }
+    end
+  end
+end
+
+local function forget_keymap(mode, lhs, opts)
+  if not ownable_keymap_opts(opts) then
+    return
+  end
+
+  for _, item in ipairs(mode_list(mode)) do
+    owned_keymaps[registry_key(item, lhs)] = nil
+  end
+end
+
+local function clear_owned_keymaps()
+  for key, owner in pairs(owned_keymaps) do
+    if keymap_matches_owner(owner) then
+      pcall(vim.keymap.del, owner.mode, owner.lhs)
+    end
+    owned_keymaps[key] = nil
+  end
+end
+
+local function delete_keymap(mode, lhs, opts)
+  for _, item in ipairs(mode_list(mode)) do
+    pcall(vim.keymap.del, item, lhs, keymap_del_opts(opts))
+    unregister(item, lhs)
+    forget_keymap(item, lhs, opts)
+  end
+end
+
+local function map(mode, lhs, rhs, desc, opts, force)
+  local modes = enabled_modes(mode, lhs, force)
+  if #modes == 0 then
+    return
+  end
+
+  opts = vim.tbl_extend("force", { silent = true }, opts or {}, { desc = desc })
+  vim.keymap.set(#modes == 1 and modes[1] or modes, lhs, rhs, opts)
+  register(modes, lhs, desc)
+  remember_keymap(modes, lhs, opts)
 end
 
 local function map_if_available(mode, lhs, rhs, desc, opts)
   for _, item in ipairs(mode_list(mode)) do
-    if not has_keymap(item, lhs) and not is_nvim_builtin_key(item, lhs) then
-      map(item, lhs, rhs, desc, opts)
+    if is_disabled(item, lhs) then
+      unregister(item, lhs)
+    else
+      local keymap = vim.fn.maparg(lhs, item, false, true)
+      if type(keymap) == "table" and next(keymap) ~= nil then
+        if keymap.desc == desc then
+          register(item, lhs, desc)
+        end
+      elseif not is_nvim_builtin_key(item, lhs) then
+        map(item, lhs, rhs, desc, opts)
+      end
+    end
+  end
+end
+
+local function keymap_lhs(item)
+  return item.key or item.lhs
+end
+
+local function keymap_rhs(item)
+  if item.disable == true then
+    return false
+  end
+  if item.action ~= nil then
+    return item.action
+  end
+  return item.rhs
+end
+
+local function keymap_desc(item)
+  return item.description or item.desc
+end
+
+local function configure_disabled_keymaps(config)
+  disabled_keymaps = {}
+  for _, item in ipairs(config.keymaps or {}) do
+    local lhs = type(item) == "table" and keymap_lhs(item) or nil
+    if type(lhs) == "string" and keymap_rhs(item) == false then
+      for _, mode in ipairs(mode_list(item.mode)) do
+        disabled_keymaps[registry_key(mode, lhs)] = true
+      end
+    end
+  end
+end
+
+local function apply_keymaps(keys, force)
+  for _, item in ipairs(keys or {}) do
+    local lhs = keymap_lhs(item)
+    local rhs = keymap_rhs(item)
+    if rhs == false then
+      delete_keymap(item.mode or "n", lhs, item.opts)
+    else
+      map(item.mode or "n", lhs, rhs, keymap_desc(item), item.opts, force)
     end
   end
 end
@@ -74,6 +253,7 @@ local function clear_terminal_keymap(lhs)
   local keymap = vim.fn.maparg(lhs, "n", false, true)
   if type(keymap) == "table" and keymap.desc == "Terminal" then
     pcall(vim.keymap.del, "n", lhs)
+    unregister("n", lhs)
   end
 end
 
@@ -136,8 +316,10 @@ local function git_nav(direction)
 end
 
 function M.setup(config)
+  clear_owned_keymaps()
   registered = {}
   registered_lookup = {}
+  configure_disabled_keymaps(config)
 
   map("n", "<Esc>", "<cmd>nohlsearch<cr>", "Clear search")
 
@@ -224,16 +406,20 @@ function M.setup(config)
   })
 
   M.apply_extra(config._extra_keymaps or {})
+  apply_keymaps(config.keymaps, true)
 end
 
 function M.apply_extra(keys)
-  for _, item in ipairs(keys or {}) do
-    map(item.mode or "n", item.lhs, item.rhs, item.desc, item.opts)
-  end
+  apply_keymaps(keys, false)
 end
 
 function M.show()
-  local lines = { "# Blak keymaps", "", "These are the mappings registered by Blak core and enabled extras.", "" }
+  local lines = {
+    "# Blak keymaps",
+    "",
+    "These are the mappings registered by Blak core, enabled extras, and user.lua.",
+    "",
+  }
   table.sort(registered, function(a, b)
     return a.lhs < b.lhs
   end)

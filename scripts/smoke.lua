@@ -94,6 +94,9 @@ assert(vim.fn.maparg("<leader>/", "n") == "", "disabled user keymap should be re
 assert(vim.fn.maparg("<leader>sg", "n", false, true).desc == "Search grep", "custom user keymap missing")
 assert(vim.fn.maparg("<leader>ff", "n", false, true).desc == "Recent override", "user keymap override missing")
 require("blak.core.keymaps").setup(require("blak.config").get())
+assert(vim.fn.maparg("<leader>sg", "n") == "", "removed user keymap should be removed")
+assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "removed user keymap disable should restore default")
+assert(vim.fn.maparg("<leader>ff", "n", false, true).desc == "Find files", "removed user keymap override should restore default")
 local blak_keymaps = {
   ["<leader>lc"] = "Blak config",
   ["<leader>le"] = "Extras",
