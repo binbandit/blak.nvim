@@ -90,6 +90,7 @@ Extras are opt-in and reversible:
 :BlakExtras enable lang.typescript
 :BlakExtras enable lang.python
 :BlakExtras enable git.lazygit
+:BlakExtras enable ui.base46
 :BlakExtras enable editor.snacks-explorer
 :BlakExtras disable lang.python
 ```
@@ -100,7 +101,7 @@ Default vs. optional is deliberate:
 
 - Language stacks are extras because most users do not need every server, formatter, linter, and parser.
 - Alternative pickers and explorers are extras because they replace muscle-memory surfaces.
-- LazyGit, Diffview, Copilot, image preview, zen mode, and animations are extras because they are valuable but preference-heavy.
+- LazyGit, Diffview, Copilot, image preview, theme collections, zen mode, and animations are extras because they are valuable but preference-heavy.
 
 ## Customization
 

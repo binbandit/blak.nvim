@@ -11,7 +11,7 @@ grep -RIn '<legacy Black identifiers>' .
 Result:
 
 ```text
-Validation passed: 59 Lua files, 16 extras
+Validation passed: 60 Lua files, 17 extras
 install.sh syntax OK
 stale name grep OK
 ```

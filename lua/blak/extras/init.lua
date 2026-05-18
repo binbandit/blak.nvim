@@ -8,6 +8,7 @@ local modules = {
   "blak.extras.lang.go",
   "blak.extras.lang.markdown",
   "blak.extras.ui.animations",
+  "blak.extras.ui.base46",
   "blak.extras.ui.image_preview",
   "blak.extras.ui.zen",
   "blak.extras.git.lazygit",

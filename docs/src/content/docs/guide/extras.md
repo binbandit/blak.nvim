@@ -131,6 +131,16 @@ Smooth scroll and cursor animations via Snacks.
 | --- | --- |
 | Snacks | `animate.enabled = true`, `scroll.enabled = true` |
 
+### `ui.base46`
+
+[AvengeMedia/base46](https://github.com/AvengeMedia/base46), the NvChad Base46 colorscheme collection as regular Neovim colorschemes.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `AvengeMedia/base46` |
+
+Enable the extra, sync plugins, then set `ui.colorscheme` to a Base46 scheme such as `base46-gruvchad`.
+
 ### `ui.image-preview`
 
 Image previews in pickers and floats — works in Kitty, WezTerm, and Ghostty.
