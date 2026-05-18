@@ -58,6 +58,49 @@ local super_tab_config = vim.tbl_deep_extend("force", {}, require("blak.config")
 })
 completion_specs = require("blak.plugins.completion")(super_tab_config)
 assert(completion_specs[1].opts.keymap.preset == "super-tab", "SuperTab config should use blink.cmp super-tab")
+do
+  local previous_blink = package.loaded["blink.cmp"]
+  local previous_blink_config = package.loaded["blink.cmp.config"]
+  local previous_blink_keymap = package.loaded["blink.cmp.keymap"]
+  local previous_blink_apply = package.loaded["blink.cmp.keymap.apply"]
+  local applied_preset
+
+  package.loaded["blink.cmp"] = {}
+  package.loaded["blink.cmp.config"] = {
+    enabled = function()
+      return true
+    end,
+  }
+  package.loaded["blink.cmp.keymap"] = {
+    get_mappings = function(keymap_config)
+      applied_preset = keymap_config.preset
+      return { ["<Tab>"] = { keymap_config.preset } }
+    end,
+  }
+  package.loaded["blink.cmp.keymap.apply"] = {
+    keymap_to_current_buffer = function(mappings)
+      vim.keymap.set("i", "<Tab>", function() end, {
+        buffer = 0,
+        desc = "blink.cmp: " .. mappings["<Tab>"][1],
+      })
+    end,
+  }
+
+  vim.keymap.set("i", "<Tab>", function() end, { buffer = 0, desc = "blink.cmp: default" })
+  require("blak.core.completion").refresh(super_tab_config)
+  assert(applied_preset == "super-tab", "completion refresh should rebuild blink keymaps from Blak config")
+  assert(
+    vim.fn.maparg("<Tab>", "i", false, true).desc == "blink.cmp: super-tab",
+    "completion refresh should replace stale blink Tab mapping"
+  )
+  pcall(vim.keymap.del, "i", "<Tab>", { buffer = 0 })
+  pcall(vim.api.nvim_del_augroup_by_name, "BlakBlinkCompletionKeymaps")
+
+  package.loaded["blink.cmp"] = previous_blink
+  package.loaded["blink.cmp.config"] = previous_blink_config
+  package.loaded["blink.cmp.keymap"] = previous_blink_keymap
+  package.loaded["blink.cmp.keymap.apply"] = previous_blink_apply
+end
 assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "<leader>/ grep mapping missing")

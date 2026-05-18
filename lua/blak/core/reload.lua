@@ -76,6 +76,7 @@ local function refresh_runtime(config)
   if lazy then
     lazy.refresh(config)
   end
+  require("blak.core.completion").refresh(config)
   M.watch_user_file()
 
   if config.lsp.automatic_enable and vim.lsp.enable then
