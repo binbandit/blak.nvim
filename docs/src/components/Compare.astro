@@ -1,6 +1,6 @@
 ---
 const stack = [
-  { role: "Package manager", tool: "lazy.nvim", note: "config rollback included" },
+  { role: "Package manager", tool: "lazy.nvim", note: "rollback snapshots included" },
   { role: "Default picker", tool: "fff.nvim", note: "fast, native" },
   { role: "Completion", tool: "blink.cmp", note: null },
   { role: "LSP wiring", tool: "vim.lsp.config()", note: "native, no wrapper" },
@@ -28,24 +28,15 @@ const stack = [
     </p>
   </header>
 
-  <table class="kit">
-    <caption class="visually-hidden">Default tools shipped with Blak</caption>
-    <thead>
-      <tr>
-        <th scope="col">What it does</th>
-        <th scope="col">Tool we ship</th>
-      </tr>
-    </thead>
-    <tbody>
+  <div class="kit-wrap">
+    <ul class="kit" aria-label="Default tools shipped with Blak">
       {stack.map((row) => (
-        <tr>
-          <th scope="row" class="kit-role">{row.role}</th>
-          <td class="kit-tool">
-            <span class="kit-tool-name" translate="no">{row.tool}</span>
-            {row.note && <span class="kit-tool-note">{row.note}</span>}
-          </td>
-        </tr>
+        <li class="kit-cell">
+          <span class="kit-cell-role">{row.role}</span>
+          <p class="kit-cell-tool" translate="no">{row.tool}</p>
+          {row.note && <p class="kit-cell-note">{row.note}</p>}
+        </li>
       ))}
-    </tbody>
-  </table>
+    </ul>
+  </div>
 </section>
