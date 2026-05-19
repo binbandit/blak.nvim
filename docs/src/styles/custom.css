@@ -530,8 +530,10 @@ dialog[aria-label="Search"] > div {
 
 .pagefind-ui__result-nested {
   margin-top: 0.55rem !important;
-  padding-left: 0.85rem !important;
-  border-left: 1px solid var(--line) !important;
+}
+
+#starlight__search .pagefind-ui__result-nested::before {
+  background: var(--line-bright) !important;
 }
 
 .pagefind-ui__result-nested .pagefind-ui__result-title a {
@@ -1361,112 +1363,139 @@ starlight-toc a:hover {
   font-size: inherit;
 }
 
-/* Terminal panel (Compare) -------------------------------------------------- */
-.terminal {
-  background: var(--ink-2);
+/* Default-kit spec table --------------------------------------------------- */
+.sl-markdown-content table.kit,
+table.kit {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
   border: 1px solid var(--line);
   border-radius: 0.6rem;
   overflow: hidden;
+  font-family: var(--sl-font);
+  font-size: 1rem;
 }
 
-.terminal-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.55rem 0.9rem;
+.sl-markdown-content table.kit th,
+.sl-markdown-content table.kit td,
+table.kit th,
+table.kit td {
+  border: none;
+  background: transparent;
+  text-transform: none;
+  letter-spacing: -0.005em;
+  text-align: left;
+  vertical-align: top;
+}
+
+.sl-markdown-content table.kit thead th,
+table.kit thead th {
   background: var(--ink-3);
   border-bottom: 1px solid var(--line);
+  padding: 0.75rem 1.25rem;
   font-family: var(--sl-font-mono);
-  font-size: 0.7rem;
-  color: var(--paper-muted);
-}
-
-.terminal-dots {
-  display: inline-flex;
-  gap: 0.32rem;
-}
-
-.terminal-dots span {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--line-bright);
-}
-
-.terminal-dots span:first-child {
-  background: var(--ember);
-}
-
-.terminal-title {
-  color: var(--paper);
-  letter-spacing: 0.02em;
-}
-
-.terminal-body {
-  padding: 0.85rem 0;
-}
-
-.stack {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 50rem) {
-  .stack {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.stack-row {
-  display: grid;
-  grid-template-columns: 0.7rem 8rem 1fr;
-  align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.5rem 1.1rem;
-  font-family: var(--sl-font-mono);
-  font-size: 0.85rem;
-}
-
-.stack-row:hover {
-  background: rgba(204, 51, 0, 0.04);
-}
-
-.stack-mark {
-  color: var(--ember);
-  font-size: 0.55rem;
-  align-self: center;
-}
-
-.stack-label {
-  color: var(--paper-dim);
-  letter-spacing: 0.06em;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-size: 0.72rem;
-  font-weight: 500;
-}
-
-.stack-value {
-  color: var(--paper-strong);
-  font-weight: 500;
-}
-
-.stack-meta {
   color: var(--paper-dim);
-  grid-column: 3;
-  font-size: 0.8rem;
 }
 
-@media (max-width: 30rem) {
-  .stack-row {
-    grid-template-columns: 0.7rem 1fr;
+.sl-markdown-content table.kit tbody tr,
+table.kit tbody tr {
+  border-top: 1px solid var(--line);
+  transition: background 0.15s ease;
+  background: transparent;
+}
+
+.sl-markdown-content table.kit tbody tr:first-child,
+table.kit tbody tr:first-child {
+  border-top: none;
+}
+
+.sl-markdown-content table.kit tbody tr:hover,
+table.kit tbody tr:hover {
+  background: var(--ink-2);
+}
+
+.sl-markdown-content table.kit .kit-role,
+.sl-markdown-content table.kit .kit-tool,
+table.kit .kit-role,
+table.kit .kit-tool {
+  padding: 1rem 1.25rem;
+}
+
+.sl-markdown-content table.kit .kit-role,
+table.kit .kit-role {
+  width: 14rem;
+  color: var(--paper);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.sl-markdown-content table.kit .kit-tool,
+table.kit .kit-tool {
+  font-weight: 400;
+}
+
+.kit-tool-name {
+  display: block;
+  font-family: var(--sl-font-mono);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--paper-strong);
+  letter-spacing: -0.005em;
+}
+
+.kit-tool-note {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: var(--paper-dim);
+  line-height: 1.45;
+}
+
+@media (max-width: 40rem) {
+  .sl-markdown-content table.kit,
+  .sl-markdown-content table.kit thead,
+  .sl-markdown-content table.kit tbody,
+  .sl-markdown-content table.kit tr,
+  table.kit,
+  table.kit thead,
+  table.kit tbody,
+  table.kit tr {
+    display: block;
   }
-  .stack-label,
-  .stack-value,
-  .stack-meta {
-    grid-column: 2;
+
+  .sl-markdown-content table.kit thead,
+  table.kit thead {
+    display: none;
+  }
+
+  .sl-markdown-content table.kit tbody tr,
+  table.kit tbody tr {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+    padding: 0.9rem 1.1rem;
+  }
+
+  .sl-markdown-content table.kit .kit-role,
+  .sl-markdown-content table.kit .kit-tool,
+  table.kit .kit-role,
+  table.kit .kit-tool {
+    padding: 0;
+    width: auto;
+  }
+
+  .sl-markdown-content table.kit .kit-role,
+  table.kit .kit-role {
+    font-family: var(--sl-font-mono);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper-dim);
   }
 }
 

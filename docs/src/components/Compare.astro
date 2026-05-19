@@ -1,17 +1,17 @@
 ---
 const stack = [
-  { label: "package manager", value: "lazy.nvim", meta: "+ config rollback" },
-  { label: "default picker", value: "fff.nvim", meta: "fast, native" },
-  { label: "completion", value: "blink.cmp", meta: "" },
-  { label: "lsp wiring", value: "vim.lsp.config()", meta: "native, no wrapper" },
-  { label: "formatter", value: "conform.nvim", meta: "" },
-  { label: "linter", value: "nvim-lint", meta: "" },
-  { label: "treesitter", value: "nvim-treesitter", meta: "" },
-  { label: "explorer", value: "oil.nvim", meta: "+ neotree/snacks extras" },
-  { label: "git signs", value: "gitsigns.nvim", meta: "" },
-  { label: "which-key", value: "which-key.nvim", meta: "every map described" },
-  { label: "dashboard", value: "Snacks", meta: "+ black-hole splash" },
-  { label: "colorscheme", value: "blak", meta: "monochrome + ember red" },
+  { role: "Package manager", tool: "lazy.nvim", note: "config rollback included" },
+  { role: "Default picker", tool: "fff.nvim", note: "fast, native" },
+  { role: "Completion", tool: "blink.cmp", note: null },
+  { role: "LSP wiring", tool: "vim.lsp.config()", note: "native, no wrapper" },
+  { role: "Formatter", tool: "conform.nvim", note: null },
+  { role: "Linter", tool: "nvim-lint", note: null },
+  { role: "Treesitter", tool: "nvim-treesitter", note: null },
+  { role: "Explorer", tool: "oil.nvim", note: "neo-tree / snacks via extras" },
+  { role: "Git signs", tool: "gitsigns.nvim", note: null },
+  { role: "Keymap hints", tool: "which-key.nvim", note: "every mapping described" },
+  { role: "Dashboard", tool: "Snacks", note: "black-hole splash" },
+  { role: "Colorscheme", tool: "blak", note: "monochrome with ember red" },
 ];
 ---
 
@@ -23,27 +23,29 @@ const stack = [
     </span>
     <h2 class="section-title">The default kit.</h2>
     <p class="section-sub">
-      Twelve core decisions. Wired up. Reversible. Anything beyond this set
+      Twelve core decisions, wired up and reversible. Anything beyond this set
       lives in an opt-in extra.
     </p>
   </header>
 
-  <div class="terminal" aria-label="Default stack">
-    <header class="terminal-bar">
-      <span class="terminal-dots" aria-hidden="true"><span></span><span></span><span></span></span>
-      <span class="terminal-title">:BlakDoctor</span>
-    </header>
-    <div class="terminal-body">
-      <ul class="stack">
-        {stack.map((row) => (
-          <li class="stack-row">
-            <span class="stack-mark" aria-hidden="true">●</span>
-            <span class="stack-label">{row.label}</span>
-            <span class="stack-value" translate="no">{row.value}</span>
-            {row.meta && <span class="stack-meta">— {row.meta}</span>}
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
+  <table class="kit">
+    <caption class="visually-hidden">Default tools shipped with Blak</caption>
+    <thead>
+      <tr>
+        <th scope="col">What it does</th>
+        <th scope="col">Tool we ship</th>
+      </tr>
+    </thead>
+    <tbody>
+      {stack.map((row) => (
+        <tr>
+          <th scope="row" class="kit-role">{row.role}</th>
+          <td class="kit-tool">
+            <span class="kit-tool-name" translate="no">{row.tool}</span>
+            {row.note && <span class="kit-tool-note">{row.note}</span>}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 </section>
