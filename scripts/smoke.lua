@@ -217,6 +217,53 @@ package.loaded.snacks = {
 require("blak.core.explorer").open({ explorer = { provider = "snacks" } })
 package.loaded.snacks = previous_snacks
 assert(called_snacks, "snacks explorer provider did not call Snacks.explorer")
+local closed_snacks_explorer = false
+previous_snacks = package.loaded.snacks
+package.loaded.snacks = {
+  picker = {
+    get = function(opts)
+      assert(opts and opts.source == "explorer", "snacks explorer lookup should be scoped to explorer pickers")
+      return {
+        {
+          close = function()
+            closed_snacks_explorer = true
+          end,
+        },
+      }
+    end,
+  },
+  explorer = function()
+    error("snacks explorer should toggle closed instead of opening another picker")
+  end,
+}
+require("blak.core.explorer").open({ explorer = { provider = "snacks" } })
+package.loaded.snacks = previous_snacks
+assert(closed_snacks_explorer, "snacks explorer provider did not close an existing explorer")
+local snacks_explorer_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
+  explorer = { provider = "snacks" },
+})
+local snacks_ui_opts = require("blak.plugins.ui")(snacks_explorer_config)[1].opts()
+assert(vim.tbl_get(snacks_ui_opts, "explorer", "enabled") == true, "snacks explorer should enable Snacks.explorer")
+assert(
+  vim.tbl_get(snacks_ui_opts, "picker", "sources", "explorer", "auto_close") == true,
+  "snacks explorer should auto-close when it loses focus"
+)
+local snacks_override_config = vim.tbl_deep_extend("force", {}, snacks_explorer_config, {
+  snacks = {
+    picker = {
+      sources = {
+        explorer = {
+          auto_close = false,
+        },
+      },
+    },
+  },
+})
+snacks_ui_opts = require("blak.plugins.ui")(snacks_override_config)[1].opts()
+assert(
+  vim.tbl_get(snacks_ui_opts, "picker", "sources", "explorer", "auto_close") == false,
+  "user snacks config should be able to override explorer auto_close"
+)
 local snack_terminal_called = false
 previous_snacks = package.loaded.snacks
 package.loaded.snacks = {

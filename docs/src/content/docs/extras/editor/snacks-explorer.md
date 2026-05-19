@@ -4,8 +4,8 @@ description: Configure editor.snacks-explorer as the Blak file explorer provider
 ---
 
 `editor.snacks-explorer` switches Blak's configured explorer from Oil to Snacks.
-After enabling it, `<leader>e` and the dashboard Explorer action open Snacks
-explorer.
+After enabling it, `<leader>e` and the dashboard Explorer action open or close
+Snacks explorer.
 
 ## Enable it
 
@@ -31,11 +31,12 @@ Or enable it interactively:
 | Surface | Contribution |
 | --- | --- |
 | Config | `explorer.provider = "snacks"` |
-| Snacks | `explorer.enabled = true` |
-| Keymap | `<leader>e` opens Snacks explorer instead of Oil |
+| Snacks | `explorer.enabled = true`; explorer picker `auto_close = true` |
+| Keymap | `<leader>e` toggles Snacks explorer instead of opening Oil |
 | External binary | `fd` is recommended for fast file discovery |
 
 The retargeted keymap appears in `:BlakKeys`.
+Blak also toggles an already-open Snacks explorer instead of opening a second one.
 
 ## Configure explorer behavior
 
@@ -67,6 +68,7 @@ return {
     picker = {
       sources = {
         explorer = {
+          auto_close = false,
           hidden = true,
           ignored = false,
           layout = {

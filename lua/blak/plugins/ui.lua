@@ -11,6 +11,17 @@ local function enable_manual_snacks(opts)
   end
 end
 
+local function enable_snacks_explorer(opts)
+  opts.explorer = vim.tbl_deep_extend("force", opts.explorer or {}, { enabled = true })
+  opts.picker = vim.tbl_deep_extend("force", opts.picker or {}, {
+    sources = {
+      explorer = {
+        auto_close = true,
+      },
+    },
+  })
+end
+
 return function(config)
   return {
     {
@@ -62,7 +73,7 @@ return function(config)
           scroll = { enabled = false },
         }
         if config.explorer.provider == "snacks" then
-          opts.explorer = { enabled = true }
+          enable_snacks_explorer(opts)
         end
         return vim.tbl_deep_extend("force", opts, config.snacks or {})
       end,

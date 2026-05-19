@@ -366,11 +366,11 @@ stock Neovim. Opting in keeps the shortcut explicit and reversible.
 | Adds | Value |
 | --- | --- |
 | Config | sets `explorer.provider = "snacks"` |
-| Snacks | `explorer.enabled = true` |
+| Snacks | `explorer.enabled = true`; explorer picker `auto_close = true` |
 | Binary | `fd` on `$PATH` for fast file discovery |
-| Keymap | `<leader>e` → Snacks explorer |
+| Keymap | `<leader>e` → toggle Snacks explorer |
 
-Snacks already ships in core for dashboard/input/notifier/picker support, so this extra enables the explorer module instead of adding a new plugin.
+Snacks already ships in core for dashboard/input/notifier/picker support, so this extra enables the explorer module instead of adding a new plugin. Blak also toggles an already-open Snacks explorer instead of opening a second one.
 
 ### `editor.snacks-terminal`
 
