@@ -194,6 +194,10 @@ See the [LSP guide](/guide/lsp/).
 | `ai.sidekick` | `<leader>at` | Send current context to Sidekick |
 | `ai.sidekick` | `<leader>av` | Send visual selection to Sidekick |
 | `ai.sidekick` | `<leader>ap` | Pick Sidekick prompt |
+| `editor.harpoon` | `<leader>ha` | Add current file to Harpoon |
+| `editor.harpoon` | `<leader>hh` | Toggle Harpoon quick menu |
+| `editor.harpoon` | `<leader>hp` / `<leader>hn` | Previous / next Harpoon file |
+| `editor.harpoon` | `<leader>h1`-`<leader>h4` | Jump to Harpoon file |
 | `editor.neotree` | `<leader>E` | Toggle Neo-tree |
 | `editor.snacks-explorer` | `<leader>e` | Snacks explorer |
 | `editor.snacks-terminal` | `terminal.toggle_key` | Snacks terminal |

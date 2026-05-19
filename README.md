@@ -108,6 +108,7 @@ Extras are opt-in and reversible:
 :BlakExtras enable ui.dim
 :BlakExtras enable ui.lualine
 :BlakExtras enable ai.sidekick
+:BlakExtras enable editor.harpoon
 :BlakExtras enable editor.mini
 :BlakExtras enable editor.window-navigation
 :BlakExtras enable editor.snacks-explorer
@@ -128,7 +129,7 @@ Default vs. optional is deliberate:
 
 - Language stacks are extras because most users do not need every server, formatter, linter, and parser.
 - Alternative pickers, explorers, window navigation chords, and Mini modules are extras because they replace or add muscle-memory surfaces.
-- LazyGit, Diffview, Copilot, Sidekick, Snacks terminal, comfy line numbers, image preview, theme collections, statuslines, dimming, zen mode, and animations are extras because they are valuable but preference-heavy.
+- LazyGit, Diffview, Copilot, Sidekick, Harpoon, Snacks terminal, comfy line numbers, image preview, theme collections, statuslines, dimming, zen mode, and animations are extras because they are valuable but preference-heavy.
 
 ## Customization
 

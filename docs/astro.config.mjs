@@ -228,6 +228,7 @@ export default defineConfig({
             { label: "Diffview", slug: "extras/git/diffview" },
             { label: "Copilot", slug: "extras/ai/copilot" },
             { label: "Sidekick", slug: "extras/ai/sidekick" },
+            { label: "Harpoon", slug: "extras/editor/harpoon" },
             { label: "Mini.nvim modules", slug: "extras/editor/mini" },
             { label: "Window navigation", slug: "extras/editor/window-navigation" },
             { label: "Neo-tree", slug: "extras/editor/neotree" },

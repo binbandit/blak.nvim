@@ -113,6 +113,8 @@ BLAK
   <Space>lT        Install Treesitter parsers
 
 EXTRAS
+  editor.harpoon maps <Space>ha, <Space>hh, <Space>hp, <Space>hn, and
+  <Space>h1 through <Space>h4 for Harpoon file marks.
   editor.window-navigation maps <C-h>, <C-j>, <C-k>, and <C-l> to move
   between windows.
   ui.comfy-line-numbers maps displayed labels with j/k and Up/Down motions.

@@ -49,6 +49,7 @@ ui.zen
 git.lazygit
 git.diffview
 
+editor.harpoon
 editor.mini
 editor.window-navigation
 editor.neotree

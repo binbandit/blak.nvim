@@ -67,7 +67,7 @@ configuration examples, install notes, and verification path.
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
 | Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/) |
 | AI | [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/) |
-| Editor | [`editor.mini`](/extras/editor/mini/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
+| Editor | [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
 
@@ -325,6 +325,18 @@ return {
 > Never enabled by default. Disable it, restart Blak, then run `:BlakExtras sync` to remove the plugin spec.
 
 ## Editor
+
+### `editor.harpoon`
+
+[Harpoon v2](https://github.com/ThePrimeagen/harpoon/tree/harpoon2) for
+project-local file marks and a small editable quick menu.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `ThePrimeagen/harpoon` on branch `harpoon2` |
+| Deps | `plenary.nvim` |
+| Config | calls `require("harpoon"):setup({})` |
+| Keymaps | `<leader>h*` Harpoon file actions |
 
 ### `editor.mini`
 

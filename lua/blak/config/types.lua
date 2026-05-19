@@ -11,6 +11,7 @@
 ---| "ai.copilot"
 ---| "ai.sidekick"
 ---| "editor.fzf-lua"
+---| "editor.harpoon"
 ---| "editor.mini"
 ---| "editor.neotree"
 ---| "editor.snacks-explorer"
