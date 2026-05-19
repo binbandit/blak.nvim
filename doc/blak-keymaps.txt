@@ -113,6 +113,17 @@ BLAK
   <Space>lT        Install Treesitter parsers
 
 EXTRAS
+  debug.dap maps <Space>d* debug actions: breakpoints, continue, step, REPL,
+  terminate, and dap-ui.
+  test.neotest maps <Space>T* test actions: nearest, file, debug, summary, and
+  output.
+  editor.aerial maps <Space>co to toggle the code outline.
+  editor.overseer maps <Space>oo, <Space>or, and <Space>oq for task workflows.
+  editor.refactoring maps <Space>r* refactor and print-debug actions.
+  editor.render-markdown maps <Space>um to toggle Markdown rendering.
+  editor.todo-comments maps ]t, [t, and <Space>xT for TODO comments.
+  editor.trouble maps <Space>xX, <Space>xQ, <Space>xL, <Space>cO, and
+  <Space>cR for Trouble lists.
   editor.harpoon maps <Space>ha, <Space>hh, <Space>hp, <Space>hn, and
   <Space>h1 through <Space>h4 for Harpoon file marks.
   editor.window-navigation maps <C-h>, <C-j>, <C-k>, and <C-l> to move

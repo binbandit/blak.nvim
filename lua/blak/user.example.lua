@@ -37,7 +37,7 @@ return {
   plugins = {
     specs = {
       -- Add lazy.nvim specs here when a personal plugin is not a Blak extra.
-      -- { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+      -- { "tpope/vim-sleuth", event = "BufReadPost" },
     },
   },
 
@@ -59,5 +59,5 @@ return {
 -- return function(config, blak)
 --   config.picker.provider = "snacks"
 --   table.insert(config.extras.enabled, "lang.typescript")
---   table.insert(config.plugins.specs, { "folke/trouble.nvim", cmd = "Trouble", opts = {} })
+--   table.insert(config.plugins.specs, { "tpope/vim-sleuth", event = "BufReadPost" })
 -- end

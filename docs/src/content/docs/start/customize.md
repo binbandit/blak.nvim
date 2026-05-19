@@ -127,7 +127,7 @@ core or a reusable extra:
 return {
   plugins = {
     specs = {
-      { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+      { "tpope/vim-sleuth", event = "BufReadPost" },
     },
   },
 }
@@ -173,7 +173,7 @@ config table it is building directly:
 return function(config, blak)
   config.picker.provider = "snacks"
   table.insert(config.extras.enabled, "lang.typescript")
-  table.insert(config.plugins.specs, { "folke/trouble.nvim", cmd = "Trouble", opts = {} })
+  table.insert(config.plugins.specs, { "tpope/vim-sleuth", event = "BufReadPost" })
 
   config.hooks.after = function()
     vim.opt.cursorline = false

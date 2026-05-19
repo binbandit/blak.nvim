@@ -38,6 +38,10 @@ lang.rust
 lang.go
 lang.markdown
 
+debug.dap
+
+test.neotest
+
 ui.animations
 ui.base46
 ui.comfy-line-numbers
@@ -49,8 +53,14 @@ ui.zen
 git.lazygit
 git.diffview
 
+editor.aerial
 editor.harpoon
 editor.mini
+editor.overseer
+editor.refactoring
+editor.render-markdown
+editor.todo-comments
+editor.trouble
 editor.window-navigation
 editor.neotree
 editor.snacks-explorer

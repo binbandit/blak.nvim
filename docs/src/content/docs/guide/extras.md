@@ -64,10 +64,12 @@ configuration examples, install notes, and verification path.
 | Group | Extras |
 | --- | --- |
 | Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/) |
+| Debug | [`debug.dap`](/extras/debug/dap/) |
+| Test | [`test.neotest`](/extras/test/neotest/) |
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
 | Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/) |
 | AI | [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/) |
-| Editor | [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
+| Editor | [`editor.aerial`](/extras/editor/aerial/), [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.overseer`](/extras/editor/overseer/), [`editor.refactoring`](/extras/editor/refactoring/), [`editor.render-markdown`](/extras/editor/render-markdown/), [`editor.todo-comments`](/extras/editor/todo-comments/), [`editor.trouble`](/extras/editor/trouble/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
 
@@ -227,6 +229,38 @@ Distraction-free editing mode.
 | Snacks | `zen.enabled = true` |
 | Keymap | `<leader>uz` → toggle zen |
 
+
+## Debug
+
+### `debug.dap`
+
+[nvim-dap](https://github.com/mfussenegger/nvim-dap) and
+[nvim-dap-ui](https://github.com/rcarriga/nvim-dap-ui) for Debug Adapter
+Protocol workflows.
+
+| Adds | Value |
+| --- | --- |
+| Plugins | `mfussenegger/nvim-dap`, `rcarriga/nvim-dap-ui` |
+| Deps | `nvim-nio` |
+| Keymaps | `<leader>d*` debug actions |
+
+Language adapters and launch configurations stay explicit in `user.lua`.
+
+## Test
+
+### `test.neotest`
+
+[neotest](https://github.com/nvim-neotest/neotest) as a base test runner
+framework.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `nvim-neotest/neotest` |
+| Deps | `nvim-nio`, `plenary.nvim`, `FixCursorHold.nvim`, `nvim-treesitter` |
+| Keymaps | `<leader>T*` test actions |
+
+Language-specific adapters stay explicit in `plugins.specs`.
+
 ## Git
 
 ### `git.lazygit`
@@ -326,6 +360,17 @@ return {
 
 ## Editor
 
+### `editor.aerial`
+
+[aerial.nvim](https://github.com/stevearc/aerial.nvim) for an opt-in code
+outline window.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `stevearc/aerial.nvim` |
+| Deps | `mini.icons` |
+| Keymap | `<leader>co` → toggle outline |
+
 ### `editor.harpoon`
 
 [Harpoon v2](https://github.com/ThePrimeagen/harpoon/tree/harpoon2) for
@@ -350,6 +395,62 @@ project-local file marks and a small editable quick menu.
 This extra does not enable any optional Mini module by default. `mini.icons` and
 `mini.pairs` ship in core; put the other modules you want in `mini.modules`,
 enable `editor.mini`, then run `:BlakExtras sync`.
+
+
+### `editor.overseer`
+
+[overseer.nvim](https://github.com/stevearc/overseer.nvim) for project task
+running and job management.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `stevearc/overseer.nvim` |
+| Keymaps | `<leader>oo`, `<leader>or`, `<leader>oq` |
+
+### `editor.refactoring`
+
+[refactoring.nvim](https://github.com/ThePrimeagen/refactoring.nvim) for
+Treesitter-powered extract, inline, and print-debug refactors.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `ThePrimeagen/refactoring.nvim` |
+| Deps | `plenary.nvim`, `nvim-treesitter` |
+| Keymaps | `<leader>r*` refactor actions |
+
+### `editor.render-markdown`
+
+[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)
+for richer in-buffer Markdown rendering.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `MeanderingProgrammer/render-markdown.nvim` |
+| Deps | `nvim-treesitter`, `mini.icons` |
+| Treesitter | `markdown`, `markdown_inline` |
+| Keymap | `<leader>um` → toggle Markdown rendering |
+
+### `editor.todo-comments`
+
+[todo-comments.nvim](https://github.com/folke/todo-comments.nvim) for highlighted
+and searchable TODO-style comments.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `folke/todo-comments.nvim` |
+| Deps | `plenary.nvim` |
+| Keymaps | `]t`, `[t`, `<leader>xT` |
+
+### `editor.trouble`
+
+[trouble.nvim](https://github.com/folke/trouble.nvim) for richer diagnostics,
+references, symbols, quickfix, and location list views.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `folke/trouble.nvim` |
+| Deps | `mini.icons` |
+| Keymaps | `<leader>xX`, `<leader>xQ`, `<leader>xL`, `<leader>cO`, `<leader>cR` |
 
 ### `editor.window-navigation`
 

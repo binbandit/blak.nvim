@@ -95,7 +95,7 @@ Personal lazy.nvim specs can be added under plugins.specs: >
   return {
     plugins = {
       specs = {
-        { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+        { "tpope/vim-sleuth", event = "BufReadPost" },
       },
     },
   }

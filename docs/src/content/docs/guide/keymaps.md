@@ -194,6 +194,37 @@ See the [LSP guide](/guide/lsp/).
 | `ai.sidekick` | `<leader>at` | Send current context to Sidekick |
 | `ai.sidekick` | `<leader>av` | Send visual selection to Sidekick |
 | `ai.sidekick` | `<leader>ap` | Pick Sidekick prompt |
+| `debug.dap` | `<leader>db` | Toggle breakpoint |
+| `debug.dap` | `<leader>dc` | Continue debugging |
+| `debug.dap` | `<leader>di` / `<leader>do` / `<leader>dO` | Step into / over / out |
+| `debug.dap` | `<leader>dr` | Toggle DAP REPL |
+| `debug.dap` | `<leader>dt` | Terminate debug session |
+| `debug.dap` | `<leader>du` | Toggle dap-ui |
+| `test.neotest` | `<leader>Tn` | Run nearest test |
+| `test.neotest` | `<leader>Tf` | Run current file tests |
+| `test.neotest` | `<leader>Td` | Debug nearest test |
+| `test.neotest` | `<leader>Ts` | Toggle test summary |
+| `test.neotest` | `<leader>To` | Open test output |
+| `test.neotest` | `<leader>TO` | Toggle test output panel |
+| `editor.aerial` | `<leader>co` | Toggle code outline |
+| `editor.overseer` | `<leader>oo` | Toggle tasks |
+| `editor.overseer` | `<leader>or` | Run task |
+| `editor.overseer` | `<leader>oq` | Task quick action |
+| `editor.refactoring` | `<leader>re` | Extract function |
+| `editor.refactoring` | `<leader>rf` | Extract function to file |
+| `editor.refactoring` | `<leader>rv` | Extract variable |
+| `editor.refactoring` | `<leader>ri` | Inline variable |
+| `editor.refactoring` | `<leader>rI` | Inline function |
+| `editor.refactoring` | `<leader>rp` | Print debug variable |
+| `editor.refactoring` | `<leader>rc` | Cleanup debug prints |
+| `editor.render-markdown` | `<leader>um` | Toggle Markdown rendering |
+| `editor.todo-comments` | `]t` / `[t` | Next / previous TODO comment |
+| `editor.todo-comments` | `<leader>xT` | TODO quickfix |
+| `editor.trouble` | `<leader>xX` | Trouble diagnostics |
+| `editor.trouble` | `<leader>xQ` | Trouble quickfix |
+| `editor.trouble` | `<leader>xL` | Trouble loclist |
+| `editor.trouble` | `<leader>cO` | Trouble symbols |
+| `editor.trouble` | `<leader>cR` | Trouble references |
 | `editor.harpoon` | `<leader>ha` | Add current file to Harpoon |
 | `editor.harpoon` | `<leader>hh` | Toggle Harpoon quick menu |
 | `editor.harpoon` | `<leader>hp` / `<leader>hn` | Previous / next Harpoon file |

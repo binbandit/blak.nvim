@@ -102,12 +102,20 @@ Extras are opt-in and reversible:
 :BlakExtras list
 :BlakExtras enable lang.typescript
 :BlakExtras enable lang.python
+:BlakExtras enable debug.dap
+:BlakExtras enable test.neotest
 :BlakExtras enable git.lazygit
 :BlakExtras enable ui.base46
 :BlakExtras enable ui.comfy-line-numbers
 :BlakExtras enable ui.dim
 :BlakExtras enable ui.lualine
 :BlakExtras enable ai.sidekick
+:BlakExtras enable editor.trouble
+:BlakExtras enable editor.aerial
+:BlakExtras enable editor.todo-comments
+:BlakExtras enable editor.overseer
+:BlakExtras enable editor.refactoring
+:BlakExtras enable editor.render-markdown
 :BlakExtras enable editor.harpoon
 :BlakExtras enable editor.mini
 :BlakExtras enable editor.window-navigation
@@ -129,7 +137,7 @@ Default vs. optional is deliberate:
 
 - Language stacks are extras because most users do not need every server, formatter, linter, and parser.
 - Alternative pickers, explorers, window navigation chords, and Mini modules are extras because they replace or add muscle-memory surfaces.
-- LazyGit, Diffview, Copilot, Sidekick, Harpoon, Snacks terminal, comfy line numbers, image preview, theme collections, statuslines, dimming, zen mode, and animations are extras because they are valuable but preference-heavy.
+- LazyGit, Diffview, Copilot, Sidekick, DAP, Neotest, Trouble, Aerial, Harpoon, TODO comments, Overseer, Refactoring, Render Markdown, Snacks terminal, comfy line numbers, image preview, theme collections, statuslines, dimming, zen mode, and animations are extras because they are valuable but preference-heavy.
 
 ## Customization
 
@@ -196,7 +204,7 @@ Personal lazy.nvim specs live under `plugins.specs`:
 return {
   plugins = {
     specs = {
-      { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+      { "tpope/vim-sleuth", event = "BufReadPost" },
     },
   },
 }

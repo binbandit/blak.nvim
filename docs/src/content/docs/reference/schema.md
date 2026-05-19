@@ -179,7 +179,7 @@ more direct names above.
 return {
   plugins = {
     specs = {
-      { "folke/trouble.nvim", cmd = "Trouble", opts = {} },
+      { "tpope/vim-sleuth", event = "BufReadPost" },
     },
   },
 }
