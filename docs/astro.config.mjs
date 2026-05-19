@@ -142,9 +142,32 @@ export default defineConfig({
     document.querySelectorAll('.pagefind-ui__form').forEach(enhance);
   }
 
+  // Augment the search button's accessible name with the visible keyboard
+  // shortcut, and label the right-side complementary aside. Starlight owns
+  // both elements, so we patch them on render and on any sidebar swap.
+  function labelLandmarks() {
+    var openBtn = document.querySelector('button[data-open-modal]');
+    if (openBtn && openBtn.getAttribute('aria-label') === 'Search') {
+      var isMac = navigator.platform.toLowerCase().indexOf('mac') >= 0;
+      var nbsp = String.fromCharCode(0x00a0);
+      var shortcut = isMac
+        ? String.fromCharCode(0x2318) + nbsp + 'K'
+        : 'Ctrl' + nbsp + 'K';
+      openBtn.setAttribute('aria-label', 'Search (' + shortcut + ')');
+    }
+    var toc = document.querySelector('aside.right-sidebar-container');
+    if (toc && !toc.hasAttribute('aria-label')) {
+      toc.setAttribute('aria-label', 'On this page');
+    }
+  }
+
   function setup() {
     scan();
-    new MutationObserver(scan).observe(document.documentElement, {
+    labelLandmarks();
+    new MutationObserver(function () {
+      scan();
+      labelLandmarks();
+    }).observe(document.documentElement, {
       childList: true,
       subtree: true,
     });

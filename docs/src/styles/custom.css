@@ -17,8 +17,8 @@
 
   --paper: #e8e8e8;
   --paper-strong: #ffffff;
-  --paper-dim: #8a8a8a;
-  --paper-muted: #5e5e5e;
+  --paper-dim: #9a9a9a;
+  --paper-muted: #7a7a7a;
   --paper-faint: #3a3a3a;
 
   /* Single accent: the deep red from the actual black-hole GIF. */
@@ -102,6 +102,12 @@ body {
   background: var(--ink);
   color: var(--paper);
   letter-spacing: -0.005em;
+  -webkit-tap-highlight-color: rgba(204, 51, 0, 0.18);
+}
+
+button,
+a {
+  touch-action: manipulation;
 }
 
 main {
@@ -134,6 +140,7 @@ main {
   letter-spacing: -0.03em;
   margin-bottom: 1rem;
   font-weight: 800;
+  text-wrap: balance;
 }
 
 .sl-markdown-content h2 {
@@ -143,6 +150,16 @@ main {
   font-size: 1.5rem;
   letter-spacing: -0.022em;
   line-height: 1.2;
+  text-wrap: balance;
+}
+
+.sl-markdown-content h3,
+.sl-markdown-content h4 {
+  text-wrap: balance;
+}
+
+.sl-markdown-content p {
+  text-wrap: pretty;
 }
 
 .sl-markdown-content h2:first-of-type {
@@ -196,6 +213,21 @@ main {
 
 .sl-markdown-content blockquote p {
   margin: 0;
+}
+
+/* Pull-quote — a styled brand callout that doesn't pretend to cite a source.
+   Used inline in MDX where the rhetorical "the promise" belongs to the docs
+   themselves, not an external author. */
+.sl-markdown-content p.pull-quote {
+  position: relative;
+  margin: 1.75rem 0;
+  padding: 0.6rem 1.4rem;
+  border-left: 2px solid var(--ember);
+  color: var(--paper-strong);
+  font-family: var(--sl-font);
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
 }
 
 .sl-markdown-content :is(ul, ol) {
@@ -333,9 +365,9 @@ button[data-open-modal] kbd,
 button[data-open-modal] kbd kbd {
   all: unset;
   font-family: var(--sl-font-mono);
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--paper-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--paper-dim);
   letter-spacing: 0.02em;
   background: transparent !important;
   border: none !important;
@@ -345,6 +377,11 @@ button[data-open-modal] kbd kbd {
   border-radius: 0 !important;
   text-shadow: none;
   display: inline;
+}
+
+button[data-open-modal]:hover kbd,
+button[data-open-modal]:hover kbd kbd {
+  color: var(--paper-strong);
 }
 
 button[data-open-modal] kbd {
@@ -361,6 +398,11 @@ dialog[aria-label="Search"] {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   color-scheme: dark;
+  overscroll-behavior: contain;
+}
+
+dialog[aria-label="Search"] > div {
+  overscroll-behavior: contain;
 }
 
 dialog[aria-label="Search"] > div {
@@ -1162,6 +1204,18 @@ starlight-toc a:hover {
   border-radius: 50%;
   background: var(--ember);
   box-shadow: 0 0 6px var(--ember);
+  animation: ember-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes ember-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.78);
+  }
 }
 
 .section-title {
@@ -1214,30 +1268,47 @@ starlight-toc a:hover {
 }
 
 .cell {
+  position: relative;
   background: var(--ink);
   padding: 1.6rem 1.5rem 1.4rem;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
   transition: background 0.2s ease;
+  overflow: hidden;
+}
+
+.cell::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: var(--ember);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .cell:hover {
   background: var(--ink-2);
 }
 
+.cell:hover::before {
+  transform: scaleY(1);
+}
+
 .cell-tag {
   align-self: flex-start;
   font-family: var(--sl-font-mono);
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ember);
-  border: 1px solid rgba(204, 51, 0, 0.35);
-  padding: 0.15rem 0.45rem;
+  color: var(--ember-hot);
+  border: 1px solid rgba(238, 102, 17, 0.42);
+  padding: 0.2rem 0.5rem;
   border-radius: 0.25rem;
-  background: rgba(204, 51, 0, 0.05);
-  font-weight: 500;
+  background: rgba(238, 102, 17, 0.08);
+  font-weight: 600;
 }
 
 .cell-title {
@@ -1315,14 +1386,14 @@ starlight-toc a:hover {
   gap: 0.32rem;
 }
 
-.terminal-dots i {
+.terminal-dots span {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
   background: var(--line-bright);
 }
 
-.terminal-dots i:first-child {
+.terminal-dots span:first-child {
   background: var(--ember);
 }
 
@@ -1370,10 +1441,11 @@ starlight-toc a:hover {
 }
 
 .stack-label {
-  color: var(--paper-muted);
+  color: var(--paper-dim);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
+  font-weight: 500;
 }
 
 .stack-value {
@@ -1401,8 +1473,8 @@ starlight-toc a:hover {
 /* Footer & "Edit page" / meta ---------------------------------------------- */
 .sl-flex.meta {
   font-family: var(--sl-font-mono);
-  font-size: 0.72rem;
-  color: var(--paper-muted);
+  font-size: 0.76rem;
+  color: var(--paper-dim);
   letter-spacing: 0.04em;
   margin-top: 2.5rem;
 }
@@ -1427,9 +1499,9 @@ starlight-toc a:hover {
 footer.sl-footer-meta {
   margin-top: 4rem;
   padding-top: 2rem;
-  color: var(--paper-muted);
+  color: var(--paper-dim);
   font-family: var(--sl-font-mono);
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   letter-spacing: 0.04em;
 }
 
@@ -1445,6 +1517,96 @@ footer.sl-footer-meta a:hover {
 /* Anchor scroll margin — keep headings clear of the sticky top nav. */
 .sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
   scroll-margin-top: 4.5rem;
+}
+
+/* Tab-focusable surfaces sit clear of the sticky header on scroll-into-view. */
+:focus-visible {
+  scroll-margin-top: 5rem;
+}
+
+/* Starlight's <Card> uses vw-based clamp for font-size; the rem-bounded clamp
+   is functionally accessible at 200% zoom, but the rule-of-thumb checker
+   prefers no viewport units in font-size. Re-state with rem-only sizes. */
+.card {
+  --card-padding: clamp(1rem, 1.4rem, 2.5rem);
+  padding: var(--card-padding);
+  gap: clamp(0.5rem, 0.75rem, 1rem);
+}
+
+.card .body {
+  font-size: var(--sl-text-body);
+}
+
+/* Visible focus rings for surfaces the audit flagged on code blocks and
+   pagination — make the ember outline thicker on those specific targets so
+   the indicator is unambiguous. */
+.expressive-code pre:focus-visible,
+.expressive-code .copy button:focus-visible,
+.pagination-links a:focus-visible,
+button[data-open-modal]:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 2px;
+  border-radius: 0.4rem;
+}
+
+/* Right TOC: allow long descriptors to wrap instead of being clipped.
+   Starlight's fixed .right-sidebar overflows the viewport on purpose so it
+   scrolls with the page, but that lets the TOC panel size itself off-screen.
+   Cap the TOC panel to the visible aside width and let links wrap. */
+aside.right-sidebar-container .right-sidebar-panel {
+  width: 100%;
+  max-width: 14rem;
+}
+
+aside.right-sidebar-container .right-sidebar-panel .sl-container {
+  max-width: 100%;
+}
+
+starlight-toc {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+}
+
+starlight-toc nav,
+starlight-toc nav ul,
+starlight-toc nav li {
+  max-width: 100%;
+  min-width: 0;
+}
+
+starlight-toc nav a {
+  display: block;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  line-height: 1.4;
+}
+
+/* ============================================================================
+   Motion — honor prefers-reduced-motion across every effect we author.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .eyebrow-dot {
+    animation: none;
+  }
+
+  .hero-btn:hover,
+  .pagination-links a:hover svg,
+  .pagination-links a[rel="next"]:hover svg,
+  .pagination-links a[rel="prev"]:hover svg {
+    transform: none !important;
+  }
 }
 
 /* Hide the (no-op) theme toggle entirely. */

@@ -81,7 +81,12 @@ const cells = [
           <h3 class="cell-title">{cell.title}</h3>
         </header>
         <p class="cell-body" set:html={cell.body} />
-        <pre class={`cell-code lang-${cell.lang}`}><code>{cell.code}</code></pre>
+        <pre
+          class={`cell-code lang-${cell.lang}`}
+          tabindex="0"
+          aria-label={`${cell.title} example`}
+          translate="no"
+        ><code>{cell.code}</code></pre>
       </article>
     ))}
   </div>

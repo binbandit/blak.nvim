@@ -30,7 +30,7 @@ const stack = [
 
   <div class="terminal" aria-label="Default stack">
     <header class="terminal-bar">
-      <span class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="terminal-dots" aria-hidden="true"><span></span><span></span><span></span></span>
       <span class="terminal-title">:BlakDoctor</span>
     </header>
     <div class="terminal-body">
@@ -39,7 +39,7 @@ const stack = [
           <li class="stack-row">
             <span class="stack-mark" aria-hidden="true">●</span>
             <span class="stack-label">{row.label}</span>
-            <span class="stack-value">{row.value}</span>
+            <span class="stack-value" translate="no">{row.value}</span>
             {row.meta && <span class="stack-meta">— {row.meta}</span>}
           </li>
         ))}

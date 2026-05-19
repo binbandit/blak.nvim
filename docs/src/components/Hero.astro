@@ -14,15 +14,15 @@ const { title = data.title, tagline } = data.hero ?? {};
   </div>
 
   <div class="hero-wordmark">
-    <p class="hero-name">blak.nvim</p>
+    <p class="hero-name" translate="no">blak.nvim</p>
     <p class="hero-tagline">
       {tagline ?? "Everything useful. Nothing escapes."}
     </p>
   </div>
 
-  <div class="hero-install" aria-label="Install command">
+  <div class="hero-install" role="group" aria-label="Install command">
     <span class="hero-install-prompt" aria-hidden="true">$</span>
-    <code id="hero-install-cmd">curl -fsSL https://getblak.dev/install.sh | sh</code>
+    <code id="hero-install-cmd" translate="no">curl -fsSL https://getblak.dev/install.sh | sh</code>
     <button
       class="hero-install-copy"
       type="button"
@@ -37,6 +37,7 @@ const { title = data.title, tagline } = data.hero ?? {};
         <polyline points="20 6 9 17 4 12" />
       </svg>
     </button>
+    <span class="visually-hidden" aria-live="polite" id="hero-install-status"></span>
   </div>
 
   <div class="hero-actions">
@@ -59,15 +60,20 @@ const { title = data.title, tagline } = data.hero ?? {};
 <script>
   (() => {
     const btn = document.querySelector(".hero-install-copy");
+    const status = document.getElementById("hero-install-status");
     if (!(btn instanceof HTMLButtonElement)) return;
     btn.addEventListener("click", async () => {
       const text = btn.getAttribute("data-copy") || "";
       try {
         await navigator.clipboard.writeText(text);
         btn.setAttribute("data-copied", "1");
-        setTimeout(() => btn.removeAttribute("data-copied"), 1400);
+        if (status) status.textContent = "Install command copied to clipboard.";
+        setTimeout(() => {
+          btn.removeAttribute("data-copied");
+          if (status) status.textContent = "";
+        }, 1400);
       } catch (_) {
-        /* ignore */
+        if (status) status.textContent = "Copy failed. Select the command and copy manually.";
       }
     });
   })();

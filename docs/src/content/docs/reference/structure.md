@@ -3,7 +3,7 @@ title: Directory layout
 description: Where every Blak module lives, so you can read the source without grepping.
 ---
 
-Blak's design is "if you can find a directory in this list, you can find the thing inside it." The layout is intentionally flat and physical — files match concepts.
+Blak's design is “if you can find a directory in this list, you can find the thing inside it.” The layout is intentionally flat and physical — files match concepts.
 
 ## Repository root
 
