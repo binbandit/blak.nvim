@@ -11,7 +11,9 @@ Read [MANIFESTO.md](MANIFESTO.md) before changing defaults. It is the product co
 3. Do not add hidden keymaps. Every keymap needs a description and should appear in `:BlakKeys`.
 4. Stable updates must not silently change a user's picker, completion engine, explorer, or LSP strategy.
 5. Extras must be reversible.
-6. If a smart simple solution solves the problem without compromise, use it.
+6. Default and extra plugin specs must be startup-safe: lazy-load through `cmd`, `event`, `ft`, `keys`, or explicit `lazy = true` unless they own startup UI, directory buffers, or the initial colorscheme.
+7. Keep config startup data-only where possible. Defer runtime-path scans, tool checks, and provider setup until the feature actually runs.
+8. If a smart simple solution solves the problem without compromise, use it.
 
 ## Layout
 
@@ -73,6 +75,9 @@ return {
   lint = { linters_by_ft = { example = { "examplelint" } } },
   snacks = { zen = { enabled = true } },
   keys = { { lhs = "<leader>ux", rhs = function() end, desc = "Example" } },
-  plugins = { { "owner/plugin.nvim", opts = {} } },
+  plugins = { { "owner/plugin.nvim", cmd = "Example", opts = {} } },
 }
 ```
+
+Plugin specs are validated for startup safety. Prefer `cmd`, `ft`, or a narrow event. Use `lazy = true`
+only when Blak keymaps or provider code explicitly load the plugin on demand. Eager defaults need a clear product reason.

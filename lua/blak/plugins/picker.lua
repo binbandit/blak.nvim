@@ -4,7 +4,7 @@ return function(config)
     {
       "dmtrKovalenko/fff",
       enabled = enabled,
-      lazy = false,
+      lazy = true,
       dependencies = { "nvim-mini/mini.icons" },
       build = function()
         local ok, download = pcall(require, "fff.download")

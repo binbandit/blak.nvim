@@ -19,7 +19,7 @@ return function(config)
     {
       "nvim-treesitter/nvim-treesitter",
       branch = "main",
-      lazy = false,
+      event = { "BufReadPre", "BufNewFile" },
       build = ":TSUpdate",
       config = function()
         require("blak.core.treesitter").setup(config)

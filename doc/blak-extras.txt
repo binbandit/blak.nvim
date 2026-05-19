@@ -28,6 +28,10 @@ persists immediately, but restart Blak to unload plugins, keymaps, and runtime
 hooks that already ran. Extras enabled in lua/blak/user.lua are marked as
 config-managed in the UI; remove them there to disable them.
 
+Extra plugin specs are startup-safe by contract. They lazy-load through
+commands, filetypes, events, key handlers, or explicit on-demand loading.
+Repository validation rejects eager extra plugin specs.
+
 AVAILABLE GROUPS
 
 lang.lua

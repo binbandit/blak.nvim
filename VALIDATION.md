@@ -24,6 +24,7 @@ The static validator checks:
 - rough Lua keyword/end balance
 - Blak-local `require()` module paths
 - duplicate or missing extra IDs
+- default and extra plugin specs have a lazy-loading trigger, explicit on-demand loading, or an approved eager-startup reason
 - required README/help/notice/CI files
 - docs-site internal `/blak.nvim/...` links
 - stale `black` module, command, config, and path identifiers after the `blak.nvim` rename
@@ -35,7 +36,7 @@ make smoke
 make smoke-install
 ```
 
-The smoke test starts Neovim headless with `NVIM_APPNAME=blak-test`, disables the splash and automatic Mason installation, loads `require("blak").setup()`, verifies config is present, runs `:checkhealth blak`, syncs plugins, runs the smoke script a second time against the synced install, exercises every public `:Blak` command, and checks directory startup.
+The smoke test starts Neovim headless with `NVIM_APPNAME=blak-test`, disables the splash and automatic Mason installation, loads `require("blak").setup()`, verifies config is present, checks config merging avoids full runtime-path scans, runs `:checkhealth blak`, syncs plugins, runs the smoke script a second time against the synced install, exercises every public `:Blak` command, and checks directory startup.
 
 The install smoke test runs the public installer into temporary XDG directories, verifies the sparse runtime checkout omits contributor-only directories, and boots that installed checkout headlessly.
 

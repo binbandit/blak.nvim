@@ -18,10 +18,10 @@ function M.install(config, opts)
     return
   end
 
-  local ok_ts, ts = pcall(require, "nvim-treesitter")
-  if not ok_ts then
+  local ts = require("blak.util").load_plugin("nvim-treesitter", "nvim-treesitter")
+  if not ts then
     if opts.notify then
-      require("blak.util").warn("nvim-treesitter is not loaded yet. Run :Lazy sync, restart, then retry.")
+      require("blak.util").warn("nvim-treesitter is not installed yet. Run :Lazy sync, restart, then retry.")
     end
     return
   end

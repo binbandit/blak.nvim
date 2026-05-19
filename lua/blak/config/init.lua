@@ -82,12 +82,14 @@ end
 local function load_user_options(options, base_config)
   options = options or {}
   local util = require("blak.util")
-  local path = find_user_path() or user_path
-  if path then
-    user_path = path
-  end
-  if options.strict_user and path and vim.fn.filereadable(path) == 1 then
-    return load_user_file(path, options, base_config)
+  if options.strict_user then
+    local path = find_user_path() or user_path
+    if path then
+      user_path = path
+    end
+    if path and vim.fn.filereadable(path) == 1 then
+      return load_user_file(path, options, base_config)
+    end
   end
 
   local ok, value = pcall(require, "blak.user")

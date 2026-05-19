@@ -125,7 +125,7 @@ return {
   plugins = {
     {
       "mluders/comfy-line-numbers.nvim",
-      lazy = false,
+      event = "VeryLazy",
       opts = {
         labels = DEFAULT_LABELS,
         up_key = "k",

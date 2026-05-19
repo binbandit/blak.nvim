@@ -1,16 +1,19 @@
 return function(config)
+  local lsp_events = { "BufReadPre", "BufNewFile" }
+
   return {
     {
       "neovim/nvim-lspconfig",
-      lazy = false,
+      event = lsp_events,
+      cmd = { "LspInfo", "LspStart", "LspStop", "LspRestart" },
       config = function()
         require("blak.core.lsp").setup(config)
       end,
     },
     {
       "mason-org/mason.nvim",
-      lazy = false,
       cmd = "Mason",
+      event = "VeryLazy",
       opts = {
         ui = {
           border = config.ui.winborder,
@@ -27,7 +30,7 @@ return function(config)
     },
     {
       "mason-org/mason-lspconfig.nvim",
-      lazy = false,
+      event = lsp_events,
       dependencies = {
         "mason-org/mason.nvim",
         "neovim/nvim-lspconfig",

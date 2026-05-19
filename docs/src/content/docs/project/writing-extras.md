@@ -57,6 +57,18 @@ return {
 }
 ```
 
+## Performance contract
+
+Extras are opt-in, but they still must not become surprise startup cost. Every plugin spec in an extra must lazy-load with one of these:
+
+- `cmd` for command-driven tools.
+- `ft` for language or filetype-specific behavior.
+- `event` for UI that can appear after startup, such as `VeryLazy`.
+- `keys` when lazy.nvim owns the mapping.
+- `lazy = true` only when Blak keymaps or provider code explicitly load the plugin on demand.
+
+Avoid `lazy = false` in extras. If a feature truly has to load at startup, it probably belongs in core or needs a design discussion first.
+
 ## Register it
 
 Add the require path to the module list in [`lua/blak/extras/init.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/extras/init.lua):
@@ -95,6 +107,7 @@ The static checker enforces:
 
 - The require path in `modules` matches an actual file.
 - The file's `id` field is unique across all extras.
+- Plugin specs lazy-load with `cmd`, `event`, `ft`, `keys`, or explicit `lazy = true`.
 - The file's Lua syntax balances delimiters and keywords.
 
 Then a smoke run:

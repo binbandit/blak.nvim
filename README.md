@@ -60,6 +60,8 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 - Editing: Oil file explorer, native terminal split, Gitsigns, which-key, `mini.icons`, `mini.pairs`, `nvim-ts-autotag`
 - Theme: TokyoNight Night (`tokyonight-night`)
 
+Only the startup owners load eagerly: the colorscheme, the dashboard-capable Snacks setup, and Oil for directory buffers. Pickers, Treesitter, LSP, Mason, formatting, linting, completion, git signs, and keymap help wake on file, command, insert, write, or explicit provider use. Config merging avoids full runtime-path scans; Lua's runtime library is attached when LSP setup runs.
+
 ## Core commands
 
 ```vim
@@ -134,6 +136,8 @@ removed there when you want them disabled.
 Use `lang.typescript-tsgo` instead of `lang.typescript` to try the experimental native TypeScript LSP.
 
 State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Enabling an extra applies its config to the current session; run `:BlakExtras sync` if the extra added plugin specs. Disabling persists immediately, but a restart is still the clean way to unload plugins, keymaps, and runtime hooks that already ran.
+
+Default and extra plugins are kept startup-safe: they lazy-load through commands, filetypes, events, or explicit on-demand loading. `make validate` rejects unapproved eager specs so optional features do not quietly become default startup cost.
 
 Default vs. optional is deliberate:
 

@@ -1,9 +1,19 @@
 local M = {}
 
+local lua_runtime_library
+
 local function capabilities()
   local caps = vim.lsp.protocol.make_client_capabilities()
-  local ok, blink = pcall(require, "blink.cmp")
-  if ok and blink.get_lsp_capabilities then
+  local completion = vim.tbl_get(caps, "textDocument", "completion")
+  if completion then
+    completion.insertTextMode = 1
+    completion.completionItem = completion.completionItem or {}
+    completion.completionItem.insertTextModeSupport = { valueSet = { 1 } }
+    completion.completionItem.labelDetailsSupport = true
+  end
+
+  local blink = package.loaded["blink.cmp"]
+  if blink and blink.get_lsp_capabilities then
     caps = blink.get_lsp_capabilities(caps)
   end
   return caps
@@ -26,6 +36,31 @@ local function configured_servers(config, names)
   return out
 end
 
+local function runtime_library()
+  if not lua_runtime_library then
+    lua_runtime_library = vim.api.nvim_get_runtime_file("", true)
+  end
+  return lua_runtime_library
+end
+
+local function with_lua_workspace_library(name, server_config)
+  if name ~= "lua_ls" then
+    return server_config
+  end
+
+  local workspace = vim.tbl_get(server_config, "settings", "Lua", "workspace")
+  if workspace and workspace.library ~= nil then
+    return server_config
+  end
+
+  server_config.settings = server_config.settings or {}
+  server_config.settings.Lua = server_config.settings.Lua or {}
+  server_config.settings.Lua.workspace = vim.tbl_deep_extend("force", {}, workspace or {}, {
+    library = runtime_library(),
+  })
+  return server_config
+end
+
 function M.setup(config, names)
   vim.diagnostic.config(config.lsp.diagnostics)
 
@@ -35,6 +70,7 @@ function M.setup(config, names)
     local server_config = vim.tbl_deep_extend("force", {}, server, {
       capabilities = vim.tbl_deep_extend("force", {}, caps, server.capabilities or {}),
     })
+    server_config = with_lua_workspace_library(name, server_config)
     vim.lsp.config(name, server_config)
   end
 end

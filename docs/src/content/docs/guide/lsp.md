@@ -30,7 +30,6 @@ lsp = {
           diagnostics = { globals = { "vim" } },
           workspace = {
             checkThirdParty = false,
-            library = vim.api.nvim_get_runtime_file("", true),
           },
           telemetry = { enable = false },
         },
@@ -39,6 +38,8 @@ lsp = {
   },
 }
 ```
+
+Blak injects `lua_ls.settings.Lua.workspace.library` lazily when LSP setup runs, so config startup does not scan the full runtime path. Set `workspace.library` yourself if you want to replace that generated library.
 
 Other servers ship via [language extras](/guide/extras/#languages): `ts_ls`, `tsgo`, `eslint`, `pyright`, `ruff`, `rust_analyzer`, `taplo`, `gopls`, `marksman`.
 

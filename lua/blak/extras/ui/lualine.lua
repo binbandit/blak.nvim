@@ -6,7 +6,7 @@ return {
     return {
       {
         "nvim-lualine/lualine.nvim",
-        lazy = false,
+        event = "VeryLazy",
         dependencies = { "nvim-mini/mini.icons" },
         opts = {
           options = {

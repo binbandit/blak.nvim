@@ -50,8 +50,25 @@ vim.g.blak_config = {
   mason = { automatic_install = false },
   treesitter = { ensure_installed = {} },
 }
+local original_get_runtime_file = vim.api.nvim_get_runtime_file
+local full_runtime_scans = 0
+local user_config_runtime_lookups = 0
+vim.api.nvim_get_runtime_file = function(name, all)
+  if name == "" and all == true then
+    full_runtime_scans = full_runtime_scans + 1
+  elseif name == "lua/blak/user.lua" and all == false then
+    user_config_runtime_lookups = user_config_runtime_lookups + 1
+  end
+  return original_get_runtime_file(name, all)
+end
+require("blak.config").setup()
+assert(full_runtime_scans == 0, "config setup should not scan the full runtime path")
+assert(user_config_runtime_lookups == 0, "config setup should let require locate lua/blak/user.lua directly")
+full_runtime_scans = 0
+user_config_runtime_lookups = 0
 require("blak").setup()
 vim.opt.rtp:prepend(vim.fn.getcwd())
+assert(user_config_runtime_lookups == 1, "startup should only locate lua/blak/user.lua once for reload watching")
 assert(require("blak.config").get())
 assert(vim.g.blak_smoke_after_hook == 1, "user.lua after hook did not run during startup")
 assert(require("blak.config").get().editor.relative_number == false, "user.lua was not loaded")
@@ -64,6 +81,38 @@ assert(require("blak.config").get().terminal.provider == "native", "native shoul
 assert(require("blak.config").get().terminal.toggle_key == "<leader>tt", "<leader>tt should be the default terminal key")
 assert(require("blak.config.defaults").editor.confirm == true, "confirm should be enabled by default")
 assert(require("blak.config").get().editor.confirm == false, "user.lua should be able to disable confirm")
+assert(
+  vim.tbl_get(require("blak.config.defaults"), "lsp", "servers", "lua_ls", "settings", "Lua", "workspace", "library")
+    == nil,
+  "lua_ls runtime library should not be computed in config defaults"
+)
+assert(
+  vim.tbl_get(require("blak.config").get(), "lsp", "servers", "lua_ls", "settings", "Lua", "workspace", "library")
+    == nil,
+  "lua_ls runtime library should not be computed while building user config"
+)
+local lsp = require("blak.core.lsp")
+local full_runtime_scans_before_lsp = full_runtime_scans
+lsp.setup(require("blak.config").get(), { "lua_ls" })
+assert(
+  full_runtime_scans == full_runtime_scans_before_lsp + 1,
+  ("lua_ls should scan runtime path during LSP setup (before=%d after=%d)"):format(
+    full_runtime_scans_before_lsp,
+    full_runtime_scans
+  )
+)
+assert(package.loaded["blink.cmp"] == nil, "LSP setup should not load blink.cmp")
+local lua_runtime_library =
+  vim.tbl_get(vim.lsp.config.lua_ls, "settings", "Lua", "workspace", "library")
+assert(type(lua_runtime_library) == "table" and #lua_runtime_library > 0, "lua_ls runtime library was not configured")
+assert(
+  vim.tbl_get(vim.lsp.config.lua_ls, "capabilities", "textDocument", "completion", "completionItem", "labelDetailsSupport")
+    == true,
+  "LSP capabilities should include completion label details without loading blink.cmp"
+)
+lsp.setup(require("blak.config").get(), { "lua_ls" })
+assert(full_runtime_scans == full_runtime_scans_before_lsp + 1, "lua_ls runtime library should be cached")
+vim.api.nvim_get_runtime_file = original_get_runtime_file
 assert(vim.o.confirm == false, "editor.confirm=false should disable confirm prompts")
 assert(vim.o.autoindent == true, "autoindent should be enabled by default")
 assert(vim.o.smartindent == true, "smartindent should be enabled by default")
@@ -405,6 +454,12 @@ assert(normal_hl.bg == nil, "theme transparent option should clear Normal backgr
 assert(lazy_plugins["oil.nvim"], "oil.nvim spec missing")
 assert(lazy_plugins["oil.nvim"].lazy == false, "oil.nvim must load eagerly for directory args")
 assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true, "oil.nvim must take directory buffers")
+assert(lazy_plugins["snacks.nvim"].lazy == true, "Snacks should defer when the splash dashboard is disabled")
+assert(lazy_plugins["fff"].lazy == true, "fff.nvim should load on first picker use")
+assert(lazy_plugins["nvim-treesitter"].lazy == true, "nvim-treesitter should load on file events")
+assert(lazy_plugins["nvim-lspconfig"].lazy == true, "nvim-lspconfig should load on file events or LSP commands")
+assert(lazy_plugins["mason.nvim"].lazy == true, "mason.nvim should load on command, VeryLazy, or LSP dependency")
+assert(lazy_plugins["mason-lspconfig.nvim"].lazy == true, "mason-lspconfig should load on file events")
 local reload_seen = false
 vim.api.nvim_create_autocmd("User", {
   pattern = "BlakConfigReloaded",

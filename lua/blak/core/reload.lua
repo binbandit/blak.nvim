@@ -38,8 +38,8 @@ local function user_files()
   return paths
 end
 
-local function user_file()
-  for _, path in ipairs(user_files()) do
+local function user_file(paths)
+  for _, path in ipairs(paths or user_files()) do
     if vim.fn.filereadable(path) == 1 then
       return path
     end
@@ -55,7 +55,7 @@ local function stop_watcher()
   watcher = nil
 end
 
-local function refresh_runtime(config)
+local function refresh_runtime(config, user_config_path)
   local util = require("blak.util")
   vim.g.mapleader = config.leader
   vim.g.maplocalleader = config.localleader
@@ -77,7 +77,7 @@ local function refresh_runtime(config)
     lazy.refresh(config)
   end
   require("blak.core.completion").refresh(config)
-  M.watch_user_file()
+  M.watch_user_file(user_config_path)
 
   if config.lsp.automatic_enable and vim.lsp.enable then
     local names = util.tbl_keys(config.lsp.servers)
@@ -96,7 +96,7 @@ function M.reload(opts)
   reloading = true
   local ok, result = pcall(function()
     local config = require("blak.config").reload()
-    refresh_runtime(config)
+    refresh_runtime(config, opts.path)
     require("blak.config").run_hooks(config, "after")
     vim.api.nvim_exec_autocmds("User", {
       pattern = "BlakConfigReloaded",
@@ -139,11 +139,11 @@ function M.schedule(opts)
   return true
 end
 
-function M.watch_user_file()
+function M.watch_user_file(path)
   stop_watcher()
 
-  local path = user_file()
-  if not path then
+  path = normalize_path(path) or user_file()
+  if not path or vim.fn.filereadable(path) ~= 1 then
     return
   end
 
@@ -168,7 +168,8 @@ end
 
 function M.setup()
   local group = vim.api.nvim_create_augroup("BlakUserConfig", { clear = true })
-  local patterns = user_files()
+  local paths = user_files()
+  local patterns = vim.deepcopy(paths)
   table.insert(patterns, "user.lua")
   table.insert(patterns, "*/lua/blak/user.lua")
 
@@ -183,7 +184,7 @@ function M.setup()
     end,
   })
 
-  M.watch_user_file()
+  M.watch_user_file(user_file(paths))
 end
 
 return M

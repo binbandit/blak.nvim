@@ -26,7 +26,7 @@ Extras add to this list automatically — see each extra's "Mason" row in [Extra
 
 ## Automatic install
 
-When `automatic_install = true`, Blak calls `tools.ensure()` shortly after startup:
+When `automatic_install = true`, Blak calls `tools.ensure()` after Mason wakes on `VeryLazy`, `:Mason`, or the first Mason-backed LSP buffer:
 
 1. Wait for the Mason registry to refresh.
 2. Look up the configured package list (`mason.ensure_installed` + extras).

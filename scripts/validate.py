@@ -18,6 +18,21 @@ ID_RE = re.compile(r"id\s*=\s*['\"]([^'\"]+)['\"]")
 MASON_LIST_RE = re.compile(r"\bmason\s*=\s*\{([^}]*)\}", re.S)
 LUA_STRING_RE = re.compile(r"['\"]([^'\"]+)['\"]")
 KEYWORD_RE = re.compile(r"\b(function|if|for|while|repeat|do|end|until)\b")
+PLUGIN_ASSIGN_RE = re.compile(r"\bplugins\s*=\s*\{")
+PLUGIN_FUNCTION_RE = re.compile(r"\bplugins\s*=\s*function\b")
+PLUGIN_RETURN_TABLE_RE = re.compile(r"\breturn\s*\{")
+LOCAL_SPEC_RE = re.compile(r"\blocal\s+spec\s*=\s*\{")
+TABLE_INSERT_SPEC_RE = re.compile(r"\btable\.insert\s*\([^,]+,\s*\{")
+PLUGIN_SPEC_RE = re.compile(r"^\s*\{\s*['\"]([^'\"]+/[^'\"]+)['\"]", re.S)
+LAZY_TRIGGER_RE = re.compile(r"\b(cmd|event|ft|keys)\s*=")
+LAZY_TRUE_RE = re.compile(r"\blazy\s*=\s*true\b")
+LAZY_FALSE_RE = re.compile(r"\blazy\s*=\s*false\b")
+ENABLED_FALSE_RE = re.compile(r"\benabled\s*=\s*false\b")
+DEFAULT_EAGER_PLUGINS = {
+    "folke/tokyonight.nvim",
+    "folke/snacks.nvim",
+    "stevearc/oil.nvim",
+}
 DOCS_LINK_RE = re.compile(
     r"\]\(/blak\.nvim/([^)\s#]*)(?:#[^) \t]*)?\)"
     r"|href=[\"']/blak\.nvim/([^\"'#]*)(?:#[^\"']*)?[\"']"
@@ -88,6 +103,160 @@ def strip_lua(text: str) -> str:
 def module_path(require_name: str) -> Path:
     parts = require_name.split(".")
     return ROOT / "lua" / Path(*parts).with_suffix(".lua")
+
+
+def skip_lua_noise(text: str, i: int) -> int | None:
+    """Skip over a Lua string/comment starting at i, returning the next index."""
+    n = len(text)
+    ch = text[i]
+    nxt = text[i + 1] if i + 1 < n else ""
+
+    if ch in {'"', "'"}:
+        quote = ch
+        i += 1
+        while i < n:
+            if text[i] == "\\":
+                i += 2
+                continue
+            if text[i] == quote:
+                return i + 1
+            i += 1
+        return n
+
+    if ch == "[":
+        match = re.match(r"\[(=*)\[", text[i:])
+        if match:
+            end_pat = "]" + match.group(1) + "]"
+            end_idx = text.find(end_pat, i + len(match.group(1)) + 2)
+            return n if end_idx == -1 else end_idx + len(end_pat)
+
+    if ch == "-" and nxt == "-":
+        match = re.match(r"--\[(=*)\[", text[i:])
+        if match:
+            end_pat = "]" + match.group(1) + "]"
+            end_idx = text.find(end_pat, i + len(match.group(1)) + 4)
+            return n if end_idx == -1 else end_idx + len(end_pat)
+        end_idx = text.find("\n", i)
+        return n if end_idx == -1 else end_idx + 1
+
+    return None
+
+
+def find_matching_brace(text: str, start: int) -> int | None:
+    depth = 0
+    i = start
+    n = len(text)
+    while i < n:
+        skipped = skip_lua_noise(text, i)
+        if skipped is not None:
+            i = skipped
+            continue
+
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    return None
+
+
+def line_number(text: str, offset: int) -> int:
+    return text.count("\n", 0, offset) + 1
+
+
+def top_level_child_tables(text: str, start: int, end: int) -> list[tuple[int, int, str]]:
+    children: list[tuple[int, int, str]] = []
+    i = start + 1
+    while i < end:
+        skipped = skip_lua_noise(text, i)
+        if skipped is not None:
+            i = skipped
+            continue
+
+        if text[i] == "{":
+            child_end = find_matching_brace(text, i)
+            if child_end is None or child_end > end:
+                break
+            children.append((i, child_end, text[i : child_end + 1]))
+            i = child_end + 1
+            continue
+        i += 1
+    return children
+
+
+def plugin_spec_name(spec: str) -> str | None:
+    match = PLUGIN_SPEC_RE.match(spec)
+    return match.group(1) if match else None
+
+
+def collect_plugin_specs(text: str, opts: dict[str, bool] | None = None) -> list[tuple[int, str, str]]:
+    opts = opts or {}
+    specs: list[tuple[int, str, str]] = []
+
+    for match in LOCAL_SPEC_RE.finditer(text):
+        start = match.end() - 1
+        end = find_matching_brace(text, start)
+        if end is None:
+            continue
+        spec = text[start : end + 1]
+        name = plugin_spec_name(spec)
+        if name:
+            specs.append((start, name, spec))
+
+    for match in PLUGIN_ASSIGN_RE.finditer(text):
+        start = match.end() - 1
+        end = find_matching_brace(text, start)
+        if end is None:
+            continue
+        table = text[start : end + 1]
+        name = plugin_spec_name(table)
+        if name:
+            specs.append((start, name, table))
+        for child_start, _, child in top_level_child_tables(text, start, end):
+            name = plugin_spec_name(child)
+            if name:
+                specs.append((child_start, name, child))
+
+    for match in PLUGIN_FUNCTION_RE.finditer(text):
+        return_match = PLUGIN_RETURN_TABLE_RE.search(text, match.end())
+        if not return_match:
+            continue
+        start = return_match.end() - 1
+        end = find_matching_brace(text, start)
+        if end is None:
+            continue
+        for child_start, _, child in top_level_child_tables(text, start, end):
+            name = plugin_spec_name(child)
+            if name:
+                specs.append((child_start, name, child))
+
+    if opts.get("return_tables"):
+        for match in PLUGIN_RETURN_TABLE_RE.finditer(text):
+            start = match.end() - 1
+            end = find_matching_brace(text, start)
+            if end is None:
+                continue
+            for child_start, _, child in top_level_child_tables(text, start, end):
+                name = plugin_spec_name(child)
+                if name:
+                    specs.append((child_start, name, child))
+
+    for match in TABLE_INSERT_SPEC_RE.finditer(text):
+        start = match.end() - 1
+        end = find_matching_brace(text, start)
+        if end is None:
+            continue
+        spec = text[start : end + 1]
+        name = plugin_spec_name(spec)
+        if name:
+            specs.append((start, name, spec))
+
+    unique_specs: dict[tuple[int, str], tuple[int, str, str]] = {}
+    for start, name, spec in specs:
+        unique_specs[(start, name)] = (start, name, spec)
+    return list(unique_specs.values())
 
 
 def check_balanced(path: Path, text: str) -> list[str]:
@@ -262,6 +431,51 @@ def check_extra_mason_lists() -> list[str]:
     return errors
 
 
+def check_extra_plugin_loading() -> list[str]:
+    errors: list[str] = []
+    for path in (ROOT / "lua" / "blak" / "extras").rglob("*.lua"):
+        if path.name in {"init.lua", "state.lua"}:
+            continue
+        text = path.read_text(encoding="utf-8")
+        for offset, plugin, spec in collect_plugin_specs(text):
+            location = f"{path.relative_to(ROOT)}:{line_number(text, offset)}"
+            if ENABLED_FALSE_RE.search(spec):
+                continue
+            if LAZY_FALSE_RE.search(spec):
+                errors.append(
+                    f"{location}: extra plugin {plugin!r} is eager; use cmd/event/ft/keys or lazy=true"
+                )
+                continue
+            if not (LAZY_TRIGGER_RE.search(spec) or LAZY_TRUE_RE.search(spec)):
+                errors.append(
+                    f"{location}: extra plugin {plugin!r} needs a lazy-loading trigger (cmd/event/ft/keys) or lazy=true"
+                )
+    return errors
+
+
+def check_default_plugin_loading() -> list[str]:
+    errors: list[str] = []
+    for path in (ROOT / "lua" / "blak" / "plugins").glob("*.lua"):
+        if path.name == "init.lua":
+            continue
+        text = path.read_text(encoding="utf-8")
+        for offset, plugin, spec in collect_plugin_specs(text, { "return_tables": True }):
+            location = f"{path.relative_to(ROOT)}:{line_number(text, offset)}"
+            if ENABLED_FALSE_RE.search(spec):
+                continue
+            if LAZY_FALSE_RE.search(spec):
+                if plugin not in DEFAULT_EAGER_PLUGINS:
+                    errors.append(
+                        f"{location}: default plugin {plugin!r} is eager without an allowlist reason"
+                    )
+                continue
+            if not (LAZY_TRIGGER_RE.search(spec) or LAZY_TRUE_RE.search(spec)):
+                errors.append(
+                    f"{location}: default plugin {plugin!r} needs a lazy-loading trigger, lazy=true, or eager allowlist"
+                )
+    return errors
+
+
 def check_extra_id_type_alias(extra_ids: set[str]) -> list[str]:
     path = ROOT / "lua" / "blak" / "config" / "types.lua"
     text = path.read_text(encoding="utf-8")
@@ -312,6 +526,8 @@ def main() -> int:
     errors.extend(check_blackhole_frames())
     errors.extend(check_docs_links())
     errors.extend(check_extra_mason_lists())
+    errors.extend(check_extra_plugin_loading())
+    errors.extend(check_default_plugin_loading())
     errors.extend(check_extra_id_type_alias(set(seen)))
 
     for rel in [

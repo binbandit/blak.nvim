@@ -23,11 +23,15 @@ local function enable_snacks_explorer(opts)
 end
 
 return function(config)
+  local splash_enabled = vim.tbl_get(config, "ui", "splash", "enabled") == true
+  local snacks_event = splash_enabled and nil or "VeryLazy"
+
   return {
     {
       "folke/snacks.nvim",
       priority = 1000,
-      lazy = false,
+      lazy = not splash_enabled,
+      event = snacks_event,
       opts = function()
         local splash = require("blak.splash")
         local opts = {

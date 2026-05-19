@@ -27,7 +27,7 @@ Modules enabled by default:
 | `picker` | Picker backend (used unless you swap to telescope / fzf_lua) |
 | `words` | Highlights other occurrences of the word under cursor |
 
-Loaded with `priority = 1000` so its UI hooks beat other plugins. Spec: [`lua/blak/plugins/ui.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/ui.lua).
+Loaded eagerly only when the splash dashboard is enabled; otherwise it waits until `VeryLazy`. When eager, `priority = 1000` keeps its UI hooks ahead of later plugins. Spec: [`lua/blak/plugins/ui.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/ui.lua).
 
 ### which-key (`folke/which-key.nvim`)
 
@@ -45,7 +45,7 @@ Auto-pairs for brackets, quotes, and paired newline insertion. Loaded on `Insert
 
 ### nvim-treesitter (`nvim-treesitter/nvim-treesitter`, `main` branch)
 
-Parser-based syntax, indent, and queries. Configured via [`lua/blak/core/treesitter.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/treesitter.lua). Lazy-loaded per-buffer on `FileType` when the buffer line count is below `performance.max_treesitter_lines`. See [Treesitter](/guide/treesitter/).
+Parser-based syntax, indent, and queries. Configured via [`lua/blak/core/treesitter.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/treesitter.lua). The plugin wakes on `BufReadPre` / `BufNewFile`; parser attachment still happens per-buffer on `FileType` when the line count is below `performance.max_treesitter_lines`. See [Treesitter](/guide/treesitter/).
 
 ### nvim-ts-autotag (`windwp/nvim-ts-autotag`)
 
@@ -59,7 +59,7 @@ The default file explorer when `explorer.provider = "oil"`. Treats directories a
 
 ### fff.nvim (`dmtrKovalenko/fff`)
 
-Default file picker. Native binary backend, downloaded on plugin build. Layout 88 × 82, frecency + history enabled. Only loaded when `picker.provider == "fff"`.
+Default file picker. Native binary backend, downloaded on plugin build. Layout 88 × 82, frecency + history enabled. Registered only when `picker.provider == "fff"` and loaded on first picker use.
 
 See [Pickers](/guide/pickers/) for swapping the backend.
 
@@ -67,21 +67,21 @@ See [Pickers](/guide/pickers/) for swapping the backend.
 
 ### blink.cmp (`saghen/blink.cmp`)
 
-Native completion engine. On the `stable` channel it pins to the `1.*` release; on `edge`/`nightly` it builds from source via `cargo build --release`. Provides LSP, path, snippet, and buffer sources. Ghost text on, documentation auto-show at 250 ms, auto-brackets, rounded borders. The default keymap preset stays `default`; set `completion.super_tab = true` to use blink.cmp's `super-tab` preset. Spec: [`lua/blak/plugins/completion.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/completion.lua).
+Native completion engine. On the `stable` channel it pins to the `1.*` release; on `edge`/`nightly` it builds from source via `cargo build --release`. Provides LSP, path, snippet, and buffer sources. Ghost text on, documentation auto-show at 250 ms, auto-brackets, rounded borders. The default keymap preset stays `default`; set `completion.super_tab = true` to use blink.cmp's `super-tab` preset. LSP setup registers completion capabilities without loading blink, so the plugin still wakes on `InsertEnter` or `CmdlineEnter`. Spec: [`lua/blak/plugins/completion.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/completion.lua).
 
 ## LSP
 
 ### nvim-lspconfig (`neovim/nvim-lspconfig`)
 
-Server configurations only — Blak uses Neovim 0.12's native `vim.lsp.config()` and `vim.lsp.enable()` for the actual wiring. Loaded eagerly so LSP is available immediately. See [LSP](/guide/lsp/).
+Server configurations only — Blak uses Neovim 0.12's native `vim.lsp.config()` and `vim.lsp.enable()` for the actual wiring. Loaded on `BufReadPre`, `BufNewFile`, or LSP commands so empty dashboard startup avoids LSP cost while the first real file still gets setup before attach. See [LSP](/guide/lsp/).
 
 ### mason.nvim (`mason-org/mason.nvim`)
 
-Tool installer. UI border honors `ui.winborder`. Auto-install controlled by `mason.automatic_install`. See [Mason](/guide/mason/).
+Tool installer. UI border honors `ui.winborder`. Loads on `:Mason`, `VeryLazy`, or as an LSP dependency. Auto-install is controlled by `mason.automatic_install`. See [Mason](/guide/mason/).
 
 ### mason-lspconfig.nvim (`mason-org/mason-lspconfig.nvim`)
 
-Bridges Mason package names to lspconfig server names. `ensure_installed` is derived from `lsp.servers` keys.
+Bridges Mason package names to lspconfig server names. `ensure_installed` is derived from `lsp.servers` keys. Loads with the first real buffer so Mason-backed LSP enablement is ready before normal editing.
 
 ## Formatting & linting
 

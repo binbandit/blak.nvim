@@ -22,6 +22,7 @@ It also syntax-checks `install.sh` and `scripts/smoke-install.sh`.
 | Lua syntax: keyword nesting | `if` / `function` / `for` / `while` / `repeat` close with `end` (or `until` for `repeat`). |
 | Require paths | Every `require("blak.…")` resolves to an actual file. |
 | Unique extra IDs | No two files under `lua/blak/extras/` declare the same `id`. |
+| Plugin loading | Default and extra plugin specs declare `cmd`, `event`, `ft`, `keys`, `lazy = true`, or an approved eager-startup reason. |
 | Splash frame structure | Frame count and color count match. Each frame is 14 rows of 50 braille glyphs. Color spans are well-formed. |
 | Required docs | `README.md`, `CONTRIBUTING.md`, `NOTICE`, `doc/blak.txt`, `doc/blak-extras.txt`, `doc/blak-keymaps.txt`, `.github/workflows/ci.yml` exist. |
 | Legacy identifier cleanup | No leftover `"black"` references from the early-naming migration. |
@@ -29,7 +30,7 @@ It also syntax-checks `install.sh` and `scripts/smoke-install.sh`.
 ### Output
 
 ```
-Validation passed: 65 Lua files, 20 extras
+Validation passed: 85 Lua files, 36 extras
 ```
 
 On failure, every problem is reported in one pass — fix them in a batch rather than running validate → fix → run → fix.
@@ -69,6 +70,9 @@ require("blak.core.explorer").open({ explorer = { provider = "snacks" } })
 local lazy_plugins = require("lazy.core.config").plugins
 assert(lazy_plugins["oil.nvim"].lazy == false)
 assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true)
+assert(lazy_plugins["fff"].lazy == true)
+assert(lazy_plugins["nvim-treesitter"].lazy == true)
+assert(lazy_plugins["nvim-lspconfig"].lazy == true)
 vim.cmd("checkhealth blak")
 ```
 
@@ -77,10 +81,12 @@ Translation:
 - Disable the splash and Mason auto-install (both noisy in headless).
 - Run setup. Any validation error or runtime error fails the test.
 - Confirm the merged config exists.
+- Confirm config merging avoids full runtime-path scans and startup only locates `lua/blak/user.lua` once for reload watching.
 - Confirm lazy.nvim's `:Lazy` command is registered.
 - Confirm Blak's terminal command and core keymaps are registered.
 - Confirm the explorer dispatcher defaults to Oil and can target Snacks.
 - Confirm Oil is eager and owns directory buffers.
+- Confirm file/picker/LSP-heavy defaults defer to lazy triggers.
 - Run `:checkhealth blak` — any error or warning in the health module shows up in output.
 
 ### What commands.lua does

@@ -12,9 +12,9 @@ function M.ensure(config, opts)
     return
   end
 
-  local ok, registry = pcall(require, "mason-registry")
-  if not ok then
-    util.warn("Mason registry is not available yet. Run :Mason first or retry :BlakToolsInstall.")
+  local registry = util.load_plugin("mason.nvim", "mason-registry")
+  if not registry then
+    util.warn("Mason registry is not available yet. Run :Lazy sync, restart, then retry :BlakToolsInstall.")
     return
   end
 

@@ -1,7 +1,11 @@
 local M = {}
 
 local function fff()
-  return require("fff")
+  local picker = require("blak.util").load_plugin("fff", "fff")
+  if not picker then
+    error("fff.nvim is not available")
+  end
+  return picker
 end
 
 function M.files(opts)
@@ -14,7 +18,8 @@ function M.files(opts)
 end
 
 function M.grep(opts)
-  return fff().live_grep(opts or {})
+  local picker = fff()
+  return picker.live_grep(opts or {})
 end
 
 function M.smart(opts)
