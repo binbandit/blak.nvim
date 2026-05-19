@@ -67,6 +67,7 @@ return {
   },
 
   ai = {
+    claudecode = {},
     sidekick = {
       nes = { enabled = false },
     },

@@ -186,6 +186,15 @@ See the [LSP guide](/guide/lsp/).
 | `git.lazygit` | `<leader>gg` | LazyGit float |
 | `git.diffview` | `<leader>gD` | DiffviewOpen |
 | `git.diffview` | `<leader>gH` | File history |
+| `ai.claudecode` | `<leader>ac` | Toggle Claude Code |
+| `ai.claudecode` | `<leader>aF` | Focus Claude Code |
+| `ai.claudecode` | `<leader>ar` | Resume Claude Code |
+| `ai.claudecode` | `<leader>aC` | Continue Claude Code |
+| `ai.claudecode` | `<leader>am` | Select Claude model |
+| `ai.claudecode` | `<leader>ab` | Add current buffer |
+| `ai.claudecode` | `<leader>as` | Send visual selection |
+| `ai.claudecode` | `<leader>aA` | Accept Claude Code diff |
+| `ai.claudecode` | `<leader>aD` | Deny Claude Code diff |
 | `ai.sidekick` | `<C-.>` | Focus Sidekick CLI |
 | `ai.sidekick` | `<leader>aa` | Toggle Sidekick CLI |
 | `ai.sidekick` | `<leader>as` | Select Sidekick CLI |

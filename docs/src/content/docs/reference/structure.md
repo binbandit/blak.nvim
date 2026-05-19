@@ -99,6 +99,7 @@ lua/blak/
 │   │   ├── lazygit.lua
 │   │   └── diffview.lua
 │   ├── ai/
+│   │   ├── claudecode.lua
 │   │   ├── copilot.lua
 │   │   ├── sidekick.lua
 │   │   └── supermaven.lua

@@ -12,7 +12,7 @@ grep -RIn '<legacy Black identifiers>' .
 Result:
 
 ```text
-Validation passed: 64 Lua files, 19 extras
+Validation passed: 85 Lua files, 36 extras
 install.sh syntax OK
 scripts/smoke-install.sh syntax OK
 stale name grep OK

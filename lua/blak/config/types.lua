@@ -8,6 +8,7 @@
 ---@alias blak.LspFormatMode "never"|"fallback"|"prefer"|"first"|string
 ---@alias blak.PluginSpec string|table
 ---@alias blak.ExtraId
+---| "ai.claudecode"
 ---| "ai.copilot"
 ---| "ai.sidekick"
 ---| "ai.supermaven"
@@ -143,6 +144,7 @@
 ---@field after? blak.UserHook|blak.UserHook[]
 
 ---@class blak.AiConfig
+---@field claudecode? table
 ---@field sidekick? blak.SidekickConfig
 ---@field supermaven? blak.SupermavenConfig
 

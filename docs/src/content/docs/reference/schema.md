@@ -213,10 +213,29 @@ Hooks receive `(config, blak)`. `config` is the merged Blak config table, and
 
 | Key | Type | Notes |
 | --- | --- | --- |
+| `claudecode` | `table` | Options passed to `coder/claudecode.nvim` when `ai.claudecode` is enabled. Blak sets `terminal.provider = "snacks"` by default. |
 | `sidekick` | `table` | Options passed to `folke/sidekick.nvim` when `ai.sidekick` is enabled. Blak sets `nes.enabled = false` by default. |
 | `supermaven` | `table` | Options passed to `supermaven-inc/supermaven-nvim` when `ai.supermaven` is enabled. Blak always disables the plugin's built-in keymaps. |
 
-Use this table for Sidekick CLI and NES configuration:
+Use this table for Claude Code configuration:
+
+```lua
+return {
+  extras = { enabled = { "ai.claudecode" } },
+  ai = {
+    claudecode = {
+      terminal = {
+        provider = "snacks",
+      },
+      diff_opts = {
+        layout = "vertical",
+      },
+    },
+  },
+}
+```
+
+Use `ai.sidekick` for Sidekick CLI and NES configuration:
 
 ```lua
 return {

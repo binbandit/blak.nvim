@@ -20,6 +20,7 @@ local modules = {
   "blak.extras.ui.zen",
   "blak.extras.git.lazygit",
   "blak.extras.git.diffview",
+  "blak.extras.ai.claudecode",
   "blak.extras.ai.copilot",
   "blak.extras.ai.sidekick",
   "blak.extras.ai.supermaven",

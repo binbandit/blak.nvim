@@ -228,6 +228,7 @@ export default defineConfig({
             { label: "Zen", slug: "extras/ui/zen" },
             { label: "LazyGit", slug: "extras/git/lazygit" },
             { label: "Diffview", slug: "extras/git/diffview" },
+            { label: "Claude Code", slug: "extras/ai/claudecode" },
             { label: "Copilot", slug: "extras/ai/copilot" },
             { label: "Sidekick", slug: "extras/ai/sidekick" },
             { label: "Supermaven", slug: "extras/ai/supermaven" },

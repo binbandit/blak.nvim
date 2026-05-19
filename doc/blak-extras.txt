@@ -53,6 +53,11 @@ ui.zen
 git.lazygit
 git.diffview
 
+ai.claudecode
+ai.copilot
+ai.sidekick
+ai.supermaven
+
 editor.aerial
 editor.harpoon
 editor.mini
@@ -67,10 +72,6 @@ editor.snacks-explorer
 editor.snacks-terminal
 editor.telescope
 editor.fzf-lua
-
-ai.copilot
-ai.sidekick
-ai.supermaven
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:

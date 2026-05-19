@@ -68,7 +68,7 @@ configuration examples, install notes, and verification path.
 | Test | [`test.neotest`](/extras/test/neotest/) |
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
 | Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/) |
-| AI | [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/), [`ai.supermaven`](/extras/ai/supermaven/) |
+| AI | [`ai.claudecode`](/extras/ai/claudecode/), [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/), [`ai.supermaven`](/extras/ai/supermaven/) |
 | Editor | [`editor.aerial`](/extras/editor/aerial/), [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.overseer`](/extras/editor/overseer/), [`editor.refactoring`](/extras/editor/refactoring/), [`editor.render-markdown`](/extras/editor/render-markdown/), [`editor.todo-comments`](/extras/editor/todo-comments/), [`editor.trouble`](/extras/editor/trouble/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
@@ -285,6 +285,45 @@ Requires `lazygit` in `$PATH`.
 | Keymap | `<leader>gH` → file history |
 
 ## AI
+
+### `ai.claudecode`
+
+[claudecode.nvim](https://github.com/coder/claudecode.nvim) integration for
+Claude Code CLI sessions and native diff review.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `coder/claudecode.nvim` |
+| Deps | `folke/snacks.nvim` |
+| Commands | `:ClaudeCode*` command family |
+| Keymap | `<leader>ac` -> toggle Claude Code |
+| Keymap | `<leader>aF` -> focus Claude Code |
+| Keymap | `<leader>ar` -> resume Claude Code |
+| Keymap | `<leader>aC` -> continue Claude Code |
+| Keymap | `<leader>am` -> select model |
+| Keymap | `<leader>ab` -> add current buffer |
+| Keymap | `<leader>as` -> send visual selection |
+| Keymap | `<leader>aA` -> accept diff |
+| Keymap | `<leader>aD` -> deny diff |
+
+Claude Code options are passed through `ai.claudecode`. Blak sets
+`terminal.provider = "snacks"` because Snacks is already part of core:
+
+```lua
+return {
+  extras = { enabled = { "ai.claudecode" } },
+  ai = {
+    claudecode = {
+      log_level = "info",
+      terminal = {
+        provider = "snacks",
+      },
+    },
+  },
+}
+```
+
+> Never enabled by default. Opt in with `:BlakExtras enable ai.claudecode`.
 
 ### `ai.copilot`
 
