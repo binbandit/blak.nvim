@@ -20,7 +20,7 @@ The longer promise lives in [MANIFESTO.md](MANIFESTO.md):
 
 ## Status
 
-Blak is launching as a **v0.1 public preview**: complete enough to install, use, and share, while still young enough that issues and contributor feedback are expected.
+Blak is in **v0.2 public preview**: complete enough to use as a daily driver, with safer updates, documented reversible extras, and room for feedback before a stable 1.0 contract.
 
 ## Requirements
 

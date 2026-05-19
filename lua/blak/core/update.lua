@@ -414,9 +414,9 @@ function M.news()
     vim.cmd.edit(news)
   else
     require("blak.util").open_scratch("Blak news", {
-      "Blak v0.1.0",
+      "Blak v0.2.0",
       "",
-      "Initial release: native-first LSP, fff.nvim file picker, Snacks dashboard, blink.cmp, Mason, Conform, nvim-lint, Oil, Gitsigns, and reversible extras.",
+      "Extras UI, live extras activation, safer update and upgrade flows, typed config metadata, theme adapters, sparse install, expanded docs, and startup deferral.",
     })
   end
 end

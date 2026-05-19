@@ -3,6 +3,49 @@ title: News
 description: What's changing in Blak, release by release.
 ---
 
+## v0.2.0 — Extras, updates, and docs
+
+Blak's second preview release is the first one that feels shaped for regular use rather than just first install. Extras are discoverable, configuration reloads are safer, updates have a clearer trust contract, and the docs now describe the runtime instead of merely introducing it.
+
+**Core**
+
+- `:BlakExtras` opens a browsable extras UI, and extras can now be enabled, disabled, synced, and activated live.
+- `lua/blak/user.lua` auto-refreshes more predictably, including user keymaps and function-valued mappings.
+- `:BlakDocs` opens the docs site from inside Neovim.
+- New management keymaps live under `<Space>l`; native split maps and alternate-file toggling were added.
+- Configuration now has typed metadata, schema validation, string completions, and a richer `lua/blak/user.example.lua`.
+- Startup work is deferred across plugin and config setup so common paths load less up front.
+
+**Updates**
+
+- `:BlakUpdate` now enforces the accepted channel and blocks pending breaking migrations.
+- `:BlakUpgrade` handles deliberate migrations and workflow-affecting moves.
+- Rollback, install, and smoke-test paths were hardened.
+- The public installer now creates a sparse runtime checkout with the runtime files Blak actually needs.
+
+**Theme**
+
+- `blak.theme` centralizes theme loading.
+- TokyoNight now goes through a theme adapter.
+- Transparent editor backgrounds can be enabled with `ui.transparent`.
+- The default theme stays plain `tokyonight-night`.
+
+**Extras**
+
+- AI: Claude Code, Sidekick, Supermaven.
+- Debug/test: DAP and Neotest.
+- Editor: Aerial, Harpoon, mini modules, Overseer, Refactoring, render-markdown, Snacks explorer, Snacks terminal, todo-comments, Trouble, window navigation.
+- UI: Base46, comfy line numbers, dim, lualine.
+- Language: TypeScript tsgo, plus Rust crates.nvim support.
+
+**Fixes**
+
+- Restored local file discovery in the fff picker provider.
+- Refreshed blink super-tab mappings after config changes.
+- Smoothed Snacks explorer quit behavior and splash recentering.
+- Stopped the Snacks explorer extra from installing `fd` unexpectedly.
+- Stabilized CI smoke tests.
+
 ## v0.1.0 — Public preview
 
 Initial implementation. Complete enough to install, use, and share — young enough that issues and contributor feedback are expected.
