@@ -11,6 +11,12 @@ return function(config)
       end,
     },
     {
+      "nvim-mini/mini.pairs",
+      version = false,
+      event = "InsertEnter",
+      opts = {},
+    },
+    {
       "nvim-treesitter/nvim-treesitter",
       branch = "main",
       lazy = false,
@@ -18,6 +24,18 @@ return function(config)
       config = function()
         require("blak.core.treesitter").setup(config)
       end,
+    },
+    {
+      "windwp/nvim-ts-autotag",
+      event = { "BufReadPre", "BufNewFile" },
+      dependencies = { "nvim-treesitter/nvim-treesitter" },
+      opts = {
+        opts = {
+          enable_close = true,
+          enable_rename = true,
+          enable_close_on_slash = false,
+        },
+      },
     },
     {
       "stevearc/oil.nvim",

@@ -11,6 +11,10 @@ return {
     super_tab = false,
   },
 
+  editor = {
+    confirm = true, -- false skips prompts before commands abandon unsaved changes
+  },
+
   terminal = {
     toggle_key = "<leader>tt", -- false disables the terminal mapping
   },

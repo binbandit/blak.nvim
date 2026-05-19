@@ -24,6 +24,7 @@ return {
 
   editor = {
     clipboard = true,
+    confirm = true,
     relative_number = true,
     scrolloff = 8,
     sidescrolloff = 8,

@@ -11,9 +11,10 @@ end
 local function mini_module_specs(config)
   local specs = {}
   local seen = {}
+  local core_modules = { icons = true, pairs = true }
   for _, raw_name in ipairs(vim.tbl_get(config, "mini", "modules") or {}) do
     local name = mini_module_name(raw_name)
-    if not seen[name] and name ~= "icons" then
+    if not seen[name] and not core_modules[name] then
       seen[name] = true
       local require_name = "mini." .. name
       table.insert(specs, {

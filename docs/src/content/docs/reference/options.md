@@ -44,6 +44,7 @@ Anything here can be overridden in your `user.lua` (via the `editor.*` table) or
 | Option | Value | Why |
 | --- | --- | --- |
 | `undofile` | `true` | Persist undo across sessions. |
+| `confirm` | from `editor.confirm` (default `true`) | Prompt before commands abandon unsaved changes. |
 | `updatetime` | `250` | Faster CursorHold / swap writes — drives gitsigns blame, etc. |
 | `timeoutlen` | `400` | Tighter mapping timeout for which-key. |
 
@@ -63,6 +64,8 @@ Anything here can be overridden in your `user.lua` (via the `editor.*` table) or
 | `tabstop` | from `editor.tabstop` (default `2`) | Spaces a tab character displays as. |
 | `shiftwidth` | from `editor.shiftwidth` (default `2`) | Spaces for `<<` / `>>`. |
 | `expandtab` | from `editor.expandtab` (default `true`) | Use spaces, not tabs. |
+| `autoindent` | `true` | Carry the current line's indent when opening a new line. |
+| `smartindent` | `true` | Add simple syntax-aware indent after opening braces when no language indent is active. |
 
 ### Completion
 
@@ -86,6 +89,7 @@ return {
     tabstop = 4,
     shiftwidth = 4,
     relative_number = false,
+    confirm = false,
     clipboard = false,
     scrolloff = 4,
   },

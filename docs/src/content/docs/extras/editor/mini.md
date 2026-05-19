@@ -21,7 +21,6 @@ return {
     modules = {
       "ai",
       "surround",
-      "pairs",
       "splitjoin",
     },
     opts = {
@@ -41,11 +40,11 @@ Because this extra adds plugins, run:
 
 | Surface | Contribution |
 | --- | --- |
-| Plugin | `nvim-mini/mini.<module>` for every configured module except `icons` |
+| Plugin | `nvim-mini/mini.<module>` for every configured module except core modules |
 | Config | `require("mini.<module>").setup(opts)` |
 
-`mini.icons` already ships in Blak core. Keep it out of `mini.modules` unless
-you are intentionally replacing the core icon setup in your own fork.
+`mini.icons` and `mini.pairs` already ship in Blak core. Keep them out of
+`mini.modules` unless you are intentionally replacing core setup in your own fork.
 
 ## Choose modules
 
@@ -68,7 +67,6 @@ Common choices:
 | --- | --- |
 | `ai` | richer `a`/`i` textobjects |
 | `surround` | add, delete, replace, and find surrounds |
-| `pairs` | autopairs |
 | `splitjoin` | split and join arguments |
 | `trailspace` | highlight and remove trailing whitespace |
 | `hipatterns` | highlight configured text patterns |
@@ -85,16 +83,14 @@ Options go under `mini.opts.<module>` and are passed directly to that module's
 return {
   extras = { enabled = { "editor.mini" } },
   mini = {
-    modules = { "surround", "pairs" },
+    modules = { "surround", "splitjoin" },
     opts = {
       surround = {
         n_lines = 120,
       },
-      pairs = {
-        modes = {
-          insert = true,
-          command = false,
-          terminal = false,
+      splitjoin = {
+        mappings = {
+          toggle = "gS",
         },
       },
     },

@@ -34,6 +34,7 @@ local original_user_file = read_file(user_file)
 vim.fn.delete(user_file)
 write_file(user_file, [[
 return function(config)
+  config.editor.confirm = false
   config.editor.relative_number = false
   config.picker.provider = "fff"
   table.insert(config.plugins.specs, { "folke/trouble.nvim", enabled = false })
@@ -61,7 +62,21 @@ assert(
 assert(require("blak.config").get().explorer.provider == "oil", "Oil should be the default explorer provider")
 assert(require("blak.config").get().terminal.provider == "native", "native should be the default terminal provider")
 assert(require("blak.config").get().terminal.toggle_key == "<leader>tt", "<leader>tt should be the default terminal key")
+assert(require("blak.config.defaults").editor.confirm == true, "confirm should be enabled by default")
+assert(require("blak.config").get().editor.confirm == false, "user.lua should be able to disable confirm")
+assert(vim.o.confirm == false, "editor.confirm=false should disable confirm prompts")
+assert(vim.o.autoindent == true, "autoindent should be enabled by default")
+assert(vim.o.smartindent == true, "smartindent should be enabled by default")
 assert(require("blak.config").get().completion.super_tab == false, "SuperTab should be opt-in")
+do
+  local editor_specs = require("blak.plugins.editor")(require("blak.config").get())
+  local plugins = {}
+  for _, spec in ipairs(editor_specs) do
+    plugins[spec[1]] = true
+  end
+  assert(plugins["nvim-mini/mini.pairs"], "mini.pairs should be a default editor plugin")
+  assert(plugins["windwp/nvim-ts-autotag"], "nvim-ts-autotag should be a default editor plugin")
+end
 local completion_specs = require("blak.plugins.completion")(require("blak.config").get())
 assert(completion_specs[1].opts.keymap.preset == "default", "default completion keymap preset should be unchanged")
 local super_tab_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
@@ -288,11 +303,11 @@ require("blak.extras").apply_one(extra_config, "editor.snacks-terminal")
 assert(extra_config.terminal.provider == "snacks", "snacks terminal extra did not set terminal provider")
 assert(vim.tbl_get(extra_config, "snacks", "terminal", "enabled") == true, "snacks terminal extra did not enable Snacks terminal")
 local mini_config = vim.deepcopy(require("blak.config.defaults"))
-mini_config.mini.modules = { "ai", "mini.surround", "ai", "icons" }
+mini_config.mini.modules = { "ai", "mini.surround", "ai", "icons", "pairs" }
 mini_config.mini.opts = { surround = { n_lines = 80 } }
 require("blak.extras").apply_one(mini_config, "editor.mini")
 local mini_specs = mini_config._extra_plugin_specs or {}
-assert(#mini_specs == 2, "mini extra should create one spec per unique configured module and skip mini.icons")
+assert(#mini_specs == 2, "mini extra should create one spec per unique configured module and skip core Mini modules")
 assert(mini_specs[1][1] == "nvim-mini/mini.ai", "mini extra missed mini.ai spec")
 assert(mini_specs[2][1] == "nvim-mini/mini.surround", "mini extra missed mini.surround spec")
 assert(vim.tbl_get(mini_specs[2], "opts", "n_lines") == 80, "mini extra did not pass module opts")
@@ -414,6 +429,8 @@ end)
 assert(reload_seen, "saving user.lua did not emit BlakConfigReloaded")
 assert(vim.g.blak_smoke_reload_hook, "user.lua after hook did not run during reload")
 assert(require("blak.config").get().editor.relative_number == true, "saving user.lua did not reload config")
+assert(require("blak.config").get().editor.confirm == true, "saving user.lua should restore omitted editor defaults")
+assert(vim.o.confirm == true, "reloaded default editor.confirm should re-enable confirm prompts")
 assert(require("blak.config").get().picker.provider == "snacks", "saving user.lua did not refresh picker config")
 vim.cmd("checkhealth blak")
 if original_user_file then

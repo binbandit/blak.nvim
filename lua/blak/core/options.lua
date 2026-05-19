@@ -17,6 +17,7 @@ function M.setup(config)
   vim.opt.ignorecase = true
   vim.opt.smartcase = true
   vim.opt.undofile = true
+  vim.opt.confirm = config.editor.confirm
   vim.opt.updatetime = 250
   vim.opt.timeoutlen = 400
   vim.opt.scrolloff = config.editor.scrolloff
@@ -25,6 +26,8 @@ function M.setup(config)
   vim.opt.shiftwidth = config.editor.shiftwidth
   vim.opt.softtabstop = config.editor.shiftwidth
   vim.opt.expandtab = config.editor.expandtab
+  vim.opt.autoindent = true
+  vim.opt.smartindent = true
   vim.opt.completeopt = { "menu", "menuone", "noselect" }
   vim.opt.pumheight = 12
   vim.opt.wrap = false

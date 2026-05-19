@@ -88,6 +88,7 @@
 
 ---@class blak.EditorConfig
 ---@field clipboard? boolean
+---@field confirm? boolean
 ---@field relative_number? boolean
 ---@field scrolloff? integer
 ---@field sidescrolloff? integer

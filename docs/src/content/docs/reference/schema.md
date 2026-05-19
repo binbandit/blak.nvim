@@ -15,6 +15,7 @@ All required.
 | `localleader` | `string` | Default `"\\"` |
 | `package` | `table` | See below |
 | `ui` | `table` | See below |
+| `editor` | `table` | See below |
 | `completion` | `table` | See below |
 | `picker` | `table` | See below |
 | `explorer` | `table` | See below |
@@ -54,6 +55,29 @@ Set `ui.transparent = true` to clear editor background highlights after the
 active colorscheme loads. Use `ui.theme` for colorscheme-native setup options.
 Blak tries the colorscheme name first, then the name before the final dash.
 Configure custom themes with unusual setup rules through `plugins.specs`.
+
+## `editor`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `clipboard` | `boolean` | Use the system clipboard when available |
+| `confirm` | `boolean` | Prompt before commands abandon unsaved changes |
+| `relative_number` | `boolean` | Toggle relative line numbers |
+| `scrolloff` | `number` | Context lines above and below the cursor |
+| `sidescrolloff` | `number` | Context columns beside the cursor |
+| `tabstop` | `number` | Width used to display a tab character |
+| `shiftwidth` | `number` | Indent width for operators and new lines |
+| `expandtab` | `boolean` | Insert spaces instead of tab characters |
+
+Disable confirm prompts in `user.lua`:
+
+```lua
+return {
+  editor = {
+    confirm = false,
+  },
+}
+```
 
 ## `picker`
 
@@ -211,7 +235,7 @@ return {
 
 | Key | Type | Notes |
 | --- | --- | --- |
-| `modules` | `string[]` | Mini module slugs to install and set up when `editor.mini` is enabled. Use `ai`, `surround`, or `mini.ai`; `mini.icons` is already a Blak core plugin. |
+| `modules` | `string[]` | Mini module slugs to install and set up when `editor.mini` is enabled. Use `ai`, `surround`, or `mini.ai`; `mini.icons` and `mini.pairs` are already Blak core plugins. |
 | `opts` | `table<string, table>` | Per-module options passed to `require("mini.<module>").setup()` |
 
 The Mini extra is intentionally inert until you choose modules:

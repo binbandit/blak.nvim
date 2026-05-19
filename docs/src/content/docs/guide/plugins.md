@@ -1,9 +1,9 @@
 ---
 title: Plugins
-description: The fourteen plugin specs that ship by default — what they do and why each one is core.
+description: The sixteen plugin specs that ship by default — what they do and why each one is core.
 ---
 
-Blak ships with fourteen default plugin specs out of the box, plus `lazy.nvim` as the package backend. Reusable optional behavior belongs in an [extra](/guide/extras/); personal plugins can live in `plugins.specs` in `user.lua`.
+Blak ships with sixteen default plugin specs out of the box, plus `lazy.nvim` as the package backend. Reusable optional behavior belongs in an [extra](/guide/extras/); personal plugins can live in `plugins.specs` in `user.lua`.
 
 All base specs live under [`lua/blak/plugins/`](https://github.com/binbandit/blak.nvim/tree/main/lua/blak/plugins).
 
@@ -39,9 +39,17 @@ Pops up after the leader (or any prefix) showing the registered keymap groups. B
 
 Icon provider. Mocks `nvim-web-devicons` so plugins expecting that API still work without it. Pinned to `version = false` because the icon set changes frequently.
 
+### mini.pairs (`nvim-mini/mini.pairs`)
+
+Auto-pairs for brackets, quotes, and paired newline insertion. Loaded on `InsertEnter`. This is core because the default editing floor should handle common delimiter insertion without requiring a preference-heavy extra.
+
 ### nvim-treesitter (`nvim-treesitter/nvim-treesitter`, `main` branch)
 
 Parser-based syntax, indent, and queries. Configured via [`lua/blak/core/treesitter.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/treesitter.lua). Lazy-loaded per-buffer on `FileType` when the buffer line count is below `performance.max_treesitter_lines`. See [Treesitter](/guide/treesitter/).
+
+### nvim-ts-autotag (`windwp/nvim-ts-autotag`)
+
+Auto-closes and renames paired HTML/XML-style tags using Treesitter. Loaded on buffer reads and new files. Blak keeps the slash-close shortcut disabled so normal `/` insertion is not claimed by surprise.
 
 ### oil.nvim (`stevearc/oil.nvim`)
 
@@ -91,10 +99,10 @@ Standalone linter runner. Loads on the events in `lint.events` (default: `BufWri
 
 Sign-column git status, hunk navigation, stage / reset / blame. Loaded on `BufReadPre` and `BufNewFile`. Staged signs enabled. Preview border honors `ui.winborder`. See [the git keymaps](/guide/keymaps/#git-gitsigns).
 
-## Why these fourteen
+## Why these sixteen
 
 Every plugin here meets one rule from the [philosophy](/guide/philosophy/):
 
 > A feature belongs in core only if most users benefit from it.
 
-A picker, completion, LSP, formatting, linting, treesitter, git status, an icon provider, a discoverable keymap menu, and broad highlight coverage for the default theme — that's the floor for "a Neovim editing experience that doesn't feel raw." Everything else lives in an extra.
+A picker, completion, LSP, formatting, linting, treesitter, delimiter/tag pairing, git status, an icon provider, a discoverable keymap menu, and broad highlight coverage for the default theme — that's the floor for "a Neovim editing experience that doesn't feel raw." Everything else lives in an extra.

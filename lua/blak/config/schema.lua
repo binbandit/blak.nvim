@@ -162,6 +162,36 @@ local function validate_ui(errors, config)
   end
 end
 
+local function validate_editor(errors, config)
+  if config.editor == nil or type(config.editor) ~= "table" then
+    return
+  end
+  if config.editor.clipboard ~= nil then
+    expect(errors, "editor.clipboard", config.editor.clipboard, "boolean")
+  end
+  if config.editor.confirm ~= nil then
+    expect(errors, "editor.confirm", config.editor.confirm, "boolean")
+  end
+  if config.editor.relative_number ~= nil then
+    expect(errors, "editor.relative_number", config.editor.relative_number, "boolean")
+  end
+  if config.editor.scrolloff ~= nil then
+    expect(errors, "editor.scrolloff", config.editor.scrolloff, "number")
+  end
+  if config.editor.sidescrolloff ~= nil then
+    expect(errors, "editor.sidescrolloff", config.editor.sidescrolloff, "number")
+  end
+  if config.editor.tabstop ~= nil then
+    expect(errors, "editor.tabstop", config.editor.tabstop, "number")
+  end
+  if config.editor.shiftwidth ~= nil then
+    expect(errors, "editor.shiftwidth", config.editor.shiftwidth, "number")
+  end
+  if config.editor.expandtab ~= nil then
+    expect(errors, "editor.expandtab", config.editor.expandtab, "boolean")
+  end
+end
+
 function M.validate(config)
   local errors = {}
 
@@ -169,6 +199,7 @@ function M.validate(config)
   expect(errors, "localleader", config.localleader, "string")
   local has_package = expect(errors, "package", config.package, "table")
   expect(errors, "ui", config.ui, "table")
+  local has_editor = expect(errors, "editor", config.editor, "table")
   local has_completion = expect(errors, "completion", config.completion, "table")
   local has_picker = expect(errors, "picker", config.picker, "table")
   local has_explorer = expect(errors, "explorer", config.explorer, "table")
@@ -184,6 +215,9 @@ function M.validate(config)
   end
 
   validate_ui(errors, config)
+  if has_editor then
+    validate_editor(errors, config)
+  end
 
   if has_picker and not valid_pickers[config.picker.provider] then
     table.insert(errors, "picker.provider must be fff, snacks, telescope, or fzf_lua")
