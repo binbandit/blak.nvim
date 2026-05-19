@@ -110,6 +110,7 @@ Extras are opt-in and reversible:
 :BlakExtras enable ui.dim
 :BlakExtras enable ui.lualine
 :BlakExtras enable ai.sidekick
+:BlakExtras enable ai.supermaven
 :BlakExtras enable editor.trouble
 :BlakExtras enable editor.aerial
 :BlakExtras enable editor.todo-comments

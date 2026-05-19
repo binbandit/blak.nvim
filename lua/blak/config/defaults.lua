@@ -70,6 +70,7 @@ return {
     sidekick = {
       nes = { enabled = false },
     },
+    supermaven = {},
   },
 
   mini = {

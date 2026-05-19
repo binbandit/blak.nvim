@@ -68,7 +68,7 @@ configuration examples, install notes, and verification path.
 | Test | [`test.neotest`](/extras/test/neotest/) |
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
 | Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/) |
-| AI | [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/) |
+| AI | [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/), [`ai.supermaven`](/extras/ai/supermaven/) |
 | Editor | [`editor.aerial`](/extras/editor/aerial/), [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.overseer`](/extras/editor/overseer/), [`editor.refactoring`](/extras/editor/refactoring/), [`editor.render-markdown`](/extras/editor/render-markdown/), [`editor.todo-comments`](/extras/editor/todo-comments/), [`editor.trouble`](/extras/editor/trouble/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
@@ -350,6 +350,42 @@ return {
             ["<a-a>"] = { "sidekick_send", mode = { "n", "i" } },
           },
         },
+      },
+    },
+  },
+}
+```
+
+> Never enabled by default. Disable it, restart Blak, then run `:BlakExtras sync` to remove the plugin spec.
+
+### `ai.supermaven`
+
+[supermaven-nvim](https://github.com/supermaven-inc/supermaven-nvim) inline AI
+completion.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `supermaven-inc/supermaven-nvim` |
+| Commands | `:Supermaven*` command family |
+| Keymap | `<leader>aS` -> toggle Supermaven |
+| Keymap | `<M-l>` -> accept the inline suggestion |
+| Keymap | `<M-w>` -> accept one word |
+| Keymap | `<M-]>` -> clear the inline suggestion |
+
+Blak disables Supermaven's built-in plugin keymaps and registers the mappings
+above through `:BlakKeys` instead. That keeps the extra discoverable and avoids
+quietly taking over `<Tab>`.
+
+Supermaven options are passed through `ai.supermaven`:
+
+```lua
+return {
+  extras = { enabled = { "ai.supermaven" } },
+  ai = {
+    supermaven = {
+      log_level = "info",
+      ignore_filetypes = {
+        markdown = true,
       },
     },
   },

@@ -214,6 +214,7 @@ Hooks receive `(config, blak)`. `config` is the merged Blak config table, and
 | Key | Type | Notes |
 | --- | --- | --- |
 | `sidekick` | `table` | Options passed to `folke/sidekick.nvim` when `ai.sidekick` is enabled. Blak sets `nes.enabled = false` by default. |
+| `supermaven` | `table` | Options passed to `supermaven-inc/supermaven-nvim` when `ai.supermaven` is enabled. Blak always disables the plugin's built-in keymaps. |
 
 Use this table for Sidekick CLI and NES configuration:
 
@@ -226,6 +227,20 @@ return {
       cli = {
         mux = { enabled = true, backend = "tmux" },
       },
+    },
+  },
+}
+```
+
+Use `ai.supermaven` to tune Supermaven without enabling its hidden keymaps:
+
+```lua
+return {
+  extras = { enabled = { "ai.supermaven" } },
+  ai = {
+    supermaven = {
+      ignore_filetypes = { markdown = true },
+      log_level = "info",
     },
   },
 }

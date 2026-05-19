@@ -70,6 +70,7 @@ editor.fzf-lua
 
 ai.copilot
 ai.sidekick
+ai.supermaven
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:

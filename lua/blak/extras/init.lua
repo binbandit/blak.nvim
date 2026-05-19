@@ -22,6 +22,7 @@ local modules = {
   "blak.extras.git.diffview",
   "blak.extras.ai.copilot",
   "blak.extras.ai.sidekick",
+  "blak.extras.ai.supermaven",
   "blak.extras.editor.aerial",
   "blak.extras.editor.harpoon",
   "blak.extras.editor.mini",

@@ -100,7 +100,8 @@ lua/blak/
 │   │   └── diffview.lua
 │   ├── ai/
 │   │   ├── copilot.lua
-│   │   └── sidekick.lua
+│   │   ├── sidekick.lua
+│   │   └── supermaven.lua
 │   └── editor/
 │       ├── neotree.lua
 │       ├── snacks_explorer.lua

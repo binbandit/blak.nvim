@@ -194,6 +194,10 @@ See the [LSP guide](/guide/lsp/).
 | `ai.sidekick` | `<leader>at` | Send current context to Sidekick |
 | `ai.sidekick` | `<leader>av` | Send visual selection to Sidekick |
 | `ai.sidekick` | `<leader>ap` | Pick Sidekick prompt |
+| `ai.supermaven` | `<leader>aS` | Toggle Supermaven |
+| `ai.supermaven` | `<M-l>` | Accept inline suggestion |
+| `ai.supermaven` | `<M-w>` | Accept one word |
+| `ai.supermaven` | `<M-]>` | Clear inline suggestion |
 | `debug.dap` | `<leader>db` | Toggle breakpoint |
 | `debug.dap` | `<leader>dc` | Continue debugging |
 | `debug.dap` | `<leader>di` / `<leader>do` / `<leader>dO` | Step into / over / out |

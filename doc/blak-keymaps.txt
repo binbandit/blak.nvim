@@ -126,6 +126,8 @@ EXTRAS
   <Space>cR for Trouble lists.
   editor.harpoon maps <Space>ha, <Space>hh, <Space>hp, <Space>hn, and
   <Space>h1 through <Space>h4 for Harpoon file marks.
+  ai.supermaven maps <Space>aS to toggle Supermaven, <M-l> to accept an inline
+  suggestion, <M-w> to accept one word, and <M-]> to clear the suggestion.
   editor.window-navigation maps <C-h>, <C-j>, <C-k>, and <C-l> to move
   between windows.
   ui.comfy-line-numbers maps displayed labels with j/k and Up/Down motions.
