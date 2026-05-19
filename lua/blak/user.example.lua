@@ -25,6 +25,8 @@ return {
   keymaps = {
     -- Every active mapping needs a description so it appears in :BlakKeys.
     -- { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+    -- { mode = { "n", "x" }, key = "<leader>y", action = '"+y', description = "Yank to clipboard" },
+    -- { key = "<leader>rn", action = function() vim.lsp.buf.rename() end, description = "Rename symbol" },
     -- { key = "<leader>/", disable = true },
   },
 

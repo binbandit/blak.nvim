@@ -6,7 +6,8 @@ The rule: common operations get memorable mappings; uncommon operations get
 commands and pickers.
 
 User mappings from lua/blak/user.lua use the same registry. Add entries to
-keymaps with key, action, and description; use disable = true to disable a
+keymaps with key, action, and description. action may be a command string or Lua
+function, and mode may be one mode or a list. Use disable = true to disable a
 Blak mapping.
 
 FIND
@@ -50,6 +51,19 @@ CUSTOM
   return {
     keymaps = {
       { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+      {
+        mode = { "n", "x" },
+        key = "<leader>y",
+        action = '"+y',
+        description = "Yank to clipboard",
+      },
+      {
+        key = "<leader>rn",
+        action = function()
+          vim.lsp.buf.rename()
+        end,
+        description = "Rename symbol",
+      },
       { key = "<leader>/", disable = true },
     },
   }

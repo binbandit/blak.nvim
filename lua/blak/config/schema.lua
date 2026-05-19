@@ -40,6 +40,15 @@ local function validate_mode(errors, path, mode)
   table.insert(errors, path .. " must be a string or list of strings")
 end
 
+local function validate_keymap_mode(errors, path, item)
+  if item.mode ~= nil and item.modes ~= nil then
+    table.insert(errors, path .. " must use mode or modes, not both")
+    return
+  end
+  local field = item.modes ~= nil and ".modes" or ".mode"
+  validate_mode(errors, path .. field, item.mode or item.modes)
+end
+
 local function validate_keymap(errors, index, item)
   local path = "keymaps[" .. index .. "]"
   if type(item) ~= "table" then
@@ -51,7 +60,7 @@ local function validate_keymap(errors, index, item)
   if type(key) ~= "string" then
     table.insert(errors, path .. ".key must be a string")
   end
-  validate_mode(errors, path .. ".mode", item.mode)
+  validate_keymap_mode(errors, path, item)
 
   if item.disable ~= nil then
     expect(errors, path .. ".disable", item.disable, "boolean")

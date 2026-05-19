@@ -186,6 +186,10 @@ local function keymap_lhs(item)
   return item.key or item.lhs
 end
 
+local function keymap_mode(item)
+  return item.mode or item.modes or "n"
+end
+
 local function keymap_rhs(item)
   if item.disable == true then
     return false
@@ -205,7 +209,7 @@ local function configure_disabled_keymaps(config)
   for _, item in ipairs(config.keymaps or {}) do
     local lhs = type(item) == "table" and keymap_lhs(item) or nil
     if type(lhs) == "string" and keymap_rhs(item) == false then
-      for _, mode in ipairs(mode_list(item.mode)) do
+      for _, mode in ipairs(mode_list(keymap_mode(item))) do
         disabled_keymaps[registry_key(mode, lhs)] = true
       end
     end
@@ -217,9 +221,9 @@ local function apply_keymaps(keys, force)
     local lhs = keymap_lhs(item)
     local rhs = keymap_rhs(item)
     if rhs == false then
-      delete_keymap(item.mode or "n", lhs, item.opts)
+      delete_keymap(keymap_mode(item), lhs, item.opts)
     else
-      map(item.mode or "n", lhs, rhs, keymap_desc(item), item.opts, force)
+      map(keymap_mode(item), lhs, rhs, keymap_desc(item), item.opts, force)
     end
   end
 end

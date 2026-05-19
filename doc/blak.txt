@@ -100,6 +100,26 @@ Personal lazy.nvim specs can be added under plugins.specs: >
     },
   }
 <
+Custom keymaps can use command strings or Lua functions, and mode accepts one
+mode or a list: >
+  return {
+    keymaps = {
+      {
+        mode = { "n", "x" },
+        key = "<leader>y",
+        action = '"+y',
+        description = "Yank to clipboard",
+      },
+      {
+        key = "<leader>rn",
+        action = function()
+          vim.lsp.buf.rename()
+        end,
+        description = "Rename symbol",
+      },
+    },
+  }
+<
 For full Lua control, return a function. Blak passes the config table it is
 building before validation and extras apply: >
   return function(config)

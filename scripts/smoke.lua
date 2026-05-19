@@ -140,6 +140,14 @@ local user_keymaps_config = vim.tbl_deep_extend("force", {}, require("blak.confi
     { key = "<leader>/", disable = true },
     { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Search grep" },
     { key = "<leader>ff", action = "<cmd>BlakPick recent<cr>", description = "Recent override" },
+    {
+      modes = { "n", "x" },
+      key = "<leader>mx",
+      action = function()
+        vim.g.blak_smoke_user_keymap_callback = (vim.g.blak_smoke_user_keymap_callback or 0) + 1
+      end,
+      description = "Multi-mode callback",
+    },
   },
 })
 require("blak.config.schema").validate(user_keymaps_config)
@@ -147,8 +155,16 @@ require("blak.core.keymaps").setup(user_keymaps_config)
 assert(vim.fn.maparg("<leader>/", "n") == "", "disabled user keymap should be removed")
 assert(vim.fn.maparg("<leader>sg", "n", false, true).desc == "Search grep", "custom user keymap missing")
 assert(vim.fn.maparg("<leader>ff", "n", false, true).desc == "Recent override", "user keymap override missing")
+local user_callback_keymap = vim.fn.maparg("<leader>mx", "n", false, true)
+assert(user_callback_keymap.desc == "Multi-mode callback", "multi-mode function keymap missing in normal mode")
+assert(vim.fn.maparg("<leader>mx", "x", false, true).desc == "Multi-mode callback", "multi-mode function keymap missing in visual mode")
+assert(type(user_callback_keymap.callback) == "function", "user function keymap callback missing")
+user_callback_keymap.callback()
+assert(vim.g.blak_smoke_user_keymap_callback == 1, "user function keymap callback did not run")
 require("blak.core.keymaps").setup(require("blak.config").get())
 assert(vim.fn.maparg("<leader>sg", "n") == "", "removed user keymap should be removed")
+assert(vim.fn.maparg("<leader>mx", "n") == "", "removed normal-mode user function keymap should be removed")
+assert(vim.fn.maparg("<leader>mx", "x") == "", "removed visual-mode user function keymap should be removed")
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "removed user keymap disable should restore default")
 assert(vim.fn.maparg("<leader>ff", "n", false, true).desc == "Find files", "removed user keymap override should restore default")
 local blak_keymaps = {

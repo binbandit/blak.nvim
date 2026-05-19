@@ -162,8 +162,32 @@ return {
 ```
 
 Custom keymaps registered through `user.lua` require a description and appear in
-`:BlakKeys`. Use `disable = true` when you want Blak to leave one of its default
-mappings unbound.
+`:BlakKeys`. Actions can be command strings or Lua functions, and `mode` can be
+a single mode or a list of modes:
+
+```lua
+return {
+  keymaps = {
+    {
+      mode = { "n", "x" },
+      key = "<leader>y",
+      action = '"+y',
+      description = "Yank to clipboard",
+    },
+    {
+      key = "<leader>rn",
+      action = function()
+        vim.lsp.buf.rename()
+      end,
+      description = "Rename symbol",
+    },
+    { key = "<leader>/", disable = true },
+  },
+}
+```
+
+Use `disable = true` when you want Blak to leave one of its default mappings
+unbound.
 
 Personal lazy.nvim specs live under `plugins.specs`:
 

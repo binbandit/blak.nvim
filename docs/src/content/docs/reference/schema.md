@@ -108,6 +108,7 @@ return {
 | Key | Type | Notes |
 | --- | --- | --- |
 | `mode` | `string` or `string[]` | Optional; defaults to `"n"` |
+| `modes` | `string` or `string[]` | Alias for `mode`; use one or the other |
 | `key` | `string` | Required key to map |
 | `action` | `string`, `function`, or `false` | Required action; `false` disables this key |
 | `description` | `string` | Required for active mappings so `:BlakKeys` can show it |
@@ -118,6 +119,19 @@ return {
 return {
   keymaps = {
     { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+    {
+      mode = { "n", "x" },
+      key = "<leader>y",
+      action = '"+y',
+      description = "Yank to clipboard",
+    },
+    {
+      key = "<leader>rn",
+      action = function()
+        vim.lsp.buf.rename()
+      end,
+      description = "Rename symbol",
+    },
     { key = "<leader>/", disable = true },
   },
 }

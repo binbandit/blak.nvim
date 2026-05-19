@@ -17,14 +17,28 @@ Add or override mappings from `lua/blak/user.lua` with the `keymaps` list:
 return {
   keymaps = {
     { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+    {
+      mode = { "n", "x" },
+      key = "<leader>y",
+      action = '"+y',
+      description = "Yank to clipboard",
+    },
+    {
+      key = "<leader>rn",
+      action = function()
+        vim.lsp.buf.rename()
+      end,
+      description = "Rename symbol",
+    },
     { key = "<leader>/", disable = true },
   },
 }
 ```
 
 Active entries require `description` so they stay discoverable through `:BlakKeys`.
-Use `disable = true` to disable a Blak mapping. To move a default action, disable
-the old key and add the new one.
+Use `mode` for one mode or a list of modes, and use a command string or Lua
+function for `action`. Use `disable = true` to disable a Blak mapping. To move a
+default action, disable the old key and add the new one.
 
 ## Edit & navigation
 

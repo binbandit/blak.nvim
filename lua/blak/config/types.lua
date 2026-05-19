@@ -114,6 +114,7 @@
 
 ---@class blak.KeymapSpec
 ---@field mode? string|string[]
+---@field modes? string|string[]
 ---@field key? string
 ---@field action? string|function|false
 ---@field description? string

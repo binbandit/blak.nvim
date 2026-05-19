@@ -69,14 +69,28 @@ Add or override keymaps:
 return {
   keymaps = {
     { key = "<leader>sg", action = "<cmd>BlakPick grep<cr>", description = "Grep" },
+    {
+      mode = { "n", "x" },
+      key = "<leader>y",
+      action = '"+y',
+      description = "Yank to clipboard",
+    },
+    {
+      key = "<leader>rn",
+      action = function()
+        vim.lsp.buf.rename()
+      end,
+      description = "Rename symbol",
+    },
     { key = "<leader>/", disable = true },
   },
 }
 ```
 
 Every active mapping needs `description` so it appears in `:BlakKeys`. Use
-`disable = true` to remove one of Blak's default mappings before adding your
-replacement.
+`mode` for one mode or a list of modes, and use a command string or Lua function
+for `action`. Use `disable = true` to remove one of Blak's default mappings
+before adding your replacement.
 
 Add Mason tools or Treesitter parsers:
 
