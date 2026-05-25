@@ -23,7 +23,6 @@ local command_names = {
 }
 
 local picker_kinds = {
-  "smart",
   "files",
   "grep",
   "buffers",
@@ -201,6 +200,12 @@ local function main()
     run("BlakPick " .. kind, "BlakPick " .. kind)
     assert(vim.g.blak_command_test_picker_kind == kind, "BlakPick did not dispatch " .. kind)
   end
+  vim.g.blak_command_test_picker_kind = nil
+  run("BlakPick default", "BlakPick")
+  assert(vim.g.blak_command_test_picker_kind == "files", "BlakPick without args should dispatch files")
+  vim.g.blak_command_test_picker_kind = nil
+  run("BlakPick smart alias", "BlakPick smart")
+  assert(vim.g.blak_command_test_picker_kind == "files", "BlakPick smart should remain a files alias")
 
   run("BlakExtras", "BlakExtras")
   assert(vim.bo.filetype == "blak-extras", "BlakExtras did not open the extras UI")

@@ -55,7 +55,7 @@ fzf-lua handles:
 
 | Blak kind | fzf-lua call |
 | --- | --- |
-| `files`, `smart` | `files` |
+| `files` | `files` |
 | `grep` | `live_grep` |
 | `buffers` | `buffers` |
 | `recent` | `oldfiles` |

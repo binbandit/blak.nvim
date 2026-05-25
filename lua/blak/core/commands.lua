@@ -3,7 +3,6 @@ local M = {}
 local docs_url = "https://getblak.dev/start/why/"
 
 local pickers = {
-  "smart",
   "files",
   "grep",
   "buffers",
@@ -113,7 +112,7 @@ function M.setup(config)
   end, { desc = "Show Blak keymaps" })
 
   vim.api.nvim_create_user_command("BlakPick", function(opts)
-    require("blak.providers.picker").pick(opts.args ~= "" and opts.args or "smart")
+    require("blak.providers.picker").pick(opts.args ~= "" and opts.args or "files")
   end, { nargs = "?", complete = complete_picker, desc = "Run a Blak picker" })
 
   vim.api.nvim_create_user_command("BlakExtras", extras_command, {

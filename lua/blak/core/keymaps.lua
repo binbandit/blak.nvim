@@ -327,7 +327,7 @@ function M.setup(config)
 
   map("n", "<Esc>", "<cmd>nohlsearch<cr>", "Clear search")
 
-  map("n", "<leader><space>", picker("smart"), "Smart find")
+  map("n", "<leader><space>", picker("files"), "Find files")
   map("n", "<leader>/", picker("grep"), "Grep")
   map("n", "<leader>ff", picker("files"), "Find files")
   map("n", "<leader>fg", picker("grep"), "Grep")

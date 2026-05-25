@@ -39,7 +39,10 @@ local function order(primary)
 end
 
 function M.pick(kind, opts)
-  kind = kind or "smart"
+  kind = kind or "files"
+  if kind == "smart" then
+    kind = "files"
+  end
   opts = with_project_cwd(kind, opts)
 
   for _, name in ipairs(order(opts.provider)) do
@@ -57,8 +60,6 @@ function M.pick(kind, opts)
 end
 
 function M.smart(opts)
-  opts = opts or {}
-  opts.cwd = opts.cwd or require("blak.util").git_root()
   return M.pick("files", opts)
 end
 

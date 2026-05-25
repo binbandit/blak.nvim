@@ -16,7 +16,6 @@ local function call(name, opts)
   return p[name](opts or {})
 end
 
-function M.smart(opts) return call("files", opts) end
 function M.files(opts) return call("files", opts) end
 function M.grep(opts) return call("grep", opts) end
 function M.buffers(opts) return call("buffers", opts) end

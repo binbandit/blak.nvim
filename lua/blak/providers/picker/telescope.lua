@@ -4,7 +4,6 @@ local function builtin()
   return require("telescope.builtin")
 end
 
-function M.smart(opts) return builtin().find_files(opts) end
 function M.files(opts) return builtin().find_files(opts) end
 function M.grep(opts) return builtin().live_grep(opts) end
 function M.buffers(opts) return builtin().buffers(opts) end

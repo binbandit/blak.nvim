@@ -49,8 +49,7 @@ Entry point for every picker action. The `{kind}` is one of:
 
 | Kind | What |
 | --- | --- |
-| `smart` | Project-aware file finder (default if no arg) |
-| `files` | Find files in the workspace |
+| `files` | Find files in the workspace (default if no arg) |
 | `grep` | Live grep |
 | `buffers` | Buffer list |
 | `recent` | Recently opened files |
@@ -62,6 +61,8 @@ Entry point for every picker action. The `{kind}` is one of:
 | `workspace_symbols` | Workspace symbols |
 
 These dispatch through [`lua/blak/providers/picker/`](https://github.com/binbandit/blak.nvim/tree/main/lua/blak/providers/picker), so changing `picker.provider` in your `user.lua` swaps the implementation without changing the keymaps. See the [Pickers guide](/guide/pickers/).
+
+The old `smart` kind is still accepted as a compatibility alias for `files`.
 
 ## Extras
 

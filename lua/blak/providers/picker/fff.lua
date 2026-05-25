@@ -22,10 +22,4 @@ function M.grep(opts)
   return picker.live_grep(opts or {})
 end
 
-function M.smart(opts)
-  opts = opts or {}
-  opts.cwd = opts.cwd or require("blak.util").git_root()
-  return M.files(opts)
-end
-
 return M

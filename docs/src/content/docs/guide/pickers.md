@@ -46,7 +46,6 @@ Source: [`lua/blak/providers/picker/init.lua`](https://github.com/binbandit/blak
 
 | Kind | fff | snacks | telescope | fzf_lua |
 | --- | --- | --- | --- | --- |
-| `smart` | ✓ | ✓ | smart fallback to files | smart fallback to files |
 | `files` | ✓ | ✓ | `find_files` | `files` |
 | `grep` | ✓ | live_grep | `live_grep` | `live_grep` |
 | `buffers` | — | ✓ | `buffers` | `buffers` |
@@ -59,6 +58,7 @@ Source: [`lua/blak/providers/picker/init.lua`](https://github.com/binbandit/blak
 | `workspace_symbols` | — | ✓ | `lsp_dynamic_workspace_symbols` | `lsp_workspace_symbols` |
 
 When a method is missing on the configured provider, the dispatcher falls back to one that has it.
+The old `smart` kind is accepted as an alias for `files`.
 
 ## Writing a new provider
 
@@ -69,7 +69,6 @@ local M = {}
 
 function M.files(opts) ... end
 function M.grep(opts) ... end
-function M.smart(opts) ... end
 -- ...
 
 return M

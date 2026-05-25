@@ -167,7 +167,7 @@ them.
 
 ```lua
 require("blak.providers.picker").pick("files")
-require("blak.providers.picker").pick("smart")
+require("blak.providers.picker").pick("smart") -- compatibility alias for files
 ```
 
 Use this if you want to bind a custom keymap to a picker call.

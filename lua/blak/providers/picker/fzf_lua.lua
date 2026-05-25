@@ -4,7 +4,6 @@ local function fzf()
   return require("fzf-lua")
 end
 
-function M.smart(opts) return fzf().files(opts) end
 function M.files(opts) return fzf().files(opts) end
 function M.grep(opts) return fzf().live_grep(opts) end
 function M.buffers(opts) return fzf().buffers(opts) end

@@ -178,6 +178,7 @@ do
 end
 assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")
+assert(vim.fn.maparg("<leader><space>", "n", false, true).desc == "Find files", "<leader><leader> files mapping missing")
 assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "<leader>/ grep mapping missing")
 assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal", "<leader>tt terminal mapping missing")
 assert(vim.fn.maparg("<leader>`", "n", false, true).desc == "Toggle last file", "<leader>` alternate file mapping missing")

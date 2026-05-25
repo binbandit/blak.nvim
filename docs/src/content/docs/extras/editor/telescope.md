@@ -60,7 +60,7 @@ Telescope handles:
 
 | Blak kind | Telescope builtin |
 | --- | --- |
-| `files`, `smart` | `find_files` |
+| `files` | `find_files` |
 | `grep` | `live_grep` |
 | `buffers` | `buffers` |
 | `recent` | `oldfiles` |

@@ -55,7 +55,7 @@ default action, disable the old key and add the new one.
 
 | Mapping | Action |
 | --- | --- |
-| `<leader><space>` | Smart file find |
+| `<leader><space>` | Find files |
 | `<leader>/` | Grep |
 | `<leader>ff` | Find files |
 | `<leader>fg` | Grep |

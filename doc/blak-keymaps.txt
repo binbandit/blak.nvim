@@ -11,7 +11,7 @@ function, and mode may be one mode or a list. Use disable = true to disable a
 Blak mapping.
 
 FIND
-  <Space><Space>   Smart file find
+  <Space><Space>   Find files
   <Space>/         Grep
   <Space>ff        Find files
   <Space>fg        Grep
