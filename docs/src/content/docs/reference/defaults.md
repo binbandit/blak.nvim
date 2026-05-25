@@ -7,7 +7,7 @@ This is the canonical default config. It lives at `lua/blak/config/defaults.lua`
 
 ```lua
 return {
-  version = "0.2.0",
+  version = "0.2.1",
   leader = " ",
   localleader = "\\",
 

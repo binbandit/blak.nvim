@@ -3,6 +3,19 @@ title: News
 description: What's changing in Blak, release by release.
 ---
 
+## v0.2.1 — Editing defaults polish
+
+This patch release tightens two default editing surfaces without adding new
+configuration weight.
+
+- Pair handling now uses `nvim-autopairs`, which gives the expected brace block
+  shape when pressing Enter inside `{}`.
+- `<Space><Space>` is now documented and implemented as a plain file finder
+  instead of a duplicate "smart" picker. `:BlakPick smart` remains available as
+  a compatibility alias for `files`.
+- Docs and smoke coverage were updated for pair insertion, picker dispatch, and
+  the Mini extra's non-conflicting module guidance.
+
 ## v0.2.0 — Extras, updates, and docs
 
 Blak's second preview release is the first one that feels shaped for regular use rather than just first install. Extras are discoverable, configuration reloads are safer, updates have a clearer trust contract, and the docs now describe the runtime instead of merely introducing it.

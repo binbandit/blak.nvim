@@ -1,5 +1,18 @@
 # Blak news
 
+## v0.2.1
+
+Patch release for two default editing fixes:
+
+- Switched core pair handling from `mini.pairs` to `nvim-autopairs` so pressing
+  Enter inside braces creates the expected block shape with the closing brace on
+  its own line.
+- Made `<Space><Space>` a plain file finder instead of a duplicate "smart"
+  picker surface. `:BlakPick smart` still works as a compatibility alias for
+  `files`.
+- Updated picker, Mini extra, and keymap docs to describe the shipped behavior,
+  and added smoke coverage for brace-newline insertion and picker dispatch.
+
 ## v0.2.0
 
 This release turns the first public preview into a more complete daily-driver
