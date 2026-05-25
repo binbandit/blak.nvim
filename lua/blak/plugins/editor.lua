@@ -11,8 +11,7 @@ return function(config)
       end,
     },
     {
-      "nvim-mini/mini.pairs",
-      version = false,
+      "windwp/nvim-autopairs",
       event = "InsertEnter",
       opts = {},
     },

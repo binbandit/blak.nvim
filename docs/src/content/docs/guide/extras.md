@@ -464,12 +464,12 @@ project-local file marks and a small editable quick menu.
 
 | Adds | Value |
 | --- | --- |
-| Plugins | one `nvim-mini/mini.<module>` spec for each configured non-core `mini.modules` entry |
+| Plugins | one `nvim-mini/mini.<module>` spec for each configured non-core, non-conflicting `mini.modules` entry |
 | Config | calls `require("mini.<module>").setup(mini.opts.<module> or {})` |
 
 This extra does not enable any optional Mini module by default. `mini.icons` and
-`mini.pairs` ship in core; put the other modules you want in `mini.modules`,
-enable `editor.mini`, then run `:BlakExtras sync`.
+pair handling ship in core; put the other Mini modules you want in
+`mini.modules`, enable `editor.mini`, then run `:BlakExtras sync`.
 
 
 ### `editor.overseer`

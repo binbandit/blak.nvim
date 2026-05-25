@@ -40,11 +40,12 @@ Because this extra adds plugins, run:
 
 | Surface | Contribution |
 | --- | --- |
-| Plugin | `nvim-mini/mini.<module>` for every configured module except core modules |
+| Plugin | `nvim-mini/mini.<module>` for every configured module except core or conflicting modules |
 | Config | `require("mini.<module>").setup(opts)` |
 
-`mini.icons` and `mini.pairs` already ship in Blak core. Keep them out of
-`mini.modules` unless you are intentionally replacing core setup in your own fork.
+`mini.icons` and pair handling already ship in Blak core. Keep `icons` and
+`pairs` out of `mini.modules` unless you are intentionally replacing core setup
+in your own fork.
 
 ## Choose modules
 

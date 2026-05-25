@@ -61,7 +61,7 @@ lua/blak/
 ├── plugins/
 │   ├── init.lua            Plugin spec collector
 │   ├── ui.lua              Snacks, which-key
-│   ├── editor.lua          mini.icons, mini.pairs, nvim-treesitter, nvim-ts-autotag, oil.nvim
+│   ├── editor.lua          mini.icons, nvim-autopairs, nvim-treesitter, nvim-ts-autotag, oil.nvim
 │   ├── picker.lua          fff.nvim (when picker.provider == "fff")
 │   ├── completion.lua      blink.cmp
 │   ├── lsp.lua             nvim-lspconfig, mason, mason-lspconfig

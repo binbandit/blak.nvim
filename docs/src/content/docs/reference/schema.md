@@ -269,7 +269,7 @@ return {
 
 | Key | Type | Notes |
 | --- | --- | --- |
-| `modules` | `string[]` | Mini module slugs to install and set up when `editor.mini` is enabled. Use `ai`, `surround`, or `mini.ai`; `mini.icons` and `mini.pairs` are already Blak core plugins. |
+| `modules` | `string[]` | Mini module slugs to install and set up when `editor.mini` is enabled. Use `ai`, `surround`, or `mini.ai`; `mini.icons` and pair handling already ship in core. |
 | `opts` | `table<string, table>` | Per-module options passed to `require("mini.<module>").setup()` |
 
 The Mini extra is intentionally inert until you choose modules:

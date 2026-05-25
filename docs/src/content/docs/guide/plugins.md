@@ -39,7 +39,7 @@ Pops up after the leader (or any prefix) showing the registered keymap groups. B
 
 Icon provider. Mocks `nvim-web-devicons` so plugins expecting that API still work without it. Pinned to `version = false` because the icon set changes frequently.
 
-### mini.pairs (`nvim-mini/mini.pairs`)
+### nvim-autopairs (`windwp/nvim-autopairs`)
 
 Auto-pairs for brackets, quotes, and paired newline insertion. Loaded on `InsertEnter`. This is core because the default editing floor should handle common delimiter insertion without requiring a preference-heavy extra.
 

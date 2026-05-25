@@ -123,7 +123,7 @@ do
   for _, spec in ipairs(editor_specs) do
     plugins[spec[1]] = true
   end
-  assert(plugins["nvim-mini/mini.pairs"], "mini.pairs should be a default editor plugin")
+  assert(plugins["windwp/nvim-autopairs"], "nvim-autopairs should be a default editor plugin")
   assert(plugins["windwp/nvim-ts-autotag"], "nvim-ts-autotag should be a default editor plugin")
 end
 local completion_specs = require("blak.plugins.completion")(require("blak.config").get())
@@ -356,7 +356,7 @@ mini_config.mini.modules = { "ai", "mini.surround", "ai", "icons", "pairs" }
 mini_config.mini.opts = { surround = { n_lines = 80 } }
 require("blak.extras").apply_one(mini_config, "editor.mini")
 local mini_specs = mini_config._extra_plugin_specs or {}
-assert(#mini_specs == 2, "mini extra should create one spec per unique configured module and skip core Mini modules")
+assert(#mini_specs == 2, "mini extra should create one spec per unique configured module and skip built-in modules")
 assert(mini_specs[1][1] == "nvim-mini/mini.ai", "mini extra missed mini.ai spec")
 assert(mini_specs[2][1] == "nvim-mini/mini.surround", "mini extra missed mini.surround spec")
 assert(vim.tbl_get(mini_specs[2], "opts", "n_lines") == 80, "mini extra did not pass module opts")
