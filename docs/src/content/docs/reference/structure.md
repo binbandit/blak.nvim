@@ -84,6 +84,7 @@ lua/blak/
 │   │   ├── typescript.lua
 │   │   ├── typescript_tsgo.lua
 │   │   ├── python.lua
+│   │   ├── python_pro.lua
 │   │   ├── rust.lua
 │   │   ├── go.lua
 │   │   └── markdown.lua

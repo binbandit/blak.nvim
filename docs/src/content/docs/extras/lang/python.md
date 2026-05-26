@@ -7,6 +7,10 @@ description: Configure lang.python for Pyright, Ruff, Black, isort, and Python T
 policy. Your `pyproject.toml`, `ruff.toml`, or tool-specific config files remain
 the source of truth for formatting and lint rules.
 
+For a more opinionated power-user stack with BasedPyright, Ruff formatting,
+virtualenv selection, and debugpy tooling, use
+[`lang.python-pro`](/extras/lang/python-pro/) instead.
+
 ## Enable it
 
 ```lua

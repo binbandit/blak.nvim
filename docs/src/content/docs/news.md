@@ -77,7 +77,7 @@ Initial implementation. Complete enough to install, use, and share — young eno
 
 **Extras (reversible)**
 
-- Languages: lua, typescript, typescript-tsgo, python, rust, go, markdown.
+- Languages: lua, typescript, typescript-tsgo, python, python-pro, rust, go, markdown.
 - UI: animations, image-preview, zen.
 - Git: lazygit, diffview.
 - Editor: neotree, snacks-explorer, telescope, fzf-lua.

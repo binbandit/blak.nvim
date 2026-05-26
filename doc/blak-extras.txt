@@ -38,6 +38,7 @@ lang.lua
 lang.typescript
 lang.typescript-tsgo
 lang.python
+lang.python-pro
 lang.rust
 lang.go
 lang.markdown

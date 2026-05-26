@@ -33,6 +33,7 @@
 ---| "lang.lua"
 ---| "lang.markdown"
 ---| "lang.python"
+---| "lang.python-pro"
 ---| "lang.rust"
 ---| "lang.typescript"
 ---| "lang.typescript-tsgo"

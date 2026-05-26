@@ -213,6 +213,7 @@ See the [LSP guide](/guide/lsp/).
 | `debug.dap` | `<leader>dr` | Toggle DAP REPL |
 | `debug.dap` | `<leader>dt` | Terminate debug session |
 | `debug.dap` | `<leader>du` | Toggle dap-ui |
+| `lang.python-pro` | `<leader>cv` | Select Python virtualenv |
 | `test.neotest` | `<leader>Tn` | Run nearest test |
 | `test.neotest` | `<leader>Tf` | Run current file tests |
 | `test.neotest` | `<leader>Td` | Debug nearest test |

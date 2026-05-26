@@ -104,6 +104,7 @@ Extras are opt-in and reversible:
 :BlakExtras list
 :BlakExtras enable lang.typescript
 :BlakExtras enable lang.python
+:BlakExtras enable lang.python-pro
 :BlakExtras enable debug.dap
 :BlakExtras enable test.neotest
 :BlakExtras enable git.lazygit
@@ -134,6 +135,7 @@ Extras listed in `lua/blak/user.lua` are shown as config-managed and should be
 removed there when you want them disabled.
 
 Use `lang.typescript-tsgo` instead of `lang.typescript` to try the experimental native TypeScript LSP.
+Use `lang.python-pro` instead of `lang.python` when you want BasedPyright, Ruff-first formatting, venv selection, and debugpy tooling.
 
 State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Enabling an extra applies its config to the current session; run `:BlakExtras sync` if the extra added plugin specs. Disabling persists immediately, but a restart is still the clean way to unload plugins, keymaps, and runtime hooks that already ran.
 

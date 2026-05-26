@@ -63,7 +63,7 @@ configuration examples, install notes, and verification path.
 
 | Group | Extras |
 | --- | --- |
-| Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/) |
+| Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.python-pro`](/extras/lang/python-pro/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/) |
 | Debug | [`debug.dap`](/extras/debug/dap/) |
 | Test | [`test.neotest`](/extras/test/neotest/) |
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
@@ -121,6 +121,21 @@ Python with Pyright + Ruff + Black + isort.
 | LSP | `pyright`, `ruff` |
 | Format | `isort`, then `black` |
 | Lint | `ruff` |
+
+### `lang.python-pro`
+
+Python with BasedPyright, Ruff-first formatting, venv selection, and debugpy.
+
+Enable this instead of `lang.python` when you want the richer Python stack.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `python`, `requirements` |
+| Mason | `ruff`, `debugpy` |
+| LSP | `basedpyright`, `ruff` |
+| Format | `ruff_organize_imports`, then `ruff_format` |
+| Plugins | `venv-selector.nvim` |
+| Keys | `<leader>cv` for `:VenvSelect` |
 
 ### `lang.rust`
 

@@ -6,6 +6,7 @@ local modules = {
   "blak.extras.lang.typescript",
   "blak.extras.lang.typescript_tsgo",
   "blak.extras.lang.python",
+  "blak.extras.lang.python_pro",
   "blak.extras.lang.rust",
   "blak.extras.lang.go",
   "blak.extras.lang.markdown",

@@ -237,6 +237,7 @@ export default defineConfig({
             { label: "TypeScript", slug: "extras/lang/typescript" },
             { label: "TypeScript tsgo", slug: "extras/lang/typescript-tsgo" },
             { label: "Python", slug: "extras/lang/python" },
+            { label: "Python Pro", slug: "extras/lang/python-pro" },
             { label: "Rust", slug: "extras/lang/rust" },
             { label: "Go", slug: "extras/lang/go" },
             { label: "Markdown", slug: "extras/lang/markdown" },

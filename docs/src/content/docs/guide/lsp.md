@@ -41,9 +41,10 @@ lsp = {
 
 Blak injects `lua_ls.settings.Lua.workspace.library` lazily when LSP setup runs, so config startup does not scan the full runtime path. Set `workspace.library` yourself if you want to replace that generated library.
 
-Other servers ship via [language extras](/guide/extras/#languages): `ts_ls`, `tsgo`, `eslint`, `pyright`, `ruff`, `rust_analyzer`, `taplo`, `gopls`, `marksman`.
+Other servers ship via [language extras](/guide/extras/#languages): `ts_ls`, `tsgo`, `eslint`, `pyright`, `basedpyright`, `ruff`, `rust_analyzer`, `taplo`, `gopls`, `marksman`.
 
 For TypeScript, use either `lang.typescript` for the stable `ts_ls` path or `lang.typescript-tsgo` for the experimental native `tsgo` language server.
+For Python, use `lang.python` for the basic Pyright path or `lang.python-pro` for BasedPyright plus Ruff's native language server.
 
 ## Adding a server
 

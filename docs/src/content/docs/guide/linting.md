@@ -26,6 +26,9 @@ No linters are configured in core. Linters arrive via [language extras](/guide/e
 | `lang.go` | `golangcilint` for go |
 | `lang.markdown` | `markdownlint` for markdown |
 
+`lang.python-pro` uses Ruff's native LSP diagnostics and code actions instead
+of adding a separate nvim-lint entry, so it avoids duplicate Ruff diagnostics.
+
 ## Adding a linter
 
 ```lua
