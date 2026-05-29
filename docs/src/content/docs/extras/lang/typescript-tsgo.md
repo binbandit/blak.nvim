@@ -34,7 +34,7 @@ Or toggle it interactively:
 
 | Surface | Contribution |
 | --- | --- |
-| Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json`, `jsonc` |
+| Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
 | Mason | `prettier`, `prettierd`, `eslint_d` |
 | LSP | `tsgo`, `eslint` |
 | Formatting | `prettierd`, falling back to `prettier`, for JS/TS/JSON filetypes |

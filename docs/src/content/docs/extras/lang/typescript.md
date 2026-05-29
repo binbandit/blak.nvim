@@ -33,7 +33,7 @@ You can also enable it from the command line:
 
 | Surface | Contribution |
 | --- | --- |
-| Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json`, `jsonc` |
+| Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
 | Mason | `prettier`, `prettierd`, `eslint_d` |
 | LSP | `ts_ls`, `eslint` |
 | Formatting | `prettierd`, falling back to `prettier`, for JS/TS/JSON filetypes |

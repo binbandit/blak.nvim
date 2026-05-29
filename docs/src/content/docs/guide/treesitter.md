@@ -23,13 +23,16 @@ Language extras add to this list automatically:
 
 | Extra | Adds |
 | --- | --- |
-| `lang.typescript` | `javascript`, `typescript`, `tsx`, `jsdoc`, `json`, `jsonc` |
-| `lang.typescript-tsgo` | `javascript`, `typescript`, `tsx`, `jsdoc`, `json`, `jsonc` |
+| `lang.typescript` | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
+| `lang.typescript-tsgo` | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
 | `lang.python` | `python` |
 | `lang.python-pro` | `python`, `requirements` |
 | `lang.rust` | `rust`, `toml` |
 | `lang.go` | `go`, `gomod`, `gosum`, `gowork` |
 | `lang.markdown` | `markdown`, `markdown_inline` |
+
+`.jsonc` files reuse the `json` parser — nvim-treesitter no longer ships a
+separate `jsonc` grammar — so JSONC highlighting works without its own parser.
 
 ## Installing parsers
 

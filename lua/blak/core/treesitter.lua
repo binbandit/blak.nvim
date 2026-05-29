@@ -26,6 +26,36 @@ function M.install(config, opts)
     return
   end
 
+  -- nvim-treesitter (main) periodically drops parsers whose upstream grammar is
+  -- unmaintained; `jsonc` is now served by the `json` parser, for instance.
+  -- Asking it to install a parser it no longer ships makes the download fail on
+  -- every startup, so only request parsers this nvim-treesitter actually knows.
+  if type(ts.get_available) == "function" then
+    local ok_available, available = pcall(ts.get_available)
+    if ok_available and type(available) == "table" and #available > 0 then
+      local known = {}
+      for _, name in ipairs(available) do
+        known[name] = true
+      end
+      local wanted, skipped = {}, {}
+      for _, name in ipairs(list) do
+        if known[name] then
+          table.insert(wanted, name)
+        else
+          table.insert(skipped, name)
+        end
+      end
+      if opts.notify and #skipped > 0 then
+        require("blak.util").warn("Skipping Treesitter parsers nvim-treesitter no longer ships: " .. table.concat(skipped, ", "))
+      end
+      list = wanted
+    end
+  end
+
+  if #list == 0 then
+    return
+  end
+
   local ok_install, result = pcall(ts.install, list)
   if not ok_install then
     require("blak.util").warn("Could not install Treesitter parsers: " .. tostring(result))

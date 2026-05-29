@@ -2,7 +2,7 @@ return {
   id = "lang.typescript-tsgo",
   label = "TypeScript (tsgo)",
   description = "tsgo, prettier, eslint_d, TS/JS Treesitter",
-  treesitter = { "javascript", "typescript", "tsx", "jsdoc", "json", "jsonc" },
+  treesitter = { "javascript", "typescript", "tsx", "jsdoc", "json" },
   mason = { "prettier", "prettierd", "eslint_d" },
   lsp = {
     servers = {
