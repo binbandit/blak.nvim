@@ -1,7 +1,7 @@
 {
   "name": "blak-docs",
   "type": "module",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "scripts": {
     "build:social": "node scripts/render-social-card.mjs",

@@ -1,5 +1,15 @@
 # Blak news
 
+## v0.2.2
+
+Maintenance release that refreshes the bundled plugin pins:
+
+- Updated the lazy lockfile, bumping `conform.nvim`, `fff`, `lazy.nvim`,
+  `mason.nvim`, `mini.icons`, `nvim-lint`, `nvim-lspconfig`, `oil.nvim`, and
+  `snacks.nvim` to their latest tracked commits.
+- No default keymaps, pickers, completion, explorer, or LSP strategy changed.
+  Muscle memory is preserved; this is purely a dependency refresh.
+
 ## v0.2.1
 
 Patch release for two default editing fixes:

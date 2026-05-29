@@ -3,6 +3,17 @@ title: News
 description: What's changing in Blak, release by release.
 ---
 
+## v0.2.2 — Dependency refresh
+
+A maintenance release that refreshes the bundled plugin pins without adding
+configuration weight or changing any defaults.
+
+- The lazy lockfile was updated, bumping `conform.nvim`, `fff`, `lazy.nvim`,
+  `mason.nvim`, `mini.icons`, `nvim-lint`, `nvim-lspconfig`, `oil.nvim`, and
+  `snacks.nvim` to their latest tracked commits.
+- No default keymaps, picker, completion engine, explorer, or LSP strategy
+  changed. Muscle memory is preserved — this is purely a dependency refresh.
+
 ## v0.2.1 — Editing defaults polish
 
 This patch release tightens two default editing surfaces without adding new

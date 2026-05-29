@@ -414,9 +414,9 @@ function M.news()
     vim.cmd.edit(news)
   else
     require("blak.util").open_scratch("Blak news", {
-      "Blak v0.2.1",
+      "Blak v0.2.2",
       "",
-      "Brace-newline pairing now uses nvim-autopairs, and <Space><Space> is a plain file finder with the old smart picker kept as a compatibility alias.",
+      "Maintenance release: bundled plugin pins refreshed to their latest tracked commits via the lazy lockfile. No default keymaps, pickers, or workflows changed.",
     })
   end
 end
