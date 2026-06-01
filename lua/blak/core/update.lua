@@ -414,9 +414,9 @@ function M.news()
     vim.cmd.edit(news)
   else
     require("blak.util").open_scratch("Blak news", {
-      "Blak v0.2.2",
+      "Blak v0.3.0",
       "",
-      "Maintenance release: bundled plugin pins refreshed to their latest tracked commits via the lazy lockfile. No default keymaps, pickers, or workflows changed.",
+      "Fifteen new opt-in extras: nine language packs (C/C++, Bash, Web, Docker, YAML, JSON, Terraform, Nix, Zig) plus Flash, grug-far, Neogit, and the Snacks-backed indent guides, git browse, and scratch buffers. No defaults changed.",
     })
   end
 end

@@ -1,5 +1,24 @@
 # Blak news
 
+## v0.3.0
+
+Fifteen new opt-in extras, all reversible and disabled by default. No default
+keymaps, picker, completion engine, explorer, or LSP strategy changed.
+
+- Languages: `lang.c` (clangd, clang-format), `lang.bash` (bashls, shellcheck),
+  `lang.web` (HTML/CSS/Tailwind/Emmet), `lang.docker` (dockerls, Compose,
+  hadolint), `lang.yaml` and `lang.json` (language servers wired to SchemaStore
+  schemas), `lang.terraform` (terraform-ls, tflint), `lang.nix` (nil, nixfmt),
+  and `lang.zig` (zls).
+- Editor: `editor.flash` (label-based jump motions; `f`/`t` stay native),
+  `editor.grug-far` (project-wide find and replace), and `editor.scratch`
+  (Snacks scratch buffers).
+- Git: `git.gitbrowse` (open the current file or line on the remote) and
+  `git.neogit` (Magit-style interactive Git).
+- UI: `ui.indent` (Snacks indent guides with animated scope).
+- The Snacks-backed extras (`ui.indent`, `git.gitbrowse`, `editor.scratch`) add
+  no new plugins.
+
 ## v0.2.2
 
 Maintenance release that refreshes the bundled plugin pins:

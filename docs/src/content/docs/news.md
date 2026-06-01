@@ -3,6 +3,26 @@ title: News
 description: What's changing in Blak, release by release.
 ---
 
+## v0.3.0 — Fifteen new extras
+
+A batch of opt-in extras that widen language and workflow coverage without
+touching any default. Each is reversible and disabled by default.
+
+- **Languages:** `lang.c` (clangd + clang-format), `lang.bash` (bashls +
+  shellcheck), `lang.web` (HTML/CSS/Tailwind/Emmet + Prettier), `lang.docker`
+  (dockerls + Compose + hadolint), `lang.yaml` and `lang.json` (language servers
+  wired to [SchemaStore](https://github.com/b0o/SchemaStore.nvim)),
+  `lang.terraform` (terraform-ls + tflint), `lang.nix` (nil + nixfmt), and
+  `lang.zig` (zls).
+- **Editor:** `editor.flash` for label-based motions (Flash's `char` mode is
+  off, so `f`/`t`/`F`/`T` stay native), `editor.grug-far` for project-wide find
+  and replace, and `editor.scratch` for Snacks scratch buffers.
+- **Git:** `git.gitbrowse` opens the current file or line on the remote, and
+  `git.neogit` adds a Magit-style interactive Git interface.
+- **UI:** `ui.indent` enables Snacks indent guides with animated scope.
+- No default keymaps, picker, completion engine, explorer, or LSP strategy
+  changed. The Snacks-backed extras add no new plugins.
+
 ## v0.2.2 — Dependency refresh
 
 A maintenance release that refreshes the bundled plugin pins without adding
