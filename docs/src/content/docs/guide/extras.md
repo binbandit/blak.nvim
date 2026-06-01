@@ -63,13 +63,13 @@ configuration examples, install notes, and verification path.
 
 | Group | Extras |
 | --- | --- |
-| Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.python-pro`](/extras/lang/python-pro/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/) |
+| Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.python-pro`](/extras/lang/python-pro/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/), [`lang.c`](/extras/lang/c/), [`lang.bash`](/extras/lang/bash/), [`lang.web`](/extras/lang/web/), [`lang.docker`](/extras/lang/docker/), [`lang.yaml`](/extras/lang/yaml/), [`lang.json`](/extras/lang/json/), [`lang.terraform`](/extras/lang/terraform/), [`lang.nix`](/extras/lang/nix/), [`lang.zig`](/extras/lang/zig/) |
 | Debug | [`debug.dap`](/extras/debug/dap/) |
 | Test | [`test.neotest`](/extras/test/neotest/) |
-| UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
-| Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/) |
+| UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.indent`](/extras/ui/indent/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
+| Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/), [`git.gitbrowse`](/extras/git/gitbrowse/), [`git.neogit`](/extras/git/neogit/) |
 | AI | [`ai.claudecode`](/extras/ai/claudecode/), [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/), [`ai.supermaven`](/extras/ai/supermaven/) |
-| Editor | [`editor.aerial`](/extras/editor/aerial/), [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.overseer`](/extras/editor/overseer/), [`editor.refactoring`](/extras/editor/refactoring/), [`editor.render-markdown`](/extras/editor/render-markdown/), [`editor.todo-comments`](/extras/editor/todo-comments/), [`editor.trouble`](/extras/editor/trouble/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
+| Editor | [`editor.aerial`](/extras/editor/aerial/), [`editor.flash`](/extras/editor/flash/), [`editor.grug-far`](/extras/editor/grug-far/), [`editor.scratch`](/extras/editor/scratch/), [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.overseer`](/extras/editor/overseer/), [`editor.refactoring`](/extras/editor/refactoring/), [`editor.render-markdown`](/extras/editor/render-markdown/), [`editor.todo-comments`](/extras/editor/todo-comments/), [`editor.trouble`](/extras/editor/trouble/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
 
@@ -173,6 +173,108 @@ Markdown with Marksman LSP and Prettier.
 | Format | `prettierd` (fallback `prettier`) for markdown |
 | Lint | `markdownlint` |
 
+### `lang.c`
+
+C and C++ with clangd and clang-format.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `c`, `cpp` |
+| Mason | `clang-format` |
+| LSP | `clangd` |
+| Format | `clang_format` for `c`, `cpp`, `objc`, `objcpp`, `cuda` |
+
+### `lang.bash`
+
+Shell scripting with the bash language server and shellcheck. Shell formatting
+with `shfmt` already ships in Blak core.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `bash` |
+| Mason | `shellcheck` |
+| LSP | `bashls` |
+| Lint | `shellcheck` for `sh`, `bash` |
+
+### `lang.web`
+
+Frontend HTML, CSS, Tailwind, and Emmet with Prettier.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `html`, `css`, `scss` |
+| Mason | `prettier`, `prettierd` |
+| LSP | `html`, `cssls`, `tailwindcss`, `emmet_language_server` |
+| Format | `prettierd` (fallback `prettier`) for `html`, `css`, `scss`, `less` |
+
+### `lang.docker`
+
+Dockerfile and Docker Compose with hadolint linting.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `dockerfile` |
+| Mason | `hadolint` |
+| LSP | `dockerls`, `docker_compose_language_service` |
+| Lint | `hadolint` for `dockerfile` |
+| Filetype | registers `yaml.docker-compose` for Compose files |
+
+### `lang.yaml`
+
+YAML with yaml-language-server, SchemaStore schemas, and Prettier.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `yaml` |
+| Mason | `prettier`, `prettierd` |
+| LSP | `yamlls` with SchemaStore schemas |
+| Format | `prettierd` (fallback `prettier`) for `yaml` |
+| Plugin | `b0o/SchemaStore.nvim` |
+
+### `lang.json`
+
+JSON with jsonls, SchemaStore schemas, and Prettier.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `json`, `jsonc` |
+| Mason | `prettier`, `prettierd` |
+| LSP | `jsonls` with SchemaStore schemas |
+| Format | `prettierd` (fallback `prettier`) for `json`, `jsonc` |
+| Plugin | `b0o/SchemaStore.nvim` |
+
+### `lang.terraform`
+
+Terraform and HCL with terraform-ls, terraform fmt, and tflint.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `terraform`, `hcl` |
+| Mason | `tflint` |
+| LSP | `terraformls` |
+| Format | `terraform_fmt` for `terraform`, `terraform-vars` (needs the `terraform` CLI) |
+| Lint | `tflint` for `terraform` |
+
+### `lang.nix`
+
+Nix with the nil language server and nixfmt.
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `nix` |
+| Mason | `nixfmt` |
+| LSP | `nil_ls` |
+| Format | `nixfmt` for `nix` |
+
+### `lang.zig`
+
+Zig with the zls language server (formatting via built-in `zig fmt`).
+
+| Adds | Value |
+| --- | --- |
+| Treesitter | `zig` |
+| LSP | `zls` |
+
 ## UI
 
 ### `ui.animations`
@@ -222,6 +324,16 @@ Image previews in pickers and floats — works in Kitty, WezTerm, and Ghostty.
 | Adds | Value |
 | --- | --- |
 | Snacks | `image.enabled = true` |
+
+### `ui.indent`
+
+Indent guides with animated active-scope highlighting via Snacks. Core ships
+the module disabled; this extra flips it on.
+
+| Adds | Value |
+| --- | --- |
+| Snacks | `indent.enabled = true` |
+| Keymap | `<leader>ug` → toggle indent guides |
 
 ### `ui.lualine`
 
@@ -298,6 +410,28 @@ Requires `lazygit` in `$PATH`.
 | Plugin | `sindrets/diffview.nvim` |
 | Keymap | `<leader>gD` → `:DiffviewOpen` |
 | Keymap | `<leader>gH` → file history |
+
+### `git.gitbrowse`
+
+Open the current file, line, or repository on its Git remote (GitHub, GitLab,
+Bitbucket, sourcehut) using Snacks gitbrowse. No new plugin.
+
+| Adds | Value |
+| --- | --- |
+| Keymap | `<leader>gB` → open on remote (normal and visual) |
+
+### `git.neogit`
+
+[NeogitOrg/neogit](https://github.com/NeogitOrg/neogit), a Magit-style
+interactive Git interface. Pairs with `git.diffview` and uses the core Snacks
+picker.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `NeogitOrg/neogit` |
+| Deps | `plenary.nvim` |
+| Treesitter | `git_config`, `git_rebase`, `gitcommit`, `diff` |
+| Keymap | `<leader>gn` → open Neogit |
 
 ## AI
 
@@ -460,6 +594,37 @@ outline window.
 | Plugin | `stevearc/aerial.nvim` |
 | Deps | `mini.icons` |
 | Keymap | `<leader>co` → toggle outline |
+
+### `editor.flash`
+
+[flash.nvim](https://github.com/folke/flash.nvim) for label-based jump motions
+and Treesitter selection. Deliberately shadows native `s`/`S`; opt-in and
+visible in `:BlakKeys`.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `folke/flash.nvim` |
+| Keymaps | `s` jump, `S` Treesitter, `r`/`R` remote/search, `<C-s>` toggle in search |
+
+### `editor.grug-far`
+
+[grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim) for buffer-based,
+ripgrep-powered project-wide find and replace.
+
+| Adds | Value |
+| --- | --- |
+| Plugin | `MagicDuck/grug-far.nvim` |
+| Keymap | `<leader>sr` → search and replace (normal and visual) |
+
+### `editor.scratch`
+
+Snacks scratch buffers: persistent, context-aware throwaway notepads. No new
+plugin.
+
+| Adds | Value |
+| --- | --- |
+| Keymap | `<leader>.` → toggle scratch buffer |
+| Keymap | `<leader>S` → select scratch buffer |
 
 ### `editor.harpoon`
 

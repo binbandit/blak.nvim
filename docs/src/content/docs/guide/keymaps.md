@@ -183,9 +183,12 @@ See the [LSP guide](/guide/lsp/).
 | `ui.comfy-line-numbers` | label + `j` / `k` | Comfy vertical motions |
 | `ui.comfy-line-numbers` | label + `<Down>` / `<Up>` | Comfy vertical motions |
 | `ui.zen` | `<leader>uz` | Zen mode |
+| `ui.indent` | `<leader>ug` | Toggle indent guides |
 | `git.lazygit` | `<leader>gg` | LazyGit float |
 | `git.diffview` | `<leader>gD` | DiffviewOpen |
 | `git.diffview` | `<leader>gH` | File history |
+| `git.gitbrowse` | `<leader>gB` | Open file/line on the Git remote |
+| `git.neogit` | `<leader>gn` | Open Neogit |
 | `ai.claudecode` | `<leader>ac` | Toggle Claude Code |
 | `ai.claudecode` | `<leader>aF` | Focus Claude Code |
 | `ai.claudecode` | `<leader>ar` | Resume Claude Code |
@@ -221,6 +224,12 @@ See the [LSP guide](/guide/lsp/).
 | `test.neotest` | `<leader>To` | Open test output |
 | `test.neotest` | `<leader>TO` | Toggle test output panel |
 | `editor.aerial` | `<leader>co` | Toggle code outline |
+| `editor.flash` | `s` / `S` | Flash jump / Treesitter select |
+| `editor.flash` | `r` / `R` | Flash remote / Treesitter search |
+| `editor.flash` | `<C-s>` | Toggle Flash while searching (command-line) |
+| `editor.grug-far` | `<leader>sr` | Search and replace (project-wide) |
+| `editor.scratch` | `<leader>.` | Toggle scratch buffer |
+| `editor.scratch` | `<leader>S` | Select scratch buffer |
 | `editor.overseer` | `<leader>oo` | Toggle tasks |
 | `editor.overseer` | `<leader>or` | Run task |
 | `editor.overseer` | `<leader>oq` | Task quick action |

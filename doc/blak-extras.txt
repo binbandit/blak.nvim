@@ -42,6 +42,15 @@ lang.python-pro
 lang.rust
 lang.go
 lang.markdown
+lang.c
+lang.bash
+lang.web
+lang.docker
+lang.yaml
+lang.json
+lang.terraform
+lang.nix
+lang.zig
 
 debug.dap
 
@@ -52,11 +61,14 @@ ui.base46
 ui.comfy-line-numbers
 ui.dim
 ui.image-preview
+ui.indent
 ui.lualine
 ui.zen
 
 git.lazygit
 git.diffview
+git.gitbrowse
+git.neogit
 
 ai.claudecode
 ai.copilot
@@ -64,6 +76,9 @@ ai.sidekick
 ai.supermaven
 
 editor.aerial
+editor.flash
+editor.grug-far
+editor.scratch
 editor.harpoon
 editor.mini
 editor.overseer
