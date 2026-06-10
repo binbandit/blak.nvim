@@ -1,5 +1,14 @@
 # Blak news
 
+## Unreleased
+
+- Re-enabled the built-in `matchparen` and `matchit` plugins. Stock Neovim
+  highlights the matching bracket under the cursor and extends `%` matching;
+  Blak disabled both for a negligible startup win without replacing them,
+  which contradicted the native-first contract. To turn them back off, set
+  `vim.g.loaded_matchparen = 1` and `vim.g.loaded_matchit = 1` in a
+  `hooks.before` function in `lua/blak/user.lua`.
+
 ## v0.3.0
 
 Fifteen new opt-in extras, all reversible and disabled by default. No default
