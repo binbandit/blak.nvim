@@ -100,6 +100,9 @@ pass before posting changes.
 
 ## Working Guidelines
 
+- Never add AI attribution to repository artifacts: no Co-Authored-By trailers,
+  no "Generated with ..." footers, and no tool or session links in commit
+  messages, PR titles, or PR bodies.
 - Keep changes focused. Do not refactor unrelated modules while fixing a narrow
   issue.
 - Preserve existing user edits and generated assets unless the task explicitly
