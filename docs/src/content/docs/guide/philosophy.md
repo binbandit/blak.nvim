@@ -7,9 +7,9 @@ Blak is optimized for **maintainability first**. A feature belongs in core only 
 
 ## The manifesto
 
-Black is not here to turn Neovim into VS Code.
+Blak is not here to turn Neovim into VS Code.
 
-Black is here to make Neovim feel inevitable.
+Blak is here to make Neovim feel inevitable.
 
 We use native Neovim first.
 
