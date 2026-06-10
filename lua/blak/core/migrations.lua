@@ -1,8 +1,21 @@
 local M = {}
 
--- Add breaking migrations here before changing stable workflow defaults.
--- A breaking migration blocks :BlakUpdate and only runs through :BlakUpgrade.
-local migrations = {}
+-- Add a migration here whenever a shipped default changes, together with a
+-- NEWS.md entry. A breaking migration blocks :BlakUpdate and only runs
+-- through :BlakUpgrade; non-breaking migrations run on the next :BlakUpgrade.
+local migrations = {
+  {
+    id = "v0.2.1.autopairs",
+    description = "Core pair handling moved from mini.pairs to nvim-autopairs in v0.2.1",
+    apply = function(_, context)
+      context.util.notify(
+        "Since v0.2.1 core pair handling uses nvim-autopairs instead of mini.pairs (see NEWS.md). "
+          .. 'To opt out, add { "windwp/nvim-autopairs", enabled = false } to plugins.specs '
+          .. "and wire your preferred pairs plugin there too."
+      )
+    end,
+  },
+}
 
 local function state_path()
   return require("blak.util").join(vim.fn.stdpath("state"), "blak", "migrations.json")

@@ -37,7 +37,9 @@ Read these first when changing behavior or defaults:
 - Do not add hidden keymaps. Every keymap needs a description and should show
   up through `:BlakKeys`.
 - Do not silently swap major workflow components such as picker, completion,
-  explorer, or LSP strategy in stable update paths.
+  explorer, or LSP strategy in stable update paths. Changing any shipped
+  default requires a migration entry in `lua/blak/core/migrations.lua` and a
+  `NEWS.md` entry in the same change.
 - Keep extras opt-in, reversible, and documented.
 - Favor clear Lua modules over magic. Users should be able to inspect and
   override behavior without spelunking through indirection.
