@@ -91,6 +91,22 @@ end
 local ok, err = xpcall(function()
   reset_test_state()
 
+  -- Manifesto contract: these shipped defaults change only through an
+  -- explicit upgrade path (migration plus NEWS entry), never by surprise.
+  local defaults = require("blak.config.defaults")
+  local function assert_default(label, actual, expected)
+    assert(
+      actual == expected,
+      string.format("contract default changed: %s = %s, expected %s", label, vim.inspect(actual), vim.inspect(expected))
+    )
+  end
+  assert_default("leader", defaults.leader, " ")
+  assert_default("localleader", defaults.localleader, "\\")
+  assert_default("picker.provider", defaults.picker.provider, "fff")
+  assert_default("explorer.provider", defaults.explorer.provider, "oil")
+  assert_default("terminal.provider", defaults.terminal.provider, "native")
+  assert_default("lsp.automatic_enable", defaults.lsp.automatic_enable, true)
+
   local config = require("blak.config").setup({
     ui = { splash = { enabled = false, animate = false } },
     package = { channel = "stable", check_updates = false },

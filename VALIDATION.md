@@ -25,6 +25,9 @@ The static validator checks:
 - Blak-local `require()` module paths
 - duplicate or missing extra IDs
 - default and extra plugin specs have a lazy-loading trigger, explicit on-demand loading, or an approved eager-startup reason
+- manifesto contract defaults (leader keys, picker, explorer, terminal, LSP
+  strategy) are unchanged; the update-contract smoke test asserts the same
+  values at runtime
 - required README/help/notice/CI files
 - docs-site internal `/blak.nvim/...` links
 - stale `black` module, command, config, and path identifiers after the `blak.nvim` rename

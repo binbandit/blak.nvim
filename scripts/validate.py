@@ -494,6 +494,34 @@ def check_extra_id_type_alias(extra_ids: set[str]) -> list[str]:
     return errors
 
 
+# Manifesto contract: stable defaults change only through an explicit upgrade
+# path (migration plus NEWS entry), never by surprise. If a change here is
+# intentional, ship that path and update this check together with
+# scripts/update-contract.lua.
+CONTRACT_DEFAULTS = [
+    ("leader", re.compile(r'^  leader = " ",$', re.MULTILINE)),
+    ("localleader", re.compile(r'^  localleader = "\\\\",$', re.MULTILINE)),
+    ("picker.provider", re.compile(r'picker = \{\s*provider = "fff"')),
+    ("explorer.provider", re.compile(r'explorer = \{\s*provider = "oil"')),
+    ("terminal.provider", re.compile(r'terminal = \{\s*provider = "native"')),
+    ("lsp.automatic_enable", re.compile(r'lsp = \{\s*automatic_enable = true')),
+]
+
+
+def check_contract_defaults() -> list[str]:
+    path = ROOT / "lua" / "blak" / "config" / "defaults.lua"
+    text = path.read_text(encoding="utf-8")
+    errors: list[str] = []
+    for label, pattern in CONTRACT_DEFAULTS:
+        if not pattern.search(text):
+            errors.append(
+                f"{path.relative_to(ROOT)}: contract default {label} changed or moved; "
+                "stable defaults need an explicit upgrade path (see MANIFESTO.md), "
+                "then update this check and scripts/update-contract.lua"
+            )
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -529,6 +557,7 @@ def main() -> int:
     errors.extend(check_extra_plugin_loading())
     errors.extend(check_default_plugin_loading())
     errors.extend(check_extra_id_type_alias(set(seen)))
+    errors.extend(check_contract_defaults())
 
     for rel in [
         "README.md",
