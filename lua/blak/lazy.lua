@@ -71,10 +71,12 @@ function M.setup(config)
     },
     performance = {
       rtp = {
+        -- Only dead weight and plugins Blak replaces (netrw -> Oil) are
+        -- disabled. matchparen and matchit stay enabled: stock Neovim
+        -- highlights matching pairs and extends %, and nothing in core
+        -- replaces them.
         disabled_plugins = {
           "gzip",
-          "matchit",
-          "matchparen",
           "netrwPlugin",
           "tarPlugin",
           "tohtml",
