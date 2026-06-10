@@ -7,26 +7,35 @@ Blak validates its merged config on load. Invalid values throw on startup with a
 
 ## Top-level keys
 
-All required.
+All present after merging with the defaults. Keys marked *validated* are
+checked by `schema.lua` on load; the rest are deep-merged and passed to the
+modules that consume them without per-field validation.
 
 | Key | Type | Notes |
 | --- | --- | --- |
-| `leader` | `string` | Default `" "` |
-| `localleader` | `string` | Default `"\\"` |
-| `package` | `table` | See below |
-| `ui` | `table` | See below |
-| `editor` | `table` | See below |
-| `completion` | `table` | See below |
-| `picker` | `table` | See below |
-| `explorer` | `table` | See below |
-| `terminal` | `table` | See below |
-| `keymaps` | `table` | List of user keymap specs |
-| `plugins` | `table` | Personal lazy.nvim specs |
-| `hooks` | `table` | Lua hooks for pre-validation and post-setup customization |
-| `ai` | `table` | See below |
-| `mini` | `table` | See below |
+| `version` | `string` | Blak's own version string. Informational; do not set it in `user.lua` |
+| `leader` | `string` | Default `" "`. Validated |
+| `localleader` | `string` | Default `"\\"`. Validated |
+| `package` | `table` | See below. Validated |
+| `ui` | `table` | See below. Validated |
+| `editor` | `table` | See below. Validated |
+| `completion` | `table` | See below. Validated |
+| `performance` | `table` | See below |
+| `picker` | `table` | See below. Validated |
+| `explorer` | `table` | See below. Validated |
+| `terminal` | `table` | See below. Validated |
+| `keymaps` | `table` | List of user keymap specs. Validated |
+| `plugins` | `table` | Personal lazy.nvim specs. Validated |
+| `hooks` | `table` | Lua hooks for pre-validation and post-setup customization. Validated |
+| `ai` | `table` | See below. Validated |
+| `mini` | `table` | See below. Validated |
+| `snacks` | `table` | See below |
+| `treesitter` | `table` | See below |
 | `lsp` | `table` | See below |
-| `extras` | `table` | See below |
+| `mason` | `table` | See below |
+| `format` | `table` | See below |
+| `lint` | `table` | See below |
+| `extras` | `table` | See below. Validated |
 
 ## `package`
 
@@ -285,6 +294,87 @@ return {
   },
 }
 ```
+
+## `performance`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `bigfile_size` | `number` | Size in bytes above which Snacks bigfile mode trims heavy features. Default 1.5 MiB |
+| `max_treesitter_lines` | `number` | Buffers with more lines than this skip Treesitter highlighting. Default `10000` |
+
+## `snacks`
+
+A table deep-merged over Blak's own `snacks.nvim` options, last-write-wins.
+Use it to tune or disable individual Snacks modules:
+
+```lua
+return {
+  snacks = {
+    words = { enabled = false },
+  },
+}
+```
+
+The full option surface is the upstream `snacks.nvim` config; Blak validates
+only that the value is mergeable.
+
+## `treesitter`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `ensure_installed` | `string[]` | Parsers installed at startup |
+
+Per the deep merge semantics below, setting `ensure_installed` in the simple
+table form **replaces** the default parser list. Use the function form or an
+extra to append.
+
+## `lsp`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `automatic_enable` | `boolean` | Enable configured servers automatically through `vim.lsp.enable()` |
+| `servers` | `table<string, table>` | Per-server options passed to `vim.lsp.config()` |
+| `diagnostics` | `table` | Passed to `vim.diagnostic.config()` |
+
+```lua
+return {
+  lsp = {
+    servers = {
+      gopls = {},
+    },
+    diagnostics = {
+      virtual_text = false,
+    },
+  },
+}
+```
+
+Language extras add their servers to `lsp.servers` for you; use this table
+directly when you want a server without the rest of an extra. Validation only
+checks that `lsp` is a table.
+
+## `mason`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `automatic_install` | `boolean` | Install `ensure_installed` tools through Mason on startup |
+| `ensure_installed` | `string[]` | Mason package names |
+
+## `format`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `enabled` | `boolean` | Format on save. `vim.g.blak_disable_autoformat` and `vim.b.blak_disable_autoformat` override per session or buffer |
+| `timeout_ms` | `number` | Formatter timeout per save |
+| `lsp_format` | `string` | Conform's `lsp_format` mode; default `"fallback"` |
+| `formatters_by_ft` | `table<string, string[]>` | Conform formatters per filetype |
+
+## `lint`
+
+| Key | Type | Notes |
+| --- | --- | --- |
+| `events` | `string[]` | Autocmd events that trigger nvim-lint; empty list disables event-driven linting |
+| `linters_by_ft` | `table<string, string[]>` | nvim-lint linters per filetype |
 
 ## `extras`
 

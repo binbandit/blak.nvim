@@ -522,6 +522,26 @@ def check_contract_defaults() -> list[str]:
     return errors
 
 
+def check_schema_doc_keys() -> list[str]:
+    """Every top-level key in config defaults must appear in the schema doc's
+    top-level keys table, so new options cannot ship undocumented."""
+    defaults_path = ROOT / "lua" / "blak" / "config" / "defaults.lua"
+    doc_path = ROOT / "docs" / "src" / "content" / "docs" / "reference" / "schema.md"
+    text = strip_lua(defaults_path.read_text(encoding="utf-8"))
+    doc = doc_path.read_text(encoding="utf-8")
+    errors: list[str] = []
+    depth = 0
+    for line in text.splitlines():
+        match = re.match(r"\s*([A-Za-z_][A-Za-z0-9_]*)\s*=", line)
+        if depth == 1 and match and f"| `{match.group(1)}` |" not in doc:
+            errors.append(
+                f"{doc_path.relative_to(ROOT)}: top-level config key "
+                f"{match.group(1)!r} from defaults.lua is missing from the top-level keys table"
+            )
+        depth += line.count("{") - line.count("}")
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -558,6 +578,7 @@ def main() -> int:
     errors.extend(check_default_plugin_loading())
     errors.extend(check_extra_id_type_alias(set(seen)))
     errors.extend(check_contract_defaults())
+    errors.extend(check_schema_doc_keys())
 
     for rel in [
         "README.md",
