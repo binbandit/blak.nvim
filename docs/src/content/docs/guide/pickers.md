@@ -38,6 +38,8 @@ Run `:BlakExtras sync` if the plugin is not installed yet. Every `<leader>f*` ma
 
 If the configured provider isn't loadable, the dispatcher falls back: **configured → snacks → fff → telescope → fzf_lua**. This is why a fresh install never lacks a working picker, even before extras are enabled or Mason has finished installing tools.
 
+A provider that supports the requested kind but fails at call time is not skipped silently: Blak warns with the provider name and the error before trying the next one, so a broken picker configuration stays visible instead of being papered over.
+
 Source: [`lua/blak/providers/picker/init.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/providers/picker/init.lua).
 
 ## Picker kinds
