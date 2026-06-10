@@ -133,10 +133,6 @@ return {
         hidden_file_types = { "undotree" },
         hidden_buffer_types = { "terminal", "nofile" },
       },
-      config = function(_, opts)
-        require("comfy-line-numbers").setup(opts)
-        require("blak.core.keymaps").apply_extra(keymaps(opts.labels or DEFAULT_LABELS))
-      end,
     },
   },
 }
