@@ -26,7 +26,6 @@ Read these first when changing behavior or defaults:
 - `lua/blak/providers/`: provider adapters, especially picker adapters.
 - `lua/blak/extras/`: optional modules users can enable and disable.
 - `lua/blak/splash/`: black-hole splash runtime and generated frames.
-- `colors/`: colorscheme files.
 - `doc/`: Vim help files.
 - `docs/`: Astro Starlight documentation site.
 - `scripts/`: static validation and smoke-test helpers.
