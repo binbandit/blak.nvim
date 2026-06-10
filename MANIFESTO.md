@@ -1,8 +1,8 @@
 # Blak Manifesto
 
-Black is not here to turn Neovim into VS Code.
+Blak is not here to turn Neovim into VS Code.
 
-Black is here to make Neovim feel inevitable.
+Blak is here to make Neovim feel inevitable.
 
 We use native Neovim first.
 
