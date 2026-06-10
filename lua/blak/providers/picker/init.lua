@@ -45,6 +45,11 @@ function M.pick(kind, opts)
   end
   opts = with_project_cwd(kind, opts)
 
+  -- Providers that do not implement a kind are skipped silently: the default
+  -- fff picker covers files and grep only, so buffers and friends fall
+  -- through to snacks by design. A provider that implements the kind but
+  -- errors is a different story; falling back without saying so would hide a
+  -- broken configuration.
   for _, name in ipairs(order(opts.provider)) do
     local module = providers[name]
     local ok, provider = pcall(require, module)
@@ -53,6 +58,9 @@ function M.pick(kind, opts)
       if ok_call then
         return result
       end
+      require("blak.util").warn(
+        string.format("%s picker failed for %s, trying the next provider: %s", name, kind, tostring(result))
+      )
     end
   end
 
