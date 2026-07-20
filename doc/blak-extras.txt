@@ -45,6 +45,7 @@ lang.markdown
 lang.c
 lang.bash
 lang.web
+lang.tailwind
 lang.docker
 lang.yaml
 lang.json
@@ -76,6 +77,7 @@ ai.sidekick
 ai.supermaven
 
 editor.aerial
+editor.emmet
 editor.flash
 editor.grug-far
 editor.scratch

@@ -63,13 +63,13 @@ configuration examples, install notes, and verification path.
 
 | Group | Extras |
 | --- | --- |
-| Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.python-pro`](/extras/lang/python-pro/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/), [`lang.c`](/extras/lang/c/), [`lang.bash`](/extras/lang/bash/), [`lang.web`](/extras/lang/web/), [`lang.docker`](/extras/lang/docker/), [`lang.yaml`](/extras/lang/yaml/), [`lang.json`](/extras/lang/json/), [`lang.terraform`](/extras/lang/terraform/), [`lang.nix`](/extras/lang/nix/), [`lang.zig`](/extras/lang/zig/) |
+| Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.python-pro`](/extras/lang/python-pro/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/), [`lang.c`](/extras/lang/c/), [`lang.bash`](/extras/lang/bash/), [`lang.web`](/extras/lang/web/), [`lang.tailwind`](/extras/lang/tailwind/), [`lang.docker`](/extras/lang/docker/), [`lang.yaml`](/extras/lang/yaml/), [`lang.json`](/extras/lang/json/), [`lang.terraform`](/extras/lang/terraform/), [`lang.nix`](/extras/lang/nix/), [`lang.zig`](/extras/lang/zig/) |
 | Debug | [`debug.dap`](/extras/debug/dap/) |
 | Test | [`test.neotest`](/extras/test/neotest/) |
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.indent`](/extras/ui/indent/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
 | Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/), [`git.gitbrowse`](/extras/git/gitbrowse/), [`git.neogit`](/extras/git/neogit/) |
 | AI | [`ai.claudecode`](/extras/ai/claudecode/), [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/), [`ai.supermaven`](/extras/ai/supermaven/) |
-| Editor | [`editor.aerial`](/extras/editor/aerial/), [`editor.flash`](/extras/editor/flash/), [`editor.grug-far`](/extras/editor/grug-far/), [`editor.scratch`](/extras/editor/scratch/), [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.overseer`](/extras/editor/overseer/), [`editor.refactoring`](/extras/editor/refactoring/), [`editor.render-markdown`](/extras/editor/render-markdown/), [`editor.todo-comments`](/extras/editor/todo-comments/), [`editor.trouble`](/extras/editor/trouble/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
+| Editor | [`editor.aerial`](/extras/editor/aerial/), [`editor.emmet`](/extras/editor/emmet/), [`editor.flash`](/extras/editor/flash/), [`editor.grug-far`](/extras/editor/grug-far/), [`editor.scratch`](/extras/editor/scratch/), [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.overseer`](/extras/editor/overseer/), [`editor.refactoring`](/extras/editor/refactoring/), [`editor.render-markdown`](/extras/editor/render-markdown/), [`editor.todo-comments`](/extras/editor/todo-comments/), [`editor.trouble`](/extras/editor/trouble/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
 
@@ -206,6 +206,15 @@ Frontend HTML, CSS, Tailwind, and Emmet with Prettier.
 | Mason | `prettier`, `prettierd` |
 | LSP | `html`, `cssls`, `tailwindcss`, `emmet_language_server` |
 | Format | `prettierd` (fallback `prettier`) for `html`, `css`, `scss`, `less` |
+
+### `lang.tailwind`
+
+Standalone Tailwind CSS language server — class completion, hovers, and lint
+without the rest of the web stack. Already included in `lang.web`.
+
+| Adds | Value |
+| --- | --- |
+| LSP | `tailwindcss` with `classAttributes` and `classFunctions` tuned for React and class-variance helpers |
 
 ### `lang.docker`
 
@@ -594,6 +603,16 @@ outline window.
 | Plugin | `stevearc/aerial.nvim` |
 | Deps | `mini.icons` |
 | Keymap | `<leader>co` → toggle outline |
+
+### `editor.emmet`
+
+VS Code-style Emmet: type `.block` and accept the completion to get
+`<div className="block"></div>` in JSX, `<div class="block"></div>` in HTML.
+Already included in `lang.web`.
+
+| Adds | Value |
+| --- | --- |
+| LSP | `emmet_language_server` for HTML, CSS, JSX/TSX, Vue, Svelte, and Astro |
 
 ### `editor.flash`
 

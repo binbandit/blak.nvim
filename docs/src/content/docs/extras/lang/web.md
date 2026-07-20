@@ -46,6 +46,9 @@ formatters need an explicit Mason entry.
   project, so there is no cost on non-Tailwind codebases.
 - Emmet expansion and Tailwind completion both attach to HTML, CSS, and
   JSX/TSX buffers; they are complementary, not conflicting.
+- Want just one piece? [`lang.tailwind`](/extras/lang/tailwind/) and
+  [`editor.emmet`](/extras/editor/emmet/) ship the Tailwind and Emmet servers
+  standalone.
 
 ## Install and verify
 
