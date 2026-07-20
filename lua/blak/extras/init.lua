@@ -16,6 +16,7 @@ local modules = {
   "blak.extras.lang.nix",
   "blak.extras.lang.terraform",
   "blak.extras.lang.web",
+  "blak.extras.lang.tailwind",
   "blak.extras.lang.docker",
   "blak.extras.lang.yaml",
   "blak.extras.lang.json",
@@ -54,6 +55,7 @@ local modules = {
   "blak.extras.editor.scratch",
   "blak.extras.editor.grug_far",
   "blak.extras.editor.flash",
+  "blak.extras.editor.emmet",
 }
 
 local registry_cache
