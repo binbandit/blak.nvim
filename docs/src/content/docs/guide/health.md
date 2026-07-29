@@ -38,6 +38,14 @@ If `picker.provider == "fff"`, confirms `fff.nvim` is `require`-able. If you swa
 
 Lists every extra ID currently in your enabled set, drawn from `extras.enabled` plus the state file. Useful for confirming a `:BlakExtras enable …` actually persisted.
 
+### Linters
+
+Lists every linter configured in `lint.linters_by_ft` (yours plus contributions
+from enabled extras) and resolves each one's command the same way the lint
+runner does. A linter whose binary isn't on `$PATH` warns here — Blak skips it
+at lint time rather than raising an error on every save, so this section is how
+you find out it never ran. See [Linting](/guide/linting/) for the details.
+
 ### Mason tools
 
 Lists every tool the merged config wants installed (`mason.ensure_installed` + contributions from enabled extras). Doesn't actually probe Mason — just shows the set. Run `:Mason` to see install status, or `:BlakToolsInstall` to install Blak's configured tool set.
@@ -62,6 +70,10 @@ Enabled extras
 - lang.lua
 - git.lazygit
 
+Linters
+- warning: markdownlint not found; it is skipped until installed. Run :BlakToolsInstall.
+- ok: shellcheck found
+
 Mason tools
 - stylua
 - shfmt
@@ -78,6 +90,8 @@ Mason tools
 | `git not found` | Install git. Lazy.nvim needs it to clone plugins. |
 | `rg not found` | Install ripgrep. Without it pickers fall back to slow built-in walks. |
 | `fff not loadable` | Run `:Lazy sync`, then check `:Lazy log fff.nvim`. The binary downloads during plugin build. |
+| `<linter> not found` | The linter isn't on `$PATH`, so it is skipped silently at lint time. Run `:BlakToolsInstall` if Mason ships it, or install it yourself. |
+| `<linter> is configured but nvim-lint has no such linter` | The name in `lint.linters_by_ft` doesn't match any nvim-lint linter. Check the spelling against [nvim-lint's linter list](https://github.com/mfussenegger/nvim-lint#available-linters). |
 | `Unknown extra: <id>` | The extra was removed or renamed. Run `:BlakExtras disable <id>` to remove the stale state entry. If it is still listed in `lua/blak/user.lua`, remove it there too. |
 
 ## Where the file lives
