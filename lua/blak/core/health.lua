@@ -66,6 +66,29 @@ function M.check()
     end
   end
 
+  h.start("Linters")
+  local linting = require("blak.core.linting")
+  local linter_names = linting.linters(config)
+  if #linter_names == 0 then
+    h.info("No linters configured")
+  else
+    local ok_lint, lint = pcall(require, "lint")
+    for _, name in ipairs(linter_names) do
+      local linter = ok_lint and lint.linters[name] or nil
+      if type(linter) == "function" then
+        local resolved_ok, resolved = pcall(linter)
+        linter = resolved_ok and resolved or nil
+      end
+      if type(linter) ~= "table" then
+        h.warn(name .. " is configured but nvim-lint has no such linter")
+      elseif linting.is_available(linter) then
+        h.ok(name .. " found")
+      else
+        h.warn(name .. " not found; it is skipped until installed. Run :BlakToolsInstall.")
+      end
+    end
+  end
+
   h.start("Mason tools")
   for _, pkg in ipairs(require("blak.core.tools").list(config)) do
     h.info(pkg)

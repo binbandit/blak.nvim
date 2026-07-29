@@ -184,6 +184,114 @@ assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal", "<leade
 assert(vim.fn.maparg("<leader>`", "n", false, true).desc == "Toggle last file", "<leader>` alternate file mapping missing")
 assert(vim.fn.maparg("<leader>ws", "n", false, true).desc == "Split window below", "<leader>ws split mapping missing")
 assert(vim.fn.maparg("<leader>wv", "n", false, true).desc == "Split window right", "<leader>wv split mapping missing")
+
+-- Linting must stay quiet when a linter is missing, and linter output that
+-- cannot be parsed must never reach the buffer as a diagnostic.
+local linting = require("blak.core.linting")
+local function missing_binary()
+  return "blak-linter-that-does-not-exist"
+end
+assert(
+  linting.is_available({ cmd = "blak-linter-that-does-not-exist" }) == false,
+  "a missing linter binary should be reported as unavailable"
+)
+assert(
+  linting.is_available({ cmd = missing_binary }) == false,
+  "a missing linter binary should be reported as unavailable when cmd is a function"
+)
+assert(
+  linting.is_available({ cmd = "git" }) == true,
+  "an installed linter binary should be reported as available"
+)
+assert(
+  linting.is_available({}) == false,
+  "a linter without a command should be reported as unavailable"
+)
+
+local lint_probe_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
+  lint = { linters_by_ft = { blakprobe = { "blakprobe" } } },
+})
+require("lint").linters.blakprobe = {
+  cmd = "cat",
+  stdin = true,
+  stream = "stdout",
+  parser = function(_, bufnr)
+    local message = "Could not parse linter output due to: boom"
+    return { { bufnr = bufnr, lnum = 0, col = 0, message = message } }
+  end,
+}
+linting.setup(lint_probe_config)
+local probe = require("lint").linters.blakprobe
+assert(probe.blak_hardened, "configured linters should be hardened against parse failures")
+assert(
+  #probe.parser("not json", 0) == 0,
+  "unparseable linter output should not become a diagnostic"
+)
+linting.setup(lint_probe_config)
+assert(
+  require("lint").linters.blakprobe == probe,
+  "repeated setup should not rewrap an already hardened linter"
+)
+require("lint").linters.blakprobe = nil
+
+-- A parser that throws must not take the lint event down with it.
+require("lint").linters.blakcrash = {
+  cmd = "cat",
+  stdin = true,
+  stream = "stdout",
+  parser = function()
+    error("parser exploded")
+  end,
+}
+linting.setup(vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
+  lint = { linters_by_ft = { blakcrash = { "blakcrash" } } },
+}))
+assert(
+  #require("lint").linters.blakcrash.parser("output", 0) == 0,
+  "a crashing parser should yield no diagnostics"
+)
+require("lint").linters.blakcrash = nil
+
+-- nvim-lint also allows a linter to be a factory function; reloads must not
+-- stack a new wrapper around it every time.
+local factory_calls = 0
+require("lint").linters.blakfactory = function()
+  factory_calls = factory_calls + 1
+  return {
+    cmd = "cat",
+    stdin = true,
+    stream = "stdout",
+    parser = function()
+      return {}
+    end,
+  }
+end
+local factory_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
+  lint = { linters_by_ft = { blakfactory = { "blakfactory" } } },
+})
+linting.setup(factory_config)
+local wrapped_factory = require("lint").linters.blakfactory
+linting.setup(factory_config)
+assert(
+  require("lint").linters.blakfactory == wrapped_factory,
+  "repeated setup should not stack wrappers around a factory linter"
+)
+assert(wrapped_factory().blak_hardened, "a factory linter should produce a hardened linter")
+assert(factory_calls == 1, "hardening a factory linter should not call it during setup")
+require("lint").linters.blakfactory = nil
+linting.setup(require("blak.config").get())
+
+local typescript_extra = require("blak.extras.lang.typescript")
+assert(typescript_extra.lint == nil, "lang.typescript should not register nvim-lint entries")
+assert(
+  not vim.tbl_contains(typescript_extra.mason, "eslint_d"),
+  "lang.typescript should not install eslint_d; the eslint language server covers it"
+)
+assert(
+  typescript_extra.lsp.servers.eslint,
+  "lang.typescript should still enable the eslint language server"
+)
+
 vim.keymap.set("n", "<leader>`", "<cmd>echo 'user alternate'<cr>", { desc = "User alternate file" })
 require("blak.core.keymaps").setup(require("blak.config").get())
 assert(

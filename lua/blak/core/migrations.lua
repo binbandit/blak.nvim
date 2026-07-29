@@ -15,6 +15,27 @@ local migrations = {
       )
     end,
   },
+  {
+    id = "v0.3.1.eslint_d",
+    description = "lang.typescript and lang.typescript-tsgo dropped eslint_d; the ESLint language server covers it",
+    apply = function(config, context)
+      -- Read through blak.extras so extras enabled with :BlakExtras (state file)
+      -- are covered, not just the ones listed in user.lua.
+      local enabled = require("blak.extras").enabled(config)
+      local uses_typescript = vim.tbl_contains(enabled, "lang.typescript")
+        or vim.tbl_contains(enabled, "lang.typescript-tsgo")
+      if not uses_typescript then
+        return
+      end
+
+      context.util.notify(
+        "The TypeScript extras no longer run eslint_d; the ESLint language server already provides "
+          .. "ESLint diagnostics without the duplicate spawns and parse errors (see NEWS.md). "
+          .. 'To keep eslint_d, add lint = { linters_by_ft = { typescript = { "eslint_d" } } } '
+          .. "to your Blak config for the filetypes you want."
+      )
+    end,
+  },
 }
 
 local function state_path()
