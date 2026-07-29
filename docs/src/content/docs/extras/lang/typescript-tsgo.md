@@ -35,10 +35,10 @@ Or toggle it interactively:
 | Surface | Contribution |
 | --- | --- |
 | Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
-| Mason | `prettier`, `prettierd`, `eslint_d` |
+| Mason | `prettier`, `prettierd` |
 | LSP | `tsgo`, `eslint` |
 | Formatting | `prettierd`, falling back to `prettier`, for JS/TS/JSON filetypes |
-| Linting | `eslint_d` for JS/TS filetypes |
+| Linting | ESLint diagnostics come from the `eslint` language server |
 | Apply hook | Removes `ts_ls` from the merged config before future setup |
 
 The extra registers the `tsgo` LSP name. It does not add a Mason package for the
@@ -77,8 +77,8 @@ return {
 
 ## Configure formatting and linting
 
-This extra uses the same formatter and linter defaults as
-`lang.typescript`. Override the filetype entries before the extra fills them:
+This extra uses the same formatter defaults as `lang.typescript`. Override the
+filetype entries before the extra fills them:
 
 ```lua
 return {
@@ -91,14 +91,13 @@ return {
       typescriptreact = { "prettier" },
     },
   },
-  lint = {
-    linters_by_ft = {
-      typescript = { "eslint_d" },
-      typescriptreact = { "eslint_d" },
-    },
-  },
 }
 ```
+
+ESLint diagnostics come from the `eslint` language server, so no nvim-lint entry
+is registered. See [Using eslint_d
+anyway](/guide/linting/#using-eslint_d-anyway) if you want the standalone daemon
+as well.
 
 ## Switching from ts_ls
 

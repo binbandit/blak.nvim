@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Linting no longer reports failures at the user. A configured linter that is
+  not installed is skipped instead of raising `Error running <cmd>: ENOENT` on
+  every lint event, and linter output that cannot be parsed is reported once as
+  a warning instead of being pinned to line 1 of the buffer as a fake
+  diagnostic. `:checkhealth blak` gained a "Linters" section that lists every
+  configured linter and whether its binary was found.
+- `lang.typescript` and `lang.typescript-tsgo` no longer run `eslint_d`. Both
+  extras already enable the ESLint language server, so ESLint diagnostics were
+  being produced twice from the same project configuration. Dropping the
+  nvim-lint entry removes the duplicate source and the `eslint_d` spawn and
+  parse failures that came with it. To keep `eslint_d`, add it back per
+  filetype: `lint = { linters_by_ft = { typescript = { "eslint_d" } } }`.
 - Re-enabled the built-in `matchparen` and `matchit` plugins. Stock Neovim
   highlights the matching bracket under the cursor and extends `%` matching;
   Blak disabled both for a negligible startup win without replacing them,

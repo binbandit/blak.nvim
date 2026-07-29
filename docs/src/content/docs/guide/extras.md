@@ -91,10 +91,10 @@ TypeScript and JavaScript with ESLint + Prettier.
 | Adds | Value |
 | --- | --- |
 | Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
-| Mason | `prettier`, `prettierd`, `eslint_d` |
+| Mason | `prettier`, `prettierd` |
 | LSP | `ts_ls`, `eslint` |
 | Format | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
-| Lint | `eslint_d` for js/ts/jsx/tsx |
+| Lint | ESLint diagnostics come from the `eslint` language server |
 
 ### `lang.typescript-tsgo`
 
@@ -105,10 +105,10 @@ Enable this instead of `lang.typescript` when you want to try TypeScript's Go-ba
 | Adds | Value |
 | --- | --- |
 | Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
-| Mason | `prettier`, `prettierd`, `eslint_d` |
+| Mason | `prettier`, `prettierd` |
 | LSP | `tsgo`, `eslint` |
 | Format | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
-| Lint | `eslint_d` for js/ts/jsx/tsx |
+| Lint | ESLint diagnostics come from the `eslint` language server |
 
 ### `lang.python`
 

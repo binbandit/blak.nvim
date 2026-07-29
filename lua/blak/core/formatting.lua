@@ -21,21 +21,7 @@ function M.refresh(config)
     conform.setup(M.conform_opts(config))
   end
 
-  local ok_lint, lint = pcall(require, "lint")
-  if ok_lint then
-    lint.linters_by_ft = config.lint.linters_by_ft
-    if #(config.lint.events or {}) > 0 then
-      vim.api.nvim_create_autocmd(config.lint.events, {
-        group = vim.api.nvim_create_augroup("BlakLint", { clear = true }),
-        callback = function()
-          local ok = pcall(lint.try_lint)
-          if not ok then
-            -- Missing external linters should not make editing noisy.
-          end
-        end,
-      })
-    end
-  end
+  require("blak.core.linting").setup(config)
 end
 
 return M

@@ -34,10 +34,10 @@ You can also enable it from the command line:
 | Surface | Contribution |
 | --- | --- |
 | Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
-| Mason | `prettier`, `prettierd`, `eslint_d` |
+| Mason | `prettier`, `prettierd` |
 | LSP | `ts_ls`, `eslint` |
 | Formatting | `prettierd`, falling back to `prettier`, for JS/TS/JSON filetypes |
-| Linting | `eslint_d` for JS/TS filetypes |
+| Linting | ESLint diagnostics come from the `eslint` language server |
 
 ## Configure ts_ls and ESLint
 
@@ -95,26 +95,17 @@ return {
 }
 ```
 
-## Disable JS/TS linting
+## Where ESLint diagnostics come from
 
-To keep the LSP and formatting but stop `eslint_d` lint events for this stack,
-set empty linter lists for the same filetypes:
+The extra registers no nvim-lint entries. ESLint diagnostics come from the
+`eslint` language server, which Mason installs as
+`vscode-eslint-language-server` because the extra lists `eslint` under
+`lsp.servers`.
 
-```lua
-return {
-  extras = {
-    enabled = { "lang.typescript" },
-  },
-  lint = {
-    linters_by_ft = {
-      javascript = {},
-      javascriptreact = {},
-      typescript = {},
-      typescriptreact = {},
-    },
-  },
-}
-```
+To run the standalone `eslint_d` daemon in addition, see [Using eslint_d
+anyway](/guide/linting/#using-eslint_d-anyway). To take manual control of which
+servers start, see [Disabling automatic
+enable](/guide/lsp/#disabling-automatic-enable).
 
 ## Install and verify
 
