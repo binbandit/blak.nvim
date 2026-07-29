@@ -11,6 +11,53 @@ local function health_api()
   }
 end
 
+---Path of a verified fff download that was never installed.
+---
+---fff.nvim skips the final rename when the old library is still loaded, leaving
+---the new one at `<binary>.tmp` for the next session to promote. Nothing on its
+---require path promotes it, so the state survives restarts.
+---@return string?
+local function fff_stranded_download()
+  local uv = vim.uv or vim.loop
+  local ok, download = pcall(require, "fff.download")
+  if not ok or type(download.get_binary_path) ~= "function" then
+    return nil
+  end
+
+  local ok_path, path = pcall(download.get_binary_path)
+  if not ok_path or type(path) ~= "string" then
+    return nil
+  end
+
+  local tmp = path .. ".tmp"
+  local stat = uv.fs_stat(tmp)
+  if stat and stat.type == "file" then
+    return tmp
+  end
+  return nil
+end
+
+---Whether fff.nvim can actually run.
+---
+---`require("fff")` resolves to `fff.main`, which defers the Rust backend into
+---function bodies, so it succeeds even with no native library on disk. Probe the
+---backend directly instead.
+---@return "ok"|"missing-plugin"|"stranded-download"|"missing-binary"
+function M.fff_status()
+  if not pcall(require, "fff") then
+    return "missing-plugin"
+  end
+  if pcall(require, "fff.fuzzy") then
+    return "ok"
+  end
+  if fff_stranded_download() then
+    return "stranded-download"
+  end
+  return "missing-binary"
+end
+
+local BUILD_HINT = ':lua require("fff.download").download_or_build_binary()'
+
 function M.check()
   local h = health_api()
   local config = require("blak.config").get()
@@ -43,11 +90,26 @@ function M.check()
   end
 
   if config.picker.provider == "fff" then
-    local ok = pcall(require, "fff")
-    if ok then
+    local status = M.fff_status()
+    if status == "ok" then
       h.ok("fff.nvim is loadable")
-    else
+    elseif status == "missing-plugin" then
       h.warn("fff.nvim is not loadable yet. Run :Lazy sync, then restart.")
+    elseif status == "stranded-download" then
+      h.warn(
+        "fff.nvim downloaded its native library but could not install it, so the picker "
+          .. "will not start. Run "
+          .. BUILD_HINT
+          .. ", then restart. Stranded download: "
+          .. tostring(fff_stranded_download())
+      )
+    else
+      h.warn(
+        "fff.nvim is installed but its native library is missing, so the picker will not "
+          .. "start. Run "
+          .. BUILD_HINT
+          .. ", then restart."
+      )
     end
   end
 

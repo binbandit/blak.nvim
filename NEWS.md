@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- `:BlakDoctor` no longer reports a broken fff picker as healthy. It probed
+  `require("fff")`, which resolves to `fff.main` and defers the Rust backend
+  into function bodies, so it succeeded even with no native library on disk.
+  The check now probes the backend and names the fix, including the case where
+  fff downloaded the library but could not install it over the loaded one and
+  left it at `<binary>.tmp`.
 - Linting no longer reports failures at the user. A configured linter that is
   not installed is skipped instead of raising `Error running <cmd>: ENOENT` on
   every lint event, and linter output that cannot be parsed is reported once as
