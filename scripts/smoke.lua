@@ -292,6 +292,29 @@ assert(
   "lang.typescript should still enable the eslint language server"
 )
 
+-- require("fff") resolves to fff.main, which defers the Rust backend into
+-- function bodies, so it succeeds with no native library on disk. Health must
+-- probe the backend itself or it reports a broken picker as healthy.
+local health = require("blak.core.health")
+assert(type(health.fff_status) == "function", "health should expose the fff backend probe")
+if pcall(require, "fff") then
+  local previous_loaded = package.loaded["fff.fuzzy"]
+  local previous_preload = package.preload["fff.fuzzy"]
+  package.loaded["fff.fuzzy"] = nil
+  package.preload["fff.fuzzy"] = function()
+    error("simulated missing rust backend")
+  end
+
+  local status = health.fff_status()
+
+  package.loaded["fff.fuzzy"] = previous_loaded
+  package.preload["fff.fuzzy"] = previous_preload
+  assert(
+    status == "missing-binary" or status == "stranded-download",
+    "an fff backend that fails to load must not report ok (got " .. tostring(status) .. ")"
+  )
+end
+
 vim.keymap.set("n", "<leader>`", "<cmd>echo 'user alternate'<cr>", { desc = "User alternate file" })
 require("blak.core.keymaps").setup(require("blak.config").get())
 assert(

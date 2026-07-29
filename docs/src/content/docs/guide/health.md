@@ -32,7 +32,13 @@ The checker probes for each tool with `vim.fn.executable`. Missing tools warn bu
 
 ### Picker
 
-If `picker.provider == "fff"`, confirms `fff.nvim` is `require`-able. If you swapped to telescope or fzf-lua via an extra, those checks live in their respective extras.
+If `picker.provider == "fff"`, confirms fff.nvim can actually run. `require("fff")` isn't enough: it resolves to `fff.main`, which defers the Rust backend into function bodies and so succeeds even with no native library on disk. The check probes the backend directly, and distinguishes three failures:
+
+- **Plugin not loadable** — fff.nvim isn't installed yet. Run `:Lazy sync` and restart.
+- **Native library missing** — the plugin is there but the Rust library was never built or downloaded.
+- **Stranded download** — the library was downloaded and verified, but fff couldn't install it because the old one was still loaded, so it sits at `<binary>.tmp`. Nothing on fff's require path promotes it, so this survives restarts until you re-run the download.
+
+If you swapped to telescope or fzf-lua via an extra, those checks live in their respective extras.
 
 ### Enabled extras
 
@@ -89,7 +95,9 @@ Mason tools
 | `termguicolors disabled` | Set `vim.opt.termguicolors = true` in your terminal config, or check your `$TERM` value. |
 | `git not found` | Install git. Lazy.nvim needs it to clone plugins. |
 | `rg not found` | Install ripgrep. Without it pickers fall back to slow built-in walks. |
-| `fff not loadable` | Run `:Lazy sync`, then check `:Lazy log fff.nvim`. The binary downloads during plugin build. |
+| `fff.nvim is not loadable yet` | Run `:Lazy sync`, then check `:Lazy log fff.nvim`. The binary downloads during plugin build. |
+| `fff.nvim ... native library is missing` | Run `:lua require("fff.download").download_or_build_binary()`, then restart. Without it the picker throws a Rust backend error on startup. |
+| `fff.nvim downloaded its native library but could not install it` | Same command, then restart. The download is complete and sitting at `<binary>.tmp`; running it again promotes the file. |
 | `<linter> not found` | The linter isn't on `$PATH`, so it is skipped silently at lint time. Run `:BlakToolsInstall` if Mason ships it, or install it yourself. |
 | `<linter> is configured but nvim-lint has no such linter` | The name in `lint.linters_by_ft` doesn't match any nvim-lint linter. Check the spelling against [nvim-lint's linter list](https://github.com/mfussenegger/nvim-lint#available-linters). |
 | `Unknown extra: <id>` | The extra was removed or renamed. Run `:BlakExtras disable <id>` to remove the stale state entry. If it is still listed in `lua/blak/user.lua`, remove it there too. |
