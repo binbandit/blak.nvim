@@ -163,9 +163,21 @@
 
 ---@class blak.AiConfig
 ---@field claudecode? table
----@field copilot? table
+---@field copilot? blak.CopilotConfig
 ---@field sidekick? blak.SidekickConfig
 ---@field supermaven? blak.SupermavenConfig
+
+---@class blak.CopilotConfig
+---@field suggestion? blak.CopilotSuggestionConfig
+---@field panel? blak.FeatureToggle
+---@field filetypes? table<string, boolean>
+---@field copilot_node_command? string|string[]
+
+---@class blak.CopilotSuggestionConfig
+---@field enabled? boolean
+---@field auto_trigger? boolean
+---@field hide_during_completion? boolean
+---@field debounce? integer
 
 ---@class blak.SidekickConfig
 ---@field nes? blak.FeatureToggle

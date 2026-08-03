@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -431,23 +432,19 @@ def check_extra_mason_lists() -> list[str]:
     return errors
 
 
-def default_plugin_names() -> set[str]:
-    names: set[str] = set()
+def iter_default_plugin_specs() -> Iterator[tuple[Path, str, int, str, str]]:
+    """Yield every plugin spec core ships, as (path, text, offset, plugin, spec)."""
     for path in (ROOT / "lua" / "blak" / "plugins").glob("*.lua"):
         if path.name == "init.lua":
             continue
         text = path.read_text(encoding="utf-8")
-        for _, plugin, _ in collect_plugin_specs(text, {"return_tables": True}):
-            names.add(plugin)
-    return names
+        for offset, plugin, spec in collect_plugin_specs(text, {"return_tables": True}):
+            yield path, text, offset, plugin, spec
 
 
 def check_extra_plugin_loading() -> list[str]:
     errors: list[str] = []
-    # An extra may extend a plugin core already ships. Lazy merges the specs, so
-    # the fragment inherits the default spec's triggers instead of re-stating
-    # them; check_default_plugin_loading already holds those to the same rule.
-    defaults = default_plugin_names()
+    defaults = {plugin for _, _, _, plugin, _ in iter_default_plugin_specs()}
     for path in (ROOT / "lua" / "blak" / "extras").rglob("*.lua"):
         if path.name in {"init.lua", "state.lua"}:
             continue
@@ -456,12 +453,16 @@ def check_extra_plugin_loading() -> list[str]:
             location = f"{path.relative_to(ROOT)}:{line_number(text, offset)}"
             if ENABLED_FALSE_RE.search(spec):
                 continue
-            if plugin in defaults and not LAZY_FALSE_RE.search(spec):
-                continue
             if LAZY_FALSE_RE.search(spec):
                 errors.append(
                     f"{location}: extra plugin {plugin!r} is eager; use cmd/event/ft/keys or lazy=true"
                 )
+                continue
+            # An extra may extend a plugin core already ships. Lazy merges the
+            # specs, so the fragment inherits the default spec's triggers
+            # instead of re-stating them; check_default_plugin_loading already
+            # holds those to the same rule.
+            if plugin in defaults:
                 continue
             if not (LAZY_TRIGGER_RE.search(spec) or LAZY_TRUE_RE.search(spec)):
                 errors.append(
@@ -472,24 +473,20 @@ def check_extra_plugin_loading() -> list[str]:
 
 def check_default_plugin_loading() -> list[str]:
     errors: list[str] = []
-    for path in (ROOT / "lua" / "blak" / "plugins").glob("*.lua"):
-        if path.name == "init.lua":
+    for path, text, offset, plugin, spec in iter_default_plugin_specs():
+        location = f"{path.relative_to(ROOT)}:{line_number(text, offset)}"
+        if ENABLED_FALSE_RE.search(spec):
             continue
-        text = path.read_text(encoding="utf-8")
-        for offset, plugin, spec in collect_plugin_specs(text, { "return_tables": True }):
-            location = f"{path.relative_to(ROOT)}:{line_number(text, offset)}"
-            if ENABLED_FALSE_RE.search(spec):
-                continue
-            if LAZY_FALSE_RE.search(spec):
-                if plugin not in DEFAULT_EAGER_PLUGINS:
-                    errors.append(
-                        f"{location}: default plugin {plugin!r} is eager without an allowlist reason"
-                    )
-                continue
-            if not (LAZY_TRIGGER_RE.search(spec) or LAZY_TRUE_RE.search(spec)):
+        if LAZY_FALSE_RE.search(spec):
+            if plugin not in DEFAULT_EAGER_PLUGINS:
                 errors.append(
-                    f"{location}: default plugin {plugin!r} needs a lazy-loading trigger, lazy=true, or eager allowlist"
+                    f"{location}: default plugin {plugin!r} is eager without an allowlist reason"
                 )
+            continue
+        if not (LAZY_TRIGGER_RE.search(spec) or LAZY_TRUE_RE.search(spec)):
+            errors.append(
+                f"{location}: default plugin {plugin!r} needs a lazy-loading trigger, lazy=true, or eager allowlist"
+            )
     return errors
 
 

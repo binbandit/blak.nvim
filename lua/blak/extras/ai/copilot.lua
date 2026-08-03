@@ -1,33 +1,29 @@
-local function suggestion()
-  return require("blak.util").load_plugin("copilot.lua", "copilot.suggestion")
-end
-
 local function with_suggestion(action)
   return function()
-    local module = suggestion()
+    local module = require("blak.util").load_plugin("copilot.lua", "copilot.suggestion")
     if module and module[action] then
       module[action]()
     end
   end
 end
 
+-- Nothing can be on screen unless copilot.lua is already loaded, so read the
+-- loaded module rather than demand-loading it: these callers run per keystroke
+-- and must not pay for a :Lazy load, or warn on every press when the plugin is
+-- missing. is_visible() returns the extmark row, which is 0 on the first line.
+local function visible()
+  local module = package.loaded["copilot.suggestion"]
+  return module ~= nil and module.is_visible() ~= nil
+end
+
 -- <C-]> expands abbreviations in insert mode, so only take the key when there
 -- is a suggestion on screen to dismiss.
 local function dismiss()
-  local module = suggestion()
-  if module and module.is_visible and module.is_visible() then
-    module.dismiss()
-    return ""
+  if not visible() then
+    return "<C-]>"
   end
-  return "<C-]>"
-end
-
--- copilot.lua hides suggestions during completion by checking pumvisible(),
--- which blink.cmp never sets, so both would draw inline text at the cursor.
--- Read the loaded module only; blink must not pull Copilot in on its own.
-local function copilot_suggestion_visible()
-  local module = package.loaded["copilot.suggestion"]
-  return module ~= nil and module.is_visible() ~= nil
+  package.loaded["copilot.suggestion"].dismiss()
+  return ""
 end
 
 return {
@@ -70,10 +66,14 @@ return {
         opts = {
           completion = {
             ghost_text = {
-              -- Yield the inline preview to Copilot instead of drawing over it.
+              -- copilot.lua hides suggestions during completion by checking
+              -- pumvisible(), which blink never sets, so both would draw inline
+              -- text at the cursor. Yield to Copilot instead of drawing over it.
               -- Blink is otherwise untouched, and this leaves with the extra.
+              -- Note this key holds one predicate: another extra that yields to
+              -- blink the same way needs a shared one, not a second fragment.
               enabled = function()
-                return not copilot_suggestion_visible()
+                return not visible()
               end,
             },
           },
