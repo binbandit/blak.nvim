@@ -36,6 +36,23 @@ local migrations = {
       )
     end,
   },
+  {
+    id = "v0.3.1.copilot_suggestions",
+    description = "ai.copilot now shows inline suggestions instead of loading a plugin with every surface disabled",
+    apply = function(config, context)
+      if not vim.tbl_contains(require("blak.extras").enabled(config), "ai.copilot") then
+        return
+      end
+
+      context.util.notify(
+        "ai.copilot now turns on inline suggestions; before this it installed copilot.lua with the "
+          .. "suggestion and panel surfaces disabled, so an authenticated Copilot produced nothing "
+          .. "(see NEWS.md). Accept with <M-l>, accept a word with <M-w>, cycle with <M-]> and <M-[>, "
+          .. "dismiss with <C-]>, and toggle auto trigger with <leader>ag. "
+          .. "To go back, set ai = { copilot = { suggestion = { enabled = false } } }."
+      )
+    end,
+  },
 }
 
 local function state_path()

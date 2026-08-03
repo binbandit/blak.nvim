@@ -68,6 +68,7 @@ return {
 
   ai = {
     claudecode = {},
+    copilot = {},
     sidekick = {
       nes = { enabled = false },
     },

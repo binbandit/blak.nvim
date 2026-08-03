@@ -3,8 +3,9 @@ title: Copilot Extra
 description: Configure ai.copilot for the optional GitHub Copilot integration.
 ---
 
-`ai.copilot` installs `zbirenbaum/copilot.lua`. It is never enabled by default,
-and Blak does not add AI keymaps or silently change completion behavior.
+`ai.copilot` installs `zbirenbaum/copilot.lua` and turns on inline suggestions.
+It is never enabled by default, and every mapping it adds is a Blak mapping you
+can see in `:BlakKeys`.
 
 ## Enable it
 
@@ -31,35 +32,75 @@ Because this extra adds a plugin, run:
 | --- | --- |
 | Plugin | `zbirenbaum/copilot.lua` |
 | Load trigger | `InsertEnter` or `:Copilot` |
-| Defaults | `suggestion.enabled = false`, `panel.enabled = false` |
+| Defaults | `suggestion.enabled = true`, `suggestion.auto_trigger = true`, `panel.enabled = false` |
+| Keymaps | `<Space>ag`, `<M-l>`, `<M-w>`, `<M-]>`, `<M-[>`, `<C-]>` |
 
 ## Authenticate
 
-After syncing the plugin, start Neovim and run:
+Copilot needs Node.js 22 or newer on your `PATH`. After syncing the plugin,
+start Neovim and run:
 
 ```vim
 :Copilot auth
 :Copilot status
+:checkhealth copilot
 ```
+
+## Keymaps
+
+| Key | Mode | Action |
+| --- | --- | --- |
+| `<Space>ag` | Normal | Toggle auto trigger for the current buffer |
+| `<M-l>` | Insert | Accept the suggestion |
+| `<M-w>` | Insert | Accept one word |
+| `<M-]>` | Insert | Next suggestion |
+| `<M-[>` | Insert | Previous suggestion |
+| `<C-]>` | Insert | Dismiss the suggestion |
+
+`<C-]>` only takes the key when a suggestion is on screen. With no suggestion
+it falls through to Neovim's abbreviation expansion.
+
+Copilot ships its own mappings on these keys. Blak disables them and registers
+its own so they appear in `:BlakKeys` and can be remapped or removed through
+`keymaps` like any other Blak mapping.
 
 ## user.lua configuration
 
-The public Blak config for this extra is the opt-in itself:
+`ai.copilot` is passed to `copilot.lua` after Blak's defaults, so you can change
+anything except the suggestion keymaps:
 
 ```lua
 return {
-  extras = {
-    enabled = { "ai.copilot" },
+  extras = { enabled = { "ai.copilot" } },
+  ai = {
+    copilot = {
+      -- Copilot skips markdown, yaml, and commit buffers by default.
+      filetypes = { markdown = true },
+      -- Request suggestions only when you ask with <M-]>.
+      suggestion = { auto_trigger = false },
+      -- Turn on :Copilot panel.
+      panel = { enabled = true },
+    },
   },
 }
 ```
 
-Blak intentionally leaves inline suggestions and the Copilot panel disabled in
-the extra's default spec. That prevents the AI integration from taking over
-insert-mode behavior or adding hidden mappings.
+Blak leaves the Copilot panel disabled so the extra adds one surface rather than
+two, and always disables `copilot.lua`'s built-in keymaps so no mapping is
+hidden from `:BlakKeys`.
 
-If you want a different Copilot UI, create a local extra with your own
-`copilot.lua` options so the behavior remains explicit and easy to remove.
+To install the plugin without any suggestion UI:
+
+```lua
+return {
+  extras = { enabled = { "ai.copilot" } },
+  ai = {
+    copilot = {
+      suggestion = { enabled = false },
+    },
+  },
+}
+```
 
 ## Disable it
 

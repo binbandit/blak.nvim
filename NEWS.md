@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- `ai.copilot` now produces suggestions. It installed `copilot.lua` with both
+  `suggestion.enabled` and `panel.enabled` set to `false`, which starts and
+  authenticates the Copilot LSP client but leaves it with no way to show
+  anything, so the extra looked broken even when `:Copilot status` was healthy.
+  Inline suggestions are on with `auto_trigger`, and Blak owns the mappings so
+  they show up in `:BlakKeys`: `<M-l>` accepts, `<M-w>` accepts a word, `<M-]>`
+  and `<M-[>` cycle, `<C-]>` dismisses (and still expands abbreviations when no
+  suggestion is on screen), and `<Space>ag` toggles auto trigger. The panel
+  stays off. Tune the plugin through the new `ai.copilot` config table; set
+  `ai = { copilot = { suggestion = { enabled = false } } }` for the old
+  behavior.
 - `:BlakDoctor` no longer reports a broken fff picker as healthy. It probed
   `require("fff")`, which resolves to `fff.main` and defers the Rust backend
   into function bodies, so it succeeded even with no native library on disk.

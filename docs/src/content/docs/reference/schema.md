@@ -223,6 +223,7 @@ Hooks receive `(config, blak)`. `config` is the merged Blak config table, and
 | Key | Type | Notes |
 | --- | --- | --- |
 | `claudecode` | `table` | Options passed to `coder/claudecode.nvim` when `ai.claudecode` is enabled. Blak sets `terminal.provider = "snacks"` by default. |
+| `copilot` | `table` | Options passed to `zbirenbaum/copilot.lua` when `ai.copilot` is enabled. Blak turns on inline suggestions with `auto_trigger`, leaves the panel off, and always disables the plugin's built-in keymaps. |
 | `sidekick` | `table` | Options passed to `folke/sidekick.nvim` when `ai.sidekick` is enabled. Blak sets `nes.enabled = false` by default. |
 | `supermaven` | `table` | Options passed to `supermaven-inc/supermaven-nvim` when `ai.supermaven` is enabled. Blak always disables the plugin's built-in keymaps. |
 
@@ -239,6 +240,21 @@ return {
       diff_opts = {
         layout = "vertical",
       },
+    },
+  },
+}
+```
+
+Use `ai.copilot` to tune Copilot without restoring its hidden keymaps:
+
+```lua
+return {
+  extras = { enabled = { "ai.copilot" } },
+  ai = {
+    copilot = {
+      filetypes = { markdown = true },
+      suggestion = { auto_trigger = false },
+      panel = { enabled = true },
     },
   },
 }

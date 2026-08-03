@@ -163,6 +163,7 @@
 
 ---@class blak.AiConfig
 ---@field claudecode? table
+---@field copilot? table
 ---@field sidekick? blak.SidekickConfig
 ---@field supermaven? blak.SupermavenConfig
 

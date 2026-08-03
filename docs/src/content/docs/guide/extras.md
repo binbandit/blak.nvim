@@ -485,13 +485,42 @@ return {
 
 ### `ai.copilot`
 
-GitHub Copilot integration via [zbirenbaum/copilot.lua](https://github.com/zbirenbaum/copilot.lua).
+GitHub Copilot inline completion via [zbirenbaum/copilot.lua](https://github.com/zbirenbaum/copilot.lua).
+Needs Node.js 22 or newer and `:Copilot auth`.
 
 | Adds | Value |
 | --- | --- |
 | Plugin | `zbirenbaum/copilot.lua` |
+| Commands | `:Copilot` |
+| Keymap | `<leader>ag` -> toggle auto trigger for the buffer |
+| Keymap | `<M-l>` -> accept the inline suggestion |
+| Keymap | `<M-w>` -> accept one word |
+| Keymap | `<M-]>` -> next suggestion |
+| Keymap | `<M-[>` -> previous suggestion |
+| Keymap | `<C-]>` -> dismiss the inline suggestion |
 
-> Never enabled by default. Opt in with `:BlakExtras enable ai.copilot`.
+Blak disables Copilot's built-in plugin keymaps and registers the mappings above
+through `:BlakKeys` instead. `<C-]>` only takes the key while a suggestion is on
+screen; otherwise it falls through to Neovim's abbreviation expansion.
+
+The Copilot panel stays off so the extra adds one surface rather than two.
+Copilot options are passed through `ai.copilot`:
+
+```lua
+return {
+  extras = { enabled = { "ai.copilot" } },
+  ai = {
+    copilot = {
+      -- Copilot skips markdown, yaml, and commit buffers by default.
+      filetypes = { markdown = true },
+      suggestion = { auto_trigger = false },
+      panel = { enabled = true },
+    },
+  },
+}
+```
+
+> Never enabled by default. Disable it, restart Blak, then run `:BlakExtras sync` to remove the plugin spec.
 
 ### `ai.sidekick`
 
