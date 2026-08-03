@@ -48,7 +48,8 @@ local migrations = {
         "ai.copilot now turns on inline suggestions; before this it installed copilot.lua with the "
           .. "suggestion and panel surfaces disabled, so an authenticated Copilot produced nothing "
           .. "(see NEWS.md). Accept with <M-l>, accept a word with <M-w>, cycle with <M-]> and <M-[>, "
-          .. "dismiss with <C-]>, and toggle auto trigger with <leader>ag. "
+          .. "dismiss with <C-]>, and toggle auto trigger with <leader>ag. blink.cmp's inline preview "
+          .. "now yields while a Copilot suggestion is on screen. "
           .. "To go back, set ai = { copilot = { suggestion = { enabled = false } } }."
       )
     end,

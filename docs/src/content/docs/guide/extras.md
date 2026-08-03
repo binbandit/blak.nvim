@@ -504,6 +504,12 @@ through `:BlakKeys` instead. `<C-]>` only takes the key while a suggestion is on
 screen; otherwise it falls through to Neovim's abbreviation expansion.
 
 The Copilot panel stays off so the extra adds one surface rather than two.
+
+Blink and Copilot both draw an inline preview at the cursor, so while this extra
+is enabled blink's preview turns itself off for as long as Copilot has a
+suggestion on screen. The completion engine, sources, menu, and keymaps stay
+exactly as core ships them, and disabling the extra restores blink's preview.
+
 Copilot options are passed through `ai.copilot`:
 
 ```lua

@@ -22,6 +22,14 @@ local function dismiss()
   return "<C-]>"
 end
 
+-- copilot.lua hides suggestions during completion by checking pumvisible(),
+-- which blink.cmp never sets, so both would draw inline text at the cursor.
+-- Read the loaded module only; blink must not pull Copilot in on its own.
+local function copilot_suggestion_visible()
+  local module = package.loaded["copilot.suggestion"]
+  return module ~= nil and module.is_visible() ~= nil
+end
+
 return {
   id = "ai.copilot",
   label = "Copilot",
@@ -56,6 +64,20 @@ return {
           end
           return merged
         end,
+      },
+      {
+        "saghen/blink.cmp",
+        opts = {
+          completion = {
+            ghost_text = {
+              -- Yield the inline preview to Copilot instead of drawing over it.
+              -- Blink is otherwise untouched, and this leaves with the extra.
+              enabled = function()
+                return not copilot_suggestion_visible()
+              end,
+            },
+          },
+        },
       },
     }
   end,

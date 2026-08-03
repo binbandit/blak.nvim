@@ -34,6 +34,35 @@ Because this extra adds a plugin, run:
 | Load trigger | `InsertEnter` or `:Copilot` |
 | Defaults | `suggestion.enabled = true`, `suggestion.auto_trigger = true`, `panel.enabled = false` |
 | Keymaps | `<Space>ag`, `<M-l>`, `<M-w>`, `<M-]>`, `<M-[>`, `<C-]>` |
+| blink.cmp | Inline preview yields while a Copilot suggestion is on screen |
+
+## Inline preview
+
+Blak's completion menu draws its own inline preview of the selected item, and
+Copilot draws its suggestion in the same place. `copilot.lua` tries to avoid
+this with `suggestion.hide_during_completion`, but that checks `pumvisible()`,
+which blink.cmp never sets, so both would render at once.
+
+While this extra is enabled, blink's inline preview turns itself off for as
+long as Copilot has a suggestion on screen and comes straight back when there
+is none. Nothing else about completion changes: the engine, sources, menu, and
+keymaps are the ones core ships, and disabling the extra restores blink's
+preview with no other cleanup.
+
+To keep both previews, override the extra from your own config:
+
+```lua
+return {
+  plugins = {
+    specs = {
+      {
+        "saghen/blink.cmp",
+        opts = { completion = { ghost_text = { enabled = true } } },
+      },
+    },
+  },
+}
+```
 
 ## Authenticate
 

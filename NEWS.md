@@ -10,7 +10,10 @@
   they show up in `:BlakKeys`: `<M-l>` accepts, `<M-w>` accepts a word, `<M-]>`
   and `<M-[>` cycle, `<C-]>` dismisses (and still expands abbreviations when no
   suggestion is on screen), and `<Space>ag` toggles auto trigger. The panel
-  stays off. Tune the plugin through the new `ai.copilot` config table; set
+  stays off. While the extra is enabled, blink.cmp's inline preview yields to
+  Copilot instead of drawing over it; blink keeps its own preview whenever
+  Copilot has nothing on screen, and core blink is unchanged for everyone else.
+  Tune the plugin through the new `ai.copilot` config table; set
   `ai = { copilot = { suggestion = { enabled = false } } }` for the old
   behavior.
 - `:BlakDoctor` no longer reports a broken fff picker as healthy. It probed

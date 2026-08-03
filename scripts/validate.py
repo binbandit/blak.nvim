@@ -431,8 +431,23 @@ def check_extra_mason_lists() -> list[str]:
     return errors
 
 
+def default_plugin_names() -> set[str]:
+    names: set[str] = set()
+    for path in (ROOT / "lua" / "blak" / "plugins").glob("*.lua"):
+        if path.name == "init.lua":
+            continue
+        text = path.read_text(encoding="utf-8")
+        for _, plugin, _ in collect_plugin_specs(text, {"return_tables": True}):
+            names.add(plugin)
+    return names
+
+
 def check_extra_plugin_loading() -> list[str]:
     errors: list[str] = []
+    # An extra may extend a plugin core already ships. Lazy merges the specs, so
+    # the fragment inherits the default spec's triggers instead of re-stating
+    # them; check_default_plugin_loading already holds those to the same rule.
+    defaults = default_plugin_names()
     for path in (ROOT / "lua" / "blak" / "extras").rglob("*.lua"):
         if path.name in {"init.lua", "state.lua"}:
             continue
@@ -440,6 +455,8 @@ def check_extra_plugin_loading() -> list[str]:
         for offset, plugin, spec in collect_plugin_specs(text):
             location = f"{path.relative_to(ROOT)}:{line_number(text, offset)}"
             if ENABLED_FALSE_RE.search(spec):
+                continue
+            if plugin in defaults and not LAZY_FALSE_RE.search(spec):
                 continue
             if LAZY_FALSE_RE.search(spec):
                 errors.append(
