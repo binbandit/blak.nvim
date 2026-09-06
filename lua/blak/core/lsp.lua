@@ -1,5 +1,6 @@
 local M = {}
 
+local managed_servers = {}
 local lua_runtime_library
 
 local function capabilities()
@@ -64,6 +65,18 @@ end
 function M.setup(config, names)
   vim.diagnostic.config(config.lsp.diagnostics)
 
+  if not names then
+    for name in pairs(managed_servers) do
+      if not config.lsp.automatic_enable or not config.lsp.servers[name] then
+        vim.lsp.enable(name, false)
+      end
+    end
+    managed_servers = {}
+    for name in pairs(config.lsp.servers) do
+      managed_servers[name] = true
+    end
+  end
+
   local caps = capabilities()
   for _, name in ipairs(configured_servers(config, names)) do
     local server = config.lsp.servers[name]
@@ -71,19 +84,33 @@ function M.setup(config, names)
       capabilities = vim.tbl_deep_extend("force", {}, caps, server.capabilities or {}),
     })
     server_config = with_lua_workspace_library(name, server_config)
-    vim.lsp.config(name, server_config)
+    -- Replace Blak's override; merging would retain settings removed on reload.
+    -- Neovim still combines this with the server's runtime lsp/<name>.lua.
+    vim.lsp.config[name] = server_config
   end
 end
 
-function M.enable(config, names)
-  M.setup(config, names)
-  if not (config.lsp.automatic_enable and vim.lsp.enable and names and #names > 0) then
-    return
+-- Restrict automatic activation to configured servers. Installed tools survive
+-- disabling an extra; their presence alone must not reactivate that extra.
+function M.mason_opts(config)
+  local names = require("blak.util").tbl_keys(config.lsp.servers)
+  return {
+    ensure_installed = config.mason.automatic_install and names or {},
+    automatic_enable = config.lsp.automatic_enable and names or false,
+  }
+end
+
+function M.refresh(config)
+  M.setup(config)
+  local mason = package.loaded["mason-lspconfig"]
+  if mason then
+    mason.setup(M.mason_opts(config))
   end
-  local ok, err = pcall(vim.lsp.enable, names)
-  if not ok then
-    require("blak.util").warn("Could not enable LSP servers: " .. tostring(err))
-  end
+end
+
+function M.enable(config)
+  require("blak.util").load_plugin("mason-lspconfig.nvim", "mason-lspconfig")
+  M.refresh(config)
 end
 
 return M

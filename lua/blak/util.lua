@@ -85,8 +85,10 @@ end
 function M.write_file(path, data)
   M.mkdir(vim.fn.fnamemodify(path, ":h"))
   local fd = assert(io.open(path, "w"))
-  fd:write(data)
-  fd:close()
+  local written, err = fd:write(data)
+  local closed, close_err = fd:close()
+  assert(written, err)
+  assert(closed, close_err)
 end
 
 function M.copy_file(from, to)
@@ -138,7 +140,8 @@ function M.git_root()
     return result
   end
   local cwd = uv.cwd()
-  local handle = io.popen("git -C " .. vim.fn.shellescape(cwd) .. " rev-parse --show-toplevel 2>/dev/null")
+  local handle =
+    io.popen("git -C " .. vim.fn.shellescape(cwd) .. " rev-parse --show-toplevel 2>/dev/null")
   if handle then
     local root = handle:read("*l")
     handle:close()

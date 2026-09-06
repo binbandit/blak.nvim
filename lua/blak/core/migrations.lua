@@ -5,6 +5,28 @@ local M = {}
 -- through :BlakUpgrade; non-breaking migrations run on the next :BlakUpgrade.
 local migrations = {
   {
+    id = "v0.3.1.native-helpers",
+    description = "Restore native compressed files, archive browsing, and Tutor",
+    apply = function(_, context)
+      context.util.notify(
+        "Blak now preserves Neovim's gzip, tar, zip, and Tutor plugins. "
+          .. "Only the netrw directory handler is disabled, because Blak supplies an explorer. "
+          .. "Restart to load these native helpers. To opt out, set their loaded_* flags in hooks.before."
+      )
+    end,
+  },
+  {
+    id = "v0.3.1.configured-servers",
+    description = "Only configured Mason servers are automatically enabled; automatic_install also controls LSP installs",
+    apply = function(_, context)
+      context.util.notify(
+        "Mason now enables only servers listed in lsp.servers, including enabled extras. "
+          .. "Add any manually installed server you want to lsp.servers. "
+          .. "mason.automatic_install=false also disables automatic LSP installs; :BlakToolsInstall requests them explicitly."
+      )
+    end,
+  },
+  {
     id = "v0.2.1.autopairs",
     description = "Core pair handling moved from mini.pairs to nvim-autopairs in v0.2.1",
     apply = function(_, context)
@@ -137,7 +159,9 @@ function M.run(config)
   end
   write_state(state)
 
-  require("blak.util").notify("Applied " .. #pending .. " Blak upgrade migration" .. (#pending == 1 and "" or "s"))
+  require("blak.util").notify(
+    "Applied " .. #pending .. " Blak upgrade migration" .. (#pending == 1 and "" or "s")
+  )
   return #pending
 end
 

@@ -28,7 +28,7 @@ local function validate_mode(errors, path, mode)
   if type(mode) == "string" then
     return
   end
-  if type(mode) == "table" then
+  if type(mode) == "table" and vim.islist(mode) and #mode > 0 then
     for _, item in ipairs(mode) do
       if type(item) ~= "string" then
         table.insert(errors, path .. " entries must be strings")
@@ -57,7 +57,7 @@ local function validate_keymap(errors, index, item)
   end
 
   local key = item.key or item.lhs
-  if type(key) ~= "string" then
+  if type(key) ~= "string" or key == "" then
     table.insert(errors, path .. ".key must be a string")
   end
   validate_keymap_mode(errors, path, item)
@@ -148,7 +148,7 @@ local function validate_hooks(errors, config)
 end
 
 local function validate_ui(errors, config)
-  if config.ui == nil then
+  if type(config.ui) ~= "table" then
     return
   end
   if config.ui.colorscheme ~= nil then
@@ -192,8 +192,92 @@ local function validate_editor(errors, config)
   end
 end
 
+local function string_list(errors, path, value)
+  if type(value) ~= "table" or not vim.islist(value) then
+    table.insert(errors, path .. " must be a list")
+    return
+  end
+  for _, item in ipairs(value) do
+    if type(item) ~= "string" or item == "" then
+      table.insert(errors, path .. " entries must be non-empty strings")
+      return
+    end
+  end
+end
+
+local function validate_runtime(errors, config)
+  local fields = {
+    package = { backend = "string", check_updates = "boolean" },
+    ui = { icons = "boolean", notify = "boolean", winborder = "string", splash = "table" },
+    performance = { bigfile_size = "number", max_treesitter_lines = "number" },
+    treesitter = { ensure_installed = "table" },
+    mason = { automatic_install = "boolean", ensure_installed = "table" },
+    lsp = { automatic_enable = "boolean", servers = "table", diagnostics = "table" },
+    format = {
+      enabled = "boolean",
+      timeout_ms = "number",
+      lsp_format = "string",
+      formatters_by_ft = "table",
+    },
+    lint = { events = "table", linters_by_ft = "table" },
+    snacks = {},
+  }
+  for section, members in pairs(fields) do
+    if expect(errors, section, config[section], "table") then
+      for name, expected in pairs(members) do
+        expect(errors, section .. "." .. name, config[section][name], expected)
+      end
+    end
+  end
+  if type(config.ui) == "table" and type(config.ui.splash) == "table" then
+    for _, name in ipairs({ "enabled", "animate", "loop" }) do
+      expect(errors, "ui.splash." .. name, config.ui.splash[name], "boolean")
+    end
+  end
+  for _, field in ipairs({
+    { "treesitter", "ensure_installed" },
+    { "mason", "ensure_installed" },
+    { "lint", "events" },
+    { "extras", "enabled" },
+    { "mini", "modules" },
+  }) do
+    if type(config[field[1]]) == "table" then
+      string_list(errors, table.concat(field, "."), config[field[1]][field[2]])
+    end
+  end
+  if type(config.lsp) == "table" and type(config.lsp.servers) == "table" then
+    for name, server in pairs(config.lsp.servers) do
+      if type(name) ~= "string" or name == "" then
+        table.insert(errors, "lsp.servers keys must be non-empty strings")
+      else
+        expect(errors, "lsp.servers." .. name, server, "table")
+      end
+    end
+  end
+  if type(config.lint) == "table" and type(config.lint.linters_by_ft) == "table" then
+    for ft, names in pairs(config.lint.linters_by_ft) do
+      string_list(errors, "lint.linters_by_ft." .. tostring(ft), names)
+    end
+  end
+  for _, field in ipairs({
+    { "editor", "scrolloff", 0 },
+    { "editor", "sidescrolloff", 0 },
+    { "editor", "tabstop", 1 },
+    { "editor", "shiftwidth", 0 },
+    { "performance", "max_treesitter_lines", 1 },
+    { "format", "timeout_ms", 1 },
+  }) do
+    local section = config[field[1]]
+    local value = type(section) == "table" and section[field[2]]
+    if type(value) == "number" and (value < field[3] or value == math.huge or value % 1 ~= 0) then
+      table.insert(errors, field[1] .. "." .. field[2] .. " must be an integer >= " .. field[3])
+    end
+  end
+end
+
 function M.validate(config)
   local errors = {}
+  validate_runtime(errors, config)
 
   expect(errors, "leader", config.leader, "string")
   expect(errors, "localleader", config.localleader, "string")
@@ -272,7 +356,10 @@ function M.validate(config)
         end
         local name = module:gsub("^mini%.", "")
         if name == "" or not name:match(valid_mini_module) then
-          table.insert(errors, "mini.modules entries must be mini module names like ai, surround, or mini.ai")
+          table.insert(
+            errors,
+            "mini.modules entries must be mini module names like ai, surround, or mini.ai"
+          )
           break
         end
       end

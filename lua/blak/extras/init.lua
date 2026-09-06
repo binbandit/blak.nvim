@@ -75,7 +75,7 @@ end
 local function merge_missing_by_ft(target, source)
   for ft, value in pairs(source or {}) do
     if target[ft] == nil then
-      target[ft] = value
+      target[ft] = vim.deepcopy(value)
     end
   end
 end
@@ -89,33 +89,7 @@ local function contains(list, needle)
   return false
 end
 
-local function lsp_server_names(extra)
-  local out = {}
-  for name in pairs(vim.tbl_get(extra, "lsp", "servers") or {}) do
-    table.insert(out, name)
-  end
-  return out
-end
-
-local function refresh_lazy_specs(config, extra)
-  if not extra.plugins or not package.loaded["lazy.core.config"] then
-    return
-  end
-
-  local ok, err = pcall(function()
-    local lazy_config = require("lazy.core.config")
-    lazy_config.options.spec = require("blak.plugins").specs(config)
-    require("lazy.core.plugin").load()
-    require("lazy.core.handler").setup()
-    vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
-    vim.api.nvim_exec_autocmds("User", { pattern = "LazyReload", modeline = false })
-  end)
-  if not ok then
-    require("blak.util").warn("Could not refresh lazy.nvim specs: " .. tostring(err))
-  end
-end
-
-local function refresh_snacks(extra)
+local function refresh_snacks(extra, config)
   if not extra.snacks then
     return
   end
@@ -125,7 +99,8 @@ local function refresh_snacks(extra)
     return
   end
 
-  for name, opts in pairs(extra.snacks) do
+  for name in pairs(extra.snacks) do
+    local opts = config.snacks[name]
     snacks.config[name] = vim.tbl_deep_extend("force", snacks.config[name] or {}, opts)
     if opts.enabled ~= false then
       local ok_module, module = pcall(function()
@@ -143,8 +118,10 @@ local function refresh_snacks(extra)
 end
 
 local function refresh_runtime(config, extra)
+  require("blak.lazy").refresh(config)
+
   if extra.lsp and extra.lsp.servers then
-    require("blak.core.lsp").enable(config, lsp_server_names(extra))
+    require("blak.core.lsp").enable(config)
   end
 
   if extra.format or extra.lint then
@@ -155,8 +132,7 @@ local function refresh_runtime(config, extra)
     require("blak.core.keymaps").apply_extra(extra.keys)
   end
 
-  refresh_snacks(extra)
-  refresh_lazy_specs(config, extra)
+  refresh_snacks(extra, config)
 
   if extra.treesitter then
     require("blak.core.treesitter").install(config)
@@ -195,10 +171,11 @@ function M.apply_one(config, id)
   if extra.apply then
     extra.apply(config)
   end
-  config.treesitter.ensure_installed = util.extend_list(config.treesitter.ensure_installed, extra.treesitter)
+  config.treesitter.ensure_installed =
+    util.extend_list(config.treesitter.ensure_installed, extra.treesitter)
   config.mason.ensure_installed = util.extend_list(config.mason.ensure_installed, extra.mason)
   if extra.lsp and extra.lsp.servers then
-    config.lsp.servers = vim.tbl_deep_extend("force", config.lsp.servers or {}, extra.lsp.servers)
+    config.lsp.servers = vim.tbl_deep_extend("keep", config.lsp.servers or {}, extra.lsp.servers)
   end
   if extra.format and extra.format.formatters_by_ft then
     merge_missing_by_ft(config.format.formatters_by_ft, extra.format.formatters_by_ft)
@@ -207,10 +184,10 @@ function M.apply_one(config, id)
     merge_missing_by_ft(config.lint.linters_by_ft, extra.lint.linters_by_ft)
   end
   if extra.snacks then
-    config.snacks = vim.tbl_deep_extend("force", config.snacks or {}, extra.snacks)
+    config.snacks = vim.tbl_deep_extend("keep", config.snacks or {}, extra.snacks)
   end
   if extra.keys then
-    vim.list_extend(config._extra_keymaps, extra.keys)
+    vim.list_extend(config._extra_keymaps, vim.deepcopy(extra.keys))
   end
   if extra.plugins then
     local specs = type(extra.plugins) == "function" and extra.plugins(config) or extra.plugins
@@ -278,7 +255,12 @@ function M.set_enabled(action, id, config, opts)
       end
       return false
     end
-    if action == "disable" and not known and not contains(current, id) and not contains(config.extras.enabled or {}, id) then
+    if
+      action == "disable"
+      and not known
+      and not contains(current, id)
+      and not contains(config.extras.enabled or {}, id)
+    then
       if opts.notify then
         util.warn("Unknown extra: " .. id)
       end
@@ -315,7 +297,11 @@ function M.set_enabled(action, id, config, opts)
 
     if opts.notify then
       if action == "disable" and not known then
-        util.notify("Removed stale extra " .. id .. " from state. Restart Blak, then run :Lazy sync if plugins changed.")
+        util.notify(
+          "Removed stale extra "
+            .. id
+            .. " from state. Restart Blak, then run :Lazy sync if plugins changed."
+        )
       elseif action == "enable" then
         local suffix = active and " Applied to this session." or " Already active in this session."
         if registry()[id].plugins then
@@ -323,7 +309,11 @@ function M.set_enabled(action, id, config, opts)
         end
         util.notify("Enabled " .. id .. "." .. suffix)
       else
-        util.notify("Disabled " .. id .. ". Restart Blak to unload anything already active, then run :Lazy sync if plugins changed.")
+        util.notify(
+          "Disabled "
+            .. id
+            .. ". Restart Blak to unload anything already active, then run :Lazy sync if plugins changed."
+        )
       end
     end
     return true

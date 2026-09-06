@@ -40,8 +40,22 @@ end
 function M.toggle_native(opts)
   opts = opts or {}
 
+  if valid_win(state.win) and vim.api.nvim_win_get_buf(state.win) ~= state.buf then
+    state.win = nil
+  end
+
   if valid_win(state.win) and not opts.cmd then
-    vim.api.nvim_win_close(state.win, true)
+    local tab = vim.api.nvim_win_get_tabpage(state.win)
+    local normal_windows = vim.tbl_filter(function(win)
+      return vim.api.nvim_win_get_config(win).relative == ""
+    end, vim.api.nvim_tabpage_list_wins(tab))
+    if #normal_windows == 1 then
+      vim.api.nvim_win_call(state.win, function()
+        vim.cmd("enew")
+      end)
+    else
+      vim.api.nvim_win_close(state.win, true)
+    end
     state.win = nil
     return
   end

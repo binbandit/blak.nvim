@@ -1,4 +1,4 @@
--- Run with: NVIM_APPNAME=blak-test nvim --headless -u NONE --cmd 'set loadplugins' --cmd 'lua vim.opt.rtp:prepend(vim.fn.getcwd())' -c 'lua dofile("scripts/smoke.lua")' -c qa
+-- Run through make smoke for isolated state and nonzero assertion failures.
 -- This catches actual runtime/plugin-manager regressions in CI.
 local sep = package.config:sub(1, 1)
 
@@ -162,6 +162,7 @@ do
   }
 
   vim.keymap.set("i", "<Tab>", function() end, { buffer = 0, desc = "blink.cmp: default" })
+  require("blak.lazy").refresh(super_tab_config)
   require("blak.core.completion").refresh(super_tab_config)
   assert(applied_preset == "super-tab", "completion refresh should rebuild blink keymaps from Blak config")
   assert(
@@ -175,6 +176,7 @@ do
   package.loaded["blink.cmp.config"] = previous_blink_config
   package.loaded["blink.cmp.keymap"] = previous_blink_keymap
   package.loaded["blink.cmp.keymap.apply"] = previous_blink_apply
+  require("blak.lazy").refresh(require("blak.config").get())
 end
 assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")

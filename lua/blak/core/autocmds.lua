@@ -22,6 +22,9 @@ function M.setup(_)
   vim.api.nvim_create_autocmd("BufReadPost", {
     group = group,
     callback = function(event)
+      if event.buf ~= vim.api.nvim_get_current_buf() or vim.bo[event.buf].buftype ~= "" then
+        return
+      end
       local mark = vim.api.nvim_buf_get_mark(event.buf, '"')
       local line_count = vim.api.nvim_buf_line_count(event.buf)
       if mark[1] > 0 and mark[1] <= line_count then
@@ -35,7 +38,12 @@ function M.setup(_)
     pattern = { "help", "qf", "man", "checkhealth", "lspinfo", "notify" },
     callback = function(event)
       vim.bo[event.buf].buflisted = false
-      vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true, desc = "Close" })
+      vim.keymap.set(
+        "n",
+        "q",
+        "<cmd>close<cr>",
+        { buffer = event.buf, silent = true, desc = "Close" }
+      )
     end,
   })
 

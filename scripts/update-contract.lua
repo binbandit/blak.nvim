@@ -1,4 +1,4 @@
--- Run with: NVIM_APPNAME=blak-update-contract nvim --headless -u NONE --cmd 'set loadplugins' --cmd 'lua vim.opt.rtp:prepend(vim.fn.getcwd())' -c 'lua dofile("scripts/update-contract.lua")' -c qa
+-- Run through make smoke, which provides disposable XDG paths and fails on errors.
 -- Focused contract tests for update / upgrade / rollback behavior.
 
 local sep = package.config:sub(1, 1)

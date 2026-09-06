@@ -11,8 +11,22 @@ function M.read()
     return {}
   end
   local ok, decoded = pcall(vim.json.decode, data)
-  if ok and type(decoded) == "table" then
-    return decoded.enabled or {}
+  if
+    ok
+    and type(decoded) == "table"
+    and type(decoded.enabled) == "table"
+    and vim.islist(decoded.enabled)
+  then
+    local valid = true
+    for _, id in ipairs(decoded.enabled) do
+      if type(id) ~= "string" or id == "" then
+        valid = false
+        break
+      end
+    end
+    if valid then
+      return util.unique(decoded.enabled)
+    end
   end
   util.warn("Could not parse extras state; ignoring " .. path())
   return {}

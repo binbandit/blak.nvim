@@ -36,10 +36,7 @@ return function(config)
         "neovim/nvim-lspconfig",
       },
       opts = function()
-        return {
-          ensure_installed = require("blak.util").tbl_keys(config.lsp.servers),
-          automatic_enable = config.lsp.automatic_enable,
-        }
+        return require("blak.core.lsp").mason_opts(config)
       end,
     },
   }

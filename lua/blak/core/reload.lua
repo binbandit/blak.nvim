@@ -56,7 +56,6 @@ local function stop_watcher()
 end
 
 local function refresh_runtime(config, user_config_path)
-  local util = require("blak.util")
   vim.g.mapleader = config.leader
   vim.g.maplocalleader = config.localleader
 
@@ -64,27 +63,15 @@ local function refresh_runtime(config, user_config_path)
   require("blak.theme").load(config)
   require("blak.core.commands").setup(config)
   require("blak.core.keymaps").setup(config)
-  local lsp = package.loaded["blak.core.lsp"] or util.try_require("blak.core.lsp")
-  if lsp then
-    lsp.setup(config)
+  require("blak.lazy").refresh(config)
+  if package.loaded["mason-lspconfig"] then
+    require("blak.core.lsp").refresh(config)
+  elseif package.loaded["blak.core.lsp"] then
+    require("blak.core.lsp").setup(config)
   end
-  local formatting = package.loaded["blak.core.formatting"] or util.try_require("blak.core.formatting")
-  if formatting then
-    formatting.refresh(config)
-  end
-  local lazy = package.loaded["blak.lazy"] or util.try_require("blak.lazy")
-  if lazy then
-    lazy.refresh(config)
-  end
+  require("blak.core.formatting").refresh(config)
   require("blak.core.completion").refresh(config)
   M.watch_user_file(user_config_path)
-
-  if config.lsp.automatic_enable and vim.lsp.enable then
-    local names = util.tbl_keys(config.lsp.servers)
-    if #names > 0 then
-      pcall(vim.lsp.enable, names)
-    end
-  end
 end
 
 function M.reload(opts)
@@ -177,7 +164,8 @@ function M.setup()
     group = group,
     pattern = patterns,
     callback = function(event)
-      local path = normalize_path(vim.api.nvim_buf_get_name(event.buf)) or normalize_path(event.match)
+      local path = normalize_path(vim.api.nvim_buf_get_name(event.buf))
+        or normalize_path(event.match)
       if is_user_file(path) then
         M.schedule({ path = path })
       end

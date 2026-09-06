@@ -169,13 +169,14 @@ function M.setup(config)
   lint.linters_by_ft = linters_by_ft
   harden_linters(lint, linters_by_ft)
 
+  local group = vim.api.nvim_create_augroup(GROUP, { clear = true })
   local events = config.lint.events or {}
   if #events == 0 then
     return
   end
 
   vim.api.nvim_create_autocmd(events, {
-    group = vim.api.nvim_create_augroup(GROUP, { clear = true }),
+    group = group,
     callback = function()
       -- `ignore_errors` covers spawn failures that slip past the filter, such as
       -- a linter removed between the check and the spawn.

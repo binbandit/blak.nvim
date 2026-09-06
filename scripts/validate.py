@@ -7,12 +7,24 @@ require paths, unbalanced delimiters, duplicate extra ids, and missing docs.
 """
 from __future__ import annotations
 
+import os
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-LUA = sorted(ROOT.rglob("*.lua"))
+def source_files():
+    excluded = {".git", "node_modules", "dist", ".astro", ".cache", "__pycache__"}
+    for directory, dirs, files in os.walk(ROOT):
+        dirs[:] = [name for name in dirs if name not in excluded]
+        for name in files:
+            path = Path(directory) / name
+            if path != ROOT / "lua/blak/user.lua":
+                yield path
+
+
+FILES = sorted(source_files())
+LUA = [path for path in FILES if path.suffix == ".lua"]
 REQUIRE_RE = re.compile(r"require\(['\"](blak(?:\.[A-Za-z0-9_\-]+)*)['\"]\)")
 ID_RE = re.compile(r"id\s*=\s*['\"]([^'\"]+)['\"]")
 MASON_LIST_RE = re.compile(r"\bmason\s*=\s*\{([^}]*)\}", re.S)
@@ -34,8 +46,8 @@ DEFAULT_EAGER_PLUGINS = {
     "stevearc/oil.nvim",
 }
 DOCS_LINK_RE = re.compile(
-    r"\]\(/blak\.nvim/([^)\s#]*)(?:#[^) \t]*)?\)"
-    r"|href=[\"']/blak\.nvim/([^\"'#]*)(?:#[^\"']*)?[\"']"
+    r"\]\(/([^)\s#]*)(?:#[^) \t]*)?\)"
+    r"|href=[\"']/([^\"'#]*)(?:#[^\"']*)?[\"']"
 )
 EXTRA_ID_ALIAS_RE = re.compile(r"---@alias\s+blak\.ExtraId\s*\n((?:---\|[^\n]*\n)+)")
 
@@ -386,7 +398,7 @@ def doc_slug(path: Path) -> str:
     if parts and parts[-1] == "index":
         parts = parts[:-1]
     suffix = "/".join(parts)
-    return "/blak.nvim/" + (suffix + "/" if suffix else "")
+    return "/" + (suffix + "/" if suffix else "")
 
 
 def check_docs_links() -> list[str]:
@@ -409,8 +421,9 @@ def check_docs_links() -> list[str]:
         for match in DOCS_LINK_RE.finditer(text):
             target = (match.group(1) or match.group(2) or "").strip()
             normalized = target.strip("/")
-            slug = "/blak.nvim/" + (normalized + "/" if normalized else "")
-            if slug not in slugs:
+            slug = "/" + (normalized + "/" if normalized else "")
+            public_file = ROOT / "docs" / "public" / normalized
+            if slug not in slugs and not public_file.is_file() and normalized != "install.sh":
                 errors.append(f"{path.relative_to(ROOT)}: broken docs link {slug}")
     return errors
 
@@ -606,7 +619,7 @@ def main() -> int:
     legacy_regexes = [
         re.compile(r":Black(?!Extras\b)"),
     ]
-    for path in ROOT.rglob("*"):
+    for path in FILES:
         if path.is_dir() or path.name == "blackhole.gif" or path == ROOT / "scripts" / "validate.py" or ".git" in path.parts:
             continue
         try:

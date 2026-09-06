@@ -9,7 +9,7 @@
 # Usage:
 #   ./dev-install.sh                 install (symlink) under appname "blak-dev"
 #   ./dev-install.sh --appname NAME  use a different NVIM_APPNAME
-#   ./dev-install.sh --force         replace an existing symlink/launcher
+#   ./dev-install.sh --force         repoint an existing config symlink
 #   ./dev-install.sh --uninstall     remove the symlink and launcher
 #   ./dev-install.sh --status        show what is currently installed
 #   ./dev-install.sh --help          show this help
@@ -42,8 +42,8 @@ working tree to \$XDG_CONFIG_HOME/<appname> and creates a launcher at
 
 Options:
   --appname NAME    NVIM_APPNAME to install under (default: blak-dev)
-  --force, -f       Replace an existing symlink or launcher created by this script
-  --uninstall, -u   Remove the symlink and launcher for the given appname
+  --force, -f       Repoint an existing config symlink; preserve unrelated launchers
+  --uninstall, -u   Remove this checkout's symlink and a script-managed launcher
   --status, -s      Show what is currently installed for the given appname
   --help, -h        Show this help
 
@@ -66,7 +66,7 @@ resolve_symlink() {
 }
 
 is_managed_launcher() {
-  [ -f "$1" ] && head -n 5 -- "$1" 2>/dev/null | grep -Fq "$LAUNCHER_MARKER"
+  [ ! -L "$1" ] && [ -f "$1" ] && head -n 5 -- "$1" 2>/dev/null | grep -Fq "$LAUNCHER_MARKER"
 }
 
 while [ $# -gt 0 ]; do
@@ -91,7 +91,7 @@ while [ $# -gt 0 ]; do
 done
 
 case $APPNAME in
-  ""|*/*|.|..) die "Invalid --appname: '$APPNAME'" ;;
+  ""|[!a-zA-Z0-9]*|*[!a-zA-Z0-9_-]*) die "Invalid --appname: '$APPNAME'" ;;
 esac
 
 TARGET=$CONFIG_HOME/$APPNAME
@@ -153,9 +153,9 @@ install_launcher() {
     return
   fi
 
-  if [ -e "$LAUNCHER" ] && ! is_managed_launcher "$LAUNCHER" && [ $FORCE -eq 0 ]; then
+  if { [ -e "$LAUNCHER" ] || [ -L "$LAUNCHER" ]; } && ! is_managed_launcher "$LAUNCHER"; then
     echo "$LAUNCHER already exists and was not created by this script." >&2
-    echo "Re-run with --force to overwrite, or start Neovim manually:" >&2
+    echo "Leaving it unchanged. Start Neovim manually:" >&2
     echo "  NVIM_APPNAME=$APPNAME nvim" >&2
     return
   fi
@@ -176,9 +176,13 @@ uninstall() {
 
   if [ -L "$TARGET" ]; then
     current=$(resolve_symlink "$TARGET")
-    rm -- "$TARGET"
-    echo "Removed symlink: $TARGET (was -> $current)"
-    removed=1
+    if [ "$current" = "$REPO_ROOT" ]; then
+      rm -- "$TARGET"
+      echo "Removed symlink: $TARGET (was -> $current)"
+      removed=1
+    else
+      echo "$TARGET points to another checkout; leaving it in place." >&2
+    fi
   elif [ -e "$TARGET" ]; then
     echo "$TARGET exists but is not a symlink; leaving it in place." >&2
   fi
@@ -242,9 +246,8 @@ blak.nvim is installed for development from:
 Launch it with:
   $APPNAME$path_hint
 
-Edits in the checkout are live — no reinstall needed. First launch will run
-\`:Lazy sync\` to install plugins into:
-  $HOME/.local/share/$APPNAME/lazy
+Edits in the checkout are live — no reinstall needed. First launch installs missing plugins into:
+  ${XDG_DATA_HOME:-$HOME/.local/share}/$APPNAME/lazy
 
 To remove: $0 --uninstall${APPNAME:+ --appname $APPNAME}
 DONE

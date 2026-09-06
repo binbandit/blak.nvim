@@ -44,7 +44,9 @@ end
 
 function M.setup(config)
   if config.package.backend ~= "lazy" then
-    error("Blak currently supports package.backend = 'lazy'. The vim.pack adapter is intentionally reserved for a later release.")
+    error(
+      "Blak currently supports package.backend = 'lazy'. The vim.pack adapter is intentionally reserved for a later release."
+    )
   end
 
   bootstrap_lazy()
@@ -71,17 +73,10 @@ function M.setup(config)
     },
     performance = {
       rtp = {
-        -- Only dead weight and plugins Blak replaces (netrw -> Oil) are
-        -- disabled. matchparen and matchit stay enabled: stock Neovim
-        -- highlights matching pairs and extends %, and nothing in core
-        -- replaces them.
+        -- Disable only the directory handler replaced by Blak's explorer.
+        -- Keep native archive/compression support and Tutor.
         disabled_plugins = {
-          "gzip",
           "netrwPlugin",
-          "tarPlugin",
-          "tohtml",
-          "tutor",
-          "zipPlugin",
         },
       },
     },
@@ -94,6 +89,16 @@ function M.setup(config)
   })
 end
 
+-- Use the same merged options as initial plugin setup, including user specs.
+function M.plugin_opts(name, fallback)
+  local lazy_config = package.loaded["lazy.core.config"]
+  local plugin = lazy_config and lazy_config.plugins[name]
+  if plugin then
+    return require("lazy.core.plugin").values(plugin, "opts", false)
+  end
+  return fallback
+end
+
 function M.refresh(config)
   if not package.loaded["lazy.core.config"] then
     return
@@ -103,6 +108,10 @@ function M.refresh(config)
     local lazy_config = require("lazy.core.config")
     lazy_config.options.spec = require("blak.plugins").specs(config)
     require("lazy.core.plugin").load()
+    -- Lazy preserves loaded-plugin state, including values from the old specs.
+    for _, plugin in pairs(lazy_config.plugins) do
+      plugin._.cache = nil
+    end
     require("lazy.core.handler").setup()
     vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
     vim.api.nvim_exec_autocmds("User", { pattern = "LazyReload", modeline = false })

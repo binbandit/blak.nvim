@@ -53,7 +53,7 @@ install_repo() {
 }
 
 case "$APPNAME" in
-  "" | */* | . | ..)
+  "" | [!a-zA-Z0-9]* | *[!a-zA-Z0-9_-]*)
     echo "Invalid BLAK_APPNAME: $APPNAME" >&2
     exit 1
     ;;
@@ -77,7 +77,7 @@ nvim_check_output=$(nvim --headless --clean +'lua if vim.fn.has("nvim-0.12") == 
   exit 1
 }
 
-if [ -e "$TARGET" ]; then
+if [ -e "$TARGET" ] || [ -L "$TARGET" ]; then
   echo "$TARGET already exists" >&2
   echo "Move it aside or set BLAK_APPNAME to install an isolated copy." >&2
   exit 1
@@ -87,7 +87,7 @@ install_repo
 
 launcher_status=""
 if mkdir -p "$BIN_DIR" 2>/dev/null; then
-  if [ -e "$LAUNCHER" ]; then
+  if [ -e "$LAUNCHER" ] || [ -L "$LAUNCHER" ]; then
     launcher_status="$LAUNCHER already exists; leaving it unchanged. Start manually with: NVIM_APPNAME=$APPNAME nvim"
   else
     cat > "$LAUNCHER" <<LAUNCHER

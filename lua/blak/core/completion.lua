@@ -11,7 +11,8 @@ end
 
 local function desired_mappings(config)
   local spec = require("blak.plugins.completion")(config)[1]
-  local keymap_config = vim.deepcopy(vim.tbl_get(spec, "opts", "keymap") or {})
+  local opts = require("blak.lazy").plugin_opts("blink.cmp", spec.opts)
+  local keymap_config = vim.deepcopy(opts.keymap or {})
   return require("blink.cmp.keymap").get_mappings(keymap_config, "default")
 end
 

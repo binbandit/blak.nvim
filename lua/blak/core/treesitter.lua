@@ -13,7 +13,9 @@ function M.install(config, opts)
 
   if vim.fn.executable("tree-sitter") ~= 1 then
     if opts.notify then
-      require("blak.util").warn("tree-sitter CLI is not available yet. Run :BlakToolsInstall, then :BlakTreesitterInstall.")
+      require("blak.util").warn(
+        "tree-sitter CLI is not available yet. Run :BlakToolsInstall, then :BlakTreesitterInstall."
+      )
     end
     return
   end
@@ -21,7 +23,9 @@ function M.install(config, opts)
   local ts = require("blak.util").load_plugin("nvim-treesitter", "nvim-treesitter")
   if not ts then
     if opts.notify then
-      require("blak.util").warn("nvim-treesitter is not installed yet. Run :Lazy sync, restart, then retry.")
+      require("blak.util").warn(
+        "nvim-treesitter is not installed yet. Run :Lazy sync, restart, then retry."
+      )
     end
     return
   end
@@ -46,7 +50,10 @@ function M.install(config, opts)
         end
       end
       if opts.notify and #skipped > 0 then
-        require("blak.util").warn("Skipping Treesitter parsers nvim-treesitter no longer ships: " .. table.concat(skipped, ", "))
+        require("blak.util").warn(
+          "Skipping Treesitter parsers nvim-treesitter no longer ships: "
+            .. table.concat(skipped, ", ")
+        )
       end
       list = wanted
     end
@@ -78,13 +85,17 @@ function M.setup(config)
   vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("BlakTreesitter", { clear = true }),
     callback = function(event)
-      if vim.api.nvim_buf_line_count(event.buf) > config.performance.max_treesitter_lines then
+      local current = require("blak.config").get()
+      if
+        vim.bo[event.buf].buftype ~= ""
+        or vim.bo[event.buf].filetype == "bigfile"
+        or vim.api.nvim_buf_line_count(event.buf) > current.performance.max_treesitter_lines
+      then
         return
       end
-      pcall(vim.treesitter.start, event.buf)
-      pcall(function()
+      if pcall(vim.treesitter.start, event.buf) then
         vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-      end)
+      end
     end,
   })
 end

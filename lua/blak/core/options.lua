@@ -39,6 +39,8 @@ function M.setup(config)
 
   if config.editor.clipboard then
     vim.opt.clipboard = "unnamedplus"
+  else
+    vim.opt.clipboard:remove({ "unnamed", "unnamedplus" })
   end
 
   set_if_exists("winborder", config.ui.winborder)

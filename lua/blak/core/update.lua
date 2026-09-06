@@ -101,12 +101,20 @@ local function latest_rollback_point()
 
   for _, path in ipairs(vim.fn.glob(util.join(snapshot_dir(), "rollback-*"), false, true)) do
     local stamp, suffix = snapshot_order(path)
-    table.insert(candidates, { kind = "snapshot", path = path, stamp = stamp, suffix = suffix, priority = 2 })
+    table.insert(
+      candidates,
+      { kind = "snapshot", path = path, stamp = stamp, suffix = suffix, priority = 2 }
+    )
   end
 
-  for _, path in ipairs(vim.fn.glob(util.join(legacy_backup_dir(), "lazy-lock-*.json"), false, true)) do
+  for _, path in
+    ipairs(vim.fn.glob(util.join(legacy_backup_dir(), "lazy-lock-*.json"), false, true))
+  do
     local stamp, suffix = legacy_backup_order(path)
-    table.insert(candidates, { kind = "legacy", path = path, stamp = stamp, suffix = suffix, priority = 1 })
+    table.insert(
+      candidates,
+      { kind = "legacy", path = path, stamp = stamp, suffix = suffix, priority = 1 }
+    )
   end
 
   table.sort(candidates, function(a, b)
@@ -124,10 +132,30 @@ end
 local function tracked_files()
   return {
     { key = "lockfile", label = "lazy-lock.json", path = lockfile(), filename = "lazy-lock.json" },
-    { key = "user_config", label = "lua/blak/user.lua", path = user_config(), filename = "user.lua" },
-    { key = "extras_state", label = "extras state", path = extras_state(), filename = "extras.json" },
-    { key = "migrations_state", label = "migration state", path = migrations_state(), filename = "migrations.json" },
-    { key = "update_state", label = "update state", path = update_state(), filename = "update.json" },
+    {
+      key = "user_config",
+      label = "lua/blak/user.lua",
+      path = user_config(),
+      filename = "user.lua",
+    },
+    {
+      key = "extras_state",
+      label = "extras state",
+      path = extras_state(),
+      filename = "extras.json",
+    },
+    {
+      key = "migrations_state",
+      label = "migration state",
+      path = migrations_state(),
+      filename = "migrations.json",
+    },
+    {
+      key = "update_state",
+      label = "update state",
+      path = update_state(),
+      filename = "update.json",
+    },
   }
 end
 
@@ -150,7 +178,8 @@ end
 local function snapshot(kind)
   local util = require("blak.util")
   local path = next_snapshot_path()
-  util.mkdir(path)
+  local pending = path:gsub("rollback%-([^/]+)$", ".pending-%1")
+  util.mkdir(pending)
 
   local config = require("blak.config").get()
   local manifest = {
@@ -161,72 +190,92 @@ local function snapshot(kind)
     files = {},
   }
 
-  for _, file in ipairs(tracked_files()) do
-    local exists = util.file_exists(file.path)
-    local entry = {
-      key = file.key,
-      label = file.label,
-      path = file.path,
-      filename = file.filename,
-      exists = exists,
-    }
-    if exists then
-      entry.exists = util.copy_file(file.path, util.join(path, file.filename))
-      if not entry.exists then
-        util.warn("Could not snapshot " .. file.label)
+  local ok, err = pcall(function()
+    for _, file in ipairs(tracked_files()) do
+      local entry = vim.tbl_extend("force", {}, file, { exists = util.file_exists(file.path) })
+      if entry.exists then
+        assert(
+          util.copy_file(file.path, util.join(pending, file.filename)),
+          "Could not snapshot " .. file.label
+        )
       end
+      table.insert(manifest.files, entry)
     end
-    table.insert(manifest.files, entry)
+    write_manifest(util.join(pending, "manifest.json"), manifest)
+    assert((vim.uv or vim.loop).fs_rename(pending, path))
+  end)
+  if not ok then
+    vim.fn.delete(pending, "rf")
+    error("Update aborted: rollback snapshot failed: " .. tostring(err))
   end
 
-  write_manifest(util.join(path, "manifest.json"), manifest)
-
+  -- Retain compatibility backups, but never invalidate a complete snapshot
+  -- because its redundant lockfile-only copy could not be written.
   if util.file_exists(lockfile()) then
-    util.mkdir(legacy_backup_dir())
-    util.copy_file(lockfile(), next_legacy_backup_path())
+    local copied, result = pcall(util.copy_file, lockfile(), next_legacy_backup_path())
+    if not copied or not result then
+      util.warn("Could not write the legacy lockfile backup; the full snapshot is available.")
+    end
   end
 
   return path
 end
 
-local function restore_file(snapshot_path, entry)
-  local util = require("blak.util")
-  if entry.exists then
-    local source = util.join(snapshot_path, entry.filename)
-    if not util.copy_file(source, entry.path) then
-      util.warn("Could not restore " .. (entry.label or entry.key or entry.path))
-      return false
-    end
-    return true
-  end
-
-  vim.fn.delete(entry.path)
-  return true
-end
-
 local function restore_snapshot(path)
   local util = require("blak.util")
   local manifest = read_manifest(util.join(path, "manifest.json"))
-  if not manifest then
-    if util.copy_file(util.join(path, "lazy-lock.json"), lockfile()) then
-      return true
+  local expected = {}
+  for _, file in ipairs(tracked_files()) do
+    expected[file.key] = file
+  end
+
+  -- Read and validate the entire snapshot before changing any live file.
+  local contents = {}
+  local ok, err = pcall(function()
+    assert(
+      manifest and manifest.version == 1 and type(manifest.files) == "table",
+      "invalid manifest"
+    )
+    assert(
+      vim.islist(manifest.files) and #manifest.files == #tracked_files(),
+      "incomplete manifest"
+    )
+    for _, entry in ipairs(manifest.files) do
+      assert(type(entry) == "table", "invalid file entry")
+      local file = expected[entry.key]
+      assert(
+        file and entry.filename == file.filename and entry.path == file.path,
+        "unexpected snapshot file"
+      )
+      assert(type(entry.exists) == "boolean", "invalid file status")
+      expected[entry.key] = nil
+      if entry.exists then
+        contents[entry.key] = assert(
+          util.read_file(util.join(path, entry.filename)),
+          "missing snapshot file: " .. entry.filename
+        )
+      end
     end
-    util.warn("Rollback snapshot is missing a manifest: " .. vim.fn.fnamemodify(path, ":t"))
+  end)
+  if not ok then
+    util.warn("Rollback aborted: " .. tostring(err))
     return false
   end
 
-  local restored = false
-  local ok = true
-  for _, entry in ipairs(manifest.files or {}) do
-    local entry_ok = restore_file(path, entry)
-    ok = entry_ok and ok
-    restored = entry_ok or restored
+  for _, entry in ipairs(manifest.files) do
+    if entry.exists then
+      util.write_file(entry.path, contents[entry.key])
+    elseif util.file_exists(entry.path) and vim.fn.delete(entry.path) ~= 0 then
+      util.warn("Could not remove " .. entry.label .. " while restoring rollback")
+      return false
+    end
   end
-  return ok and restored
+  return true
 end
 
 local function reload_config()
-  local reload = package.loaded["blak.core.reload"] or require("blak.util").try_require("blak.core.reload")
+  local reload = package.loaded["blak.core.reload"]
+    or require("blak.util").try_require("blak.core.reload")
   if reload and reload.reload then
     pcall(reload.reload, { notify = false })
   end
@@ -399,7 +448,10 @@ function M.rollback()
       return
     end
   else
-    util.copy_file(latest.path, lockfile())
+    if not util.copy_file(latest.path, lockfile()) then
+      util.warn("Could not read the legacy rollback lockfile.")
+      return false
+    end
   end
 
   reload_config()

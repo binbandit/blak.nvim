@@ -4,6 +4,7 @@ local registered = {}
 local registered_lookup = {}
 local disabled_keymaps = {}
 local owned_keymaps = {}
+local user_keymaps = {}
 local terminal_lhs
 
 -- Built-in commands do not appear in maparg(), so optional keys need a small
@@ -85,14 +86,21 @@ local function keymap_del_opts(opts)
   end
 end
 
-local function ownable_keymap_opts(opts)
-  -- Buffer-local maps are owned by their buffer event, such as LspAttach.
-  return not (type(opts) == "table" and opts.buffer ~= nil)
+local function find_keymap(mode, lhs, buffer)
+  if buffer and not vim.api.nvim_buf_is_valid(buffer) then
+    return nil
+  end
+  local maps = buffer and vim.api.nvim_buf_get_keymap(buffer, mode) or vim.api.nvim_get_keymap(mode)
+  for _, candidate in ipairs(maps) do
+    if (candidate.lhsraw or candidate.lhs) == lhs then
+      return candidate
+    end
+  end
 end
 
 local function keymap_matches_owner(owner)
-  local keymap = vim.fn.maparg(owner.lhs, owner.mode, false, true)
-  if type(keymap) ~= "table" or next(keymap) == nil then
+  local keymap = find_keymap(owner.mode, owner.lhs, owner.buffer)
+  if not keymap then
     return false
   end
   if (keymap.desc or "") ~= owner.desc then
@@ -102,22 +110,33 @@ local function keymap_matches_owner(owner)
     return keymap.callback == owner.callback
   end
   if owner.rhs ~= nil and owner.rhs ~= "" then
-    return keymap.rhs == owner.rhs
+    return vim.api.nvim_replace_termcodes(keymap.rhs or "", true, true, true)
+      == vim.api.nvim_replace_termcodes(owner.rhs, true, true, true)
   end
   return true
 end
 
 local function remember_keymap(mode, lhs, opts)
-  if not ownable_keymap_opts(opts) then
-    return
+  local buffer = opts and opts.buffer
+  if buffer == true or buffer == 0 then
+    buffer = vim.api.nvim_get_current_buf()
   end
 
+  local expanded = lhs
+    :gsub("<[Ll][Ee][Aa][Dd][Ee][Rr]>", function()
+      return vim.g.mapleader or "\\"
+    end)
+    :gsub("<[Ll][Oo][Cc][Aa][Ll][Ll][Ee][Aa][Dd][Ee][Rr]>", function()
+      return vim.g.maplocalleader or "\\"
+    end)
+  expanded = vim.api.nvim_replace_termcodes(expanded, true, true, true)
   for _, item in ipairs(mode_list(mode)) do
-    local keymap = vim.fn.maparg(lhs, item, false, true)
-    if type(keymap) == "table" and next(keymap) ~= nil then
-      owned_keymaps[registry_key(item, lhs)] = {
+    local keymap = find_keymap(item, expanded, buffer)
+    if keymap then
+      owned_keymaps[registry_key(item, lhs) .. "|" .. tostring(buffer)] = {
+        buffer = buffer,
         mode = item,
-        lhs = lhs,
+        lhs = keymap.lhsraw or keymap.lhs,
         desc = keymap.desc or "",
         rhs = keymap.rhs,
         callback = keymap.callback,
@@ -127,19 +146,25 @@ local function remember_keymap(mode, lhs, opts)
 end
 
 local function forget_keymap(mode, lhs, opts)
-  if not ownable_keymap_opts(opts) then
-    return
+  local buffer = opts and opts.buffer
+  if buffer == true or buffer == 0 then
+    buffer = vim.api.nvim_get_current_buf()
   end
 
   for _, item in ipairs(mode_list(mode)) do
-    owned_keymaps[registry_key(item, lhs)] = nil
+    owned_keymaps[registry_key(item, lhs) .. "|" .. tostring(buffer)] = nil
   end
 end
 
 local function clear_owned_keymaps()
   for key, owner in pairs(owned_keymaps) do
     if keymap_matches_owner(owner) then
-      pcall(vim.keymap.del, owner.mode, owner.lhs)
+      pcall(
+        vim.keymap.del,
+        owner.mode,
+        owner.lhs,
+        owner.buffer and { buffer = owner.buffer } or nil
+      )
     end
     owned_keymaps[key] = nil
   end
@@ -159,6 +184,14 @@ local function map(mode, lhs, rhs, desc, opts, force)
     return
   end
 
+  if not force then
+    modes = vim.tbl_filter(function(item)
+      return not user_keymaps[registry_key(item, lhs)]
+    end, modes)
+    if #modes == 0 then
+      return
+    end
+  end
   opts = vim.tbl_extend("force", { silent = true }, opts or {}, { desc = desc })
   vim.keymap.set(#modes == 1 and modes[1] or modes, lhs, rhs, opts)
   register(modes, lhs, desc)
@@ -206,8 +239,14 @@ end
 
 local function configure_disabled_keymaps(config)
   disabled_keymaps = {}
+  user_keymaps = {}
   for _, item in ipairs(config.keymaps or {}) do
     local lhs = type(item) == "table" and keymap_lhs(item) or nil
+    if type(lhs) == "string" then
+      for _, mode in ipairs(mode_list(keymap_mode(item))) do
+        user_keymaps[registry_key(mode, lhs)] = true
+      end
+    end
     if type(lhs) == "string" and keymap_rhs(item) == false then
       for _, mode in ipairs(mode_list(keymap_mode(item))) do
         disabled_keymaps[registry_key(mode, lhs)] = true
@@ -363,9 +402,15 @@ function M.setup(config)
   map("n", "<leader>gd", git_action("diffthis"), "Diff this")
 
   map("n", "<leader>xx", picker("diagnostics"), "Diagnostics")
-  map("n", "<leader>xd", function() vim.diagnostic.open_float() end, "Line diagnostic")
-  map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, "Next diagnostic")
-  map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, "Previous diagnostic")
+  map("n", "<leader>xd", function()
+    vim.diagnostic.open_float()
+  end, "Line diagnostic")
+  map("n", "]d", function()
+    vim.diagnostic.jump({ count = 1, float = true })
+  end, "Next diagnostic")
+  map("n", "[d", function()
+    vim.diagnostic.jump({ count = -1, float = true })
+  end, "Previous diagnostic")
 
   map("n", "<leader>ll", "<cmd>Lazy<cr>", "Lazy")
   map("n", "<leader>lo", "<cmd>Blak<cr>", "Blak overview")
@@ -387,27 +432,35 @@ function M.setup(config)
 
   map("n", "<leader>qq", "<cmd>qa<cr>", "Quit all")
 
+  local function lsp_keys(buf)
+    local opts = { buffer = buf }
+    map("n", "gd", vim.lsp.buf.definition, "Go to definition", opts)
+    map("n", "gD", vim.lsp.buf.declaration, "Go to declaration", opts)
+    map("n", "gI", vim.lsp.buf.implementation, "Go to implementation", opts)
+    map("n", "gr", vim.lsp.buf.references, "References", opts)
+    map("n", "K", vim.lsp.buf.hover, "Hover", opts)
+    map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action", opts)
+    map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", opts)
+    map("n", "<leader>cs", picker("lsp_symbols"), "Document symbols", opts)
+    map("n", "<leader>cS", picker("workspace_symbols"), "Workspace symbols", opts)
+    map("n", "<leader>cf", function()
+      local conform = require("blak.util").load_plugin("conform.nvim", "conform")
+      if conform then
+        conform.format({ bufnr = buf, lsp_format = config.format.lsp_format })
+      end
+    end, "Format", opts)
+  end
   vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("BlakLspKeys", { clear = true }),
     callback = function(event)
-      local opts = { buffer = event.buf }
-      map("n", "gd", vim.lsp.buf.definition, "Go to definition", opts)
-      map("n", "gD", vim.lsp.buf.declaration, "Go to declaration", opts)
-      map("n", "gI", vim.lsp.buf.implementation, "Go to implementation", opts)
-      map("n", "gr", vim.lsp.buf.references, "References", opts)
-      map("n", "K", vim.lsp.buf.hover, "Hover", opts)
-      map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action", opts)
-      map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", opts)
-      map("n", "<leader>cs", picker("lsp_symbols"), "Document symbols", opts)
-      map("n", "<leader>cS", picker("workspace_symbols"), "Workspace symbols", opts)
-      map("n", "<leader>cf", function()
-        local conform = require("blak.util").load_plugin("conform.nvim", "conform")
-        if conform then
-          conform.format({ bufnr = event.buf, lsp_format = config.format.lsp_format })
-        end
-      end, "Format", opts)
+      lsp_keys(event.buf)
     end,
   })
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if #vim.lsp.get_clients({ bufnr = buf }) > 0 then
+      lsp_keys(buf)
+    end
+  end
 
   M.apply_extra(config._extra_keymaps or {})
   apply_keymaps(config.keymaps, true)
@@ -418,18 +471,35 @@ function M.apply_extra(keys)
 end
 
 function M.show()
+  local buf = vim.api.nvim_get_current_buf()
   local lines = {
     "# Blak keymaps",
     "",
     "These are the mappings registered by Blak core, enabled extras, and user.lua.",
     "",
   }
-  table.sort(registered, function(a, b)
+  local entries = vim.deepcopy(registered)
+  table.sort(entries, function(a, b)
     return a.lhs < b.lhs
   end)
-  for _, item in ipairs(registered) do
+  for _, item in ipairs(entries) do
     local mode = type(item.mode) == "table" and table.concat(item.mode, ",") or item.mode
     table.insert(lines, string.format("%-5s %-18s %s", mode, item.lhs, item.desc))
+  end
+  table.insert(lines, "")
+  table.insert(lines, "# Current buffer mappings (including plugin-owned shortcuts)")
+  table.insert(lines, "")
+  for _, mode in ipairs({ "n", "x", "s", "o", "i", "c", "t" }) do
+    local mappings = vim.api.nvim_buf_get_keymap(buf, mode)
+    table.sort(mappings, function(a, b)
+      return a.lhs < b.lhs
+    end)
+    for _, item in ipairs(mappings) do
+      table.insert(
+        lines,
+        string.format("%-5s %-18s %s", mode, item.lhs, item.desc or item.rhs or "Callback")
+      )
+    end
   end
   require("blak.util").open_scratch("Blak keymaps", lines)
 end
