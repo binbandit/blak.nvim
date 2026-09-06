@@ -3,16 +3,16 @@ title: LSP
 description: How Blak wires LSP — native vim.lsp.config(), no wrapper.
 ---
 
-Blak is built on Neovim 0.12's native LSP API. Servers are configured with `vim.lsp.config()` and Mason-backed servers are enabled through `mason-lspconfig`'s `vim.lsp.enable()` integration. There is no `lspconfig.setup()` wrapper call anywhere in the codebase.
+Blak is built on Neovim 0.12's native LSP API. Servers are configured through `vim.lsp.config` and Mason-backed servers are enabled through `mason-lspconfig`'s `vim.lsp.enable()` integration. There is no `lspconfig.setup()` wrapper call anywhere in the codebase.
 
 The native plumbing lives in [`lua/blak/plugins/lsp.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/lsp.lua). LSP keymaps are bound on `LspAttach` in [`lua/blak/core/keymaps.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/keymaps.lua).
 
 ## The flow
 
 1. Blak collects servers from `lsp.servers` in the merged config (defaults + `user.lua` + extras).
-2. For each server, it calls `vim.lsp.config(name, settings)` to register the config.
-3. `mason-lspconfig` ensures Mason-backed server binaries are installed.
-4. If `lsp.automatic_enable` is true (default), `mason-lspconfig` calls `vim.lsp.enable(name)` for installed Mason-backed servers.
+2. For each server, it assigns `vim.lsp.config[name] = settings`. This replaces Blak's previous overrides on reload while retaining the server's upstream runtime defaults.
+3. When `mason.automatic_install` is true, `mason-lspconfig` requests the configured Mason-backed server binaries.
+4. If `lsp.automatic_enable` is true (default), `mason-lspconfig` calls `vim.lsp.enable(name)` for configured, installed Mason-backed servers.
 5. When a buffer matches, Neovim auto-attaches the server and fires `LspAttach`.
 6. Blak's `LspAttach` autocmd binds the buffer-local LSP keymaps.
 
@@ -68,6 +68,9 @@ return {
 Or as an extra — see [Writing an extra](/project/writing-extras/).
 
 If a server is installed outside Mason and you still want it enabled automatically, register it in `user.lua` and call `vim.lsp.enable("server_name")` from a `User BlakReady` autocmd.
+
+Reload rebuilds server configuration for future clients. Restart Neovim when
+changing settings for a language server that is already running.
 
 ## Diagnostics
 
@@ -138,5 +141,5 @@ Then call `vim.lsp.enable("server_name")` yourself when you want to start it.
 Blak supports stable and nightly. Nightly changes to `vim.lsp.config()` or `vim.lsp.enable()` can cause loud errors after a Neovim upgrade. The mitigation:
 
 1. Upgrade Neovim.
-2. `:BlakUpdate` to pick up any compatibility fixes.
-3. If something breaks, `:BlakRollback` and report.
+2. Update the Blak Git checkout for distribution fixes and use `:BlakUpdate` for plugin updates. See [Updates](/guide/updates/).
+3. If a plugin update breaks, use `:BlakRollback` and report. This does not roll back Neovim itself or the Blak checkout.

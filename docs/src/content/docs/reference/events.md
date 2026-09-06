@@ -9,7 +9,7 @@ without monkey-patching internals. For ordinary `user.lua` tweaks, prefer
 
 ## `BlakReady`
 
-Fired once at the end of `require("blak").setup()` after every subsystem has loaded:
+Fired once at the end of `require("blak").setup()` after core setup and plugin registration complete (lazy plugins load later):
 
 ```lua
 -- lua/blak/init.lua

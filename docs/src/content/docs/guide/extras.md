@@ -52,7 +52,7 @@ After enabling an extra:
 1. Blak applies its config to the current session.
 2. **Run `:BlakExtras sync` or `:Lazy sync`** if plugins were added.
 3. **Run `:BlakToolsInstall`** to install any new Mason tools required.
-4. **Run `:BlakDoctor`** to confirm everything resolved.
+4. **Run `:BlakDoctor`** to check reported dependencies, then exercise the feature.
 
 After disabling an extra, the state file updates immediately. Restart Blak when you want already-loaded plugins, keymaps, and runtime hooks to disappear from the current session, then run `:BlakExtras sync` if plugin specs were removed.
 
@@ -821,9 +821,9 @@ return {
     { lhs = "<leader>cc", rhs = ":!cargo check<CR>", desc = "cargo check" },
   },
   plugins = { -- optional, lazy.nvim spec list
-    { "owner/plugin.nvim", opts = {} },
+    { "owner/plugin.nvim", cmd = "Example", opts = {} },
   },
-  apply = function(config) -- optional, runs after merge
+  apply = function(config) -- optional, runs before declarative contributions
     config.snacks.dim = { enabled = true }
   end,
 }

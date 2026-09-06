@@ -20,7 +20,7 @@ The longer promise lives in [MANIFESTO.md](MANIFESTO.md):
 
 ## Status
 
-Blak is in **v0.2 public preview**: complete enough to use as a daily driver, with safer updates, documented reversible extras, and room for feedback before a stable 1.0 contract.
+Blak is in **v0.3 public preview**: complete enough to use as a daily driver, with safer updates, documented reversible extras, and room for feedback before a stable 1.0 contract.
 
 ## Requirements
 
@@ -29,6 +29,7 @@ Blak is in **v0.2 public preview**: complete enough to use as a daily driver, wi
 - `rg` for search
 - `fd` for faster file discovery
 - `tree-sitter` CLI for nvim-treesitter parser installation; Blak can install `tree-sitter-cli` through Mason on first launch, then `:BlakTreesitterInstall` can install parsers.
+- A C compiler for Treesitter parser builds
 - A Nerd Font is recommended, not required
 
 ## Install
@@ -58,6 +59,7 @@ Blak's defaults are intentionally small. They cover the editing floor and leave 
 - LSP: native `vim.lsp.config()` with `mason-lspconfig` handling Mason-backed `vim.lsp.enable()`
 - Tools: Mason, Conform, nvim-lint, nvim-treesitter
 - Editing: Oil file explorer, native terminal split, Gitsigns, which-key, `mini.icons`, `nvim-autopairs`, `nvim-ts-autotag`
+- Native helpers: compressed files, tar/zip browsing, and `:Tutor` remain available
 - Theme: TokyoNight Night (`tokyonight-night`)
 
 Only the startup owners load eagerly: the colorscheme, the dashboard-capable Snacks setup, and Oil for directory buffers. Pickers, Treesitter, LSP, Mason, formatting, linting, completion, git signs, and keymap help wake on file, command, insert, write, or explicit provider use. Config merging avoids full runtime-path scans; Lua's runtime library is attached when LSP setup runs.
@@ -67,7 +69,7 @@ Only the startup owners load eagerly: the colorscheme, the dashboard-capable Sna
 ```vim
 :Blak              overview
 :BlakDoctor        health checks
-:BlakKeys          keymaps registered by Blak
+:BlakKeys          Blak keymaps and current-buffer shortcuts
 :BlakNews          release notes
 :BlakDocs          open https://getblak.dev/start/why/
 :BlakConfig        open or create lua/blak/user.lua
@@ -230,7 +232,7 @@ end
 ```
 
 When Blak is already running, saving `lua/blak/user.lua` reloads the merged
-config and refreshes the current session. Plugin installs/removals still go
+config and refreshes the current session. Some loaded plugin settings need a restart. Plugin installs/removals still go
 through `:BlakExtras sync` or `:Lazy sync`; restarting remains the clean way to
 unload plugins, keymaps, or runtime hooks that already ran.
 
@@ -240,6 +242,8 @@ Blak should feel like a polished editor immediately, but never like a mystery bo
 
 Stable updates must not silently swap major workflow components. `:BlakUpdate` snapshots the lockfile and config state, then refuses channel changes and pending breaking migrations. `:BlakUpgrade` snapshots first, applies migrations, accepts the current channel, and is the explicit path for bigger moves.
 
+These commands update plugins, not the Blak Git checkout. Update the checkout explicitly after reviewing `NEWS.md` (`git -C ~/.config/blak pull --ff-only`), then restart and run `:BlakUpgrade`. Snapshots exclude the distribution revision, Mason tools, and installed parsers. The stable channel pins Blink to `1.*`; other plugins follow their configured branches.
+
 ## Before posting
 
 ```sh
@@ -248,13 +252,13 @@ make smoke
 make smoke-install
 ```
 
-`make validate` is static and works without Neovim. `make smoke` runs Neovim headless against the checkout, and `make smoke-install` runs the public installer into temporary XDG directories and boots that sparse install. GitHub Actions runs all three on every push and pull request.
+`make validate` is static and works without Neovim. `make smoke` runs Neovim headless against the checkout, and `make smoke-install` runs the public installer into temporary XDG directories and boots that sparse install. GitHub Actions runs all three on pushes to main and pull requests.
 
 ## Documentation
 
 The full documentation site lives at [getblak.dev](https://getblak.dev/) and is built from `docs/` with [Astro Starlight](https://starlight.astro.build/).
 
-To run it locally:
+To run it locally (Node.js 22.12+ required; CI uses Node.js 24):
 
 ```sh
 cd docs
@@ -270,4 +274,4 @@ make docs-dev
 make docs-build
 ```
 
-The site auto-deploys to [getblak.dev](https://getblak.dev/) via GitHub Pages on every push to `main` via `.github/workflows/docs.yml`.
+The site auto-deploys to [getblak.dev](https://getblak.dev/) via GitHub Pages after successful builds for relevant changes on `main`, using `.github/workflows/docs.yml`.

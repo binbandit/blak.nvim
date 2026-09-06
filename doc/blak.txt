@@ -14,7 +14,8 @@ COMMANDS                                                 *blak-commands*
     Run |:checkhealth| for Blak.
 
 :BlakKeys
-    Show keymaps registered by Blak core, enabled extras, and user.lua.
+    Show keymaps registered by Blak core, enabled extras, and user.lua, plus
+    shortcuts in the current buffer.
 
 :BlakNews
     Open the Blak release notes.
@@ -136,4 +137,30 @@ or removing plugin-backed extras; restart to unload runtime hooks that already
 ran.
 
 ==============================================================================
+
+UPDATE SCOPE
+
+:BlakUpdate and :BlakUpgrade update plugins, not the Blak Git checkout. Review
+NEWS.md and local changes before running git pull --ff-only in the config
+checkout. Restart and run :BlakUpgrade for pending migrations. Snapshots do not
+include the distribution revision, Mason tools, or Treesitter parsers. Lazy
+restore may need network access for missing commits or build artifacts.
+
+Only language servers in lsp.servers are automatically enabled. Disabling an
+extra and restarting stops its LSP wiring, but installed Mason tools remain.
+mason.automatic_install=false disables automatic tool and server installs;
+:BlakToolsInstall explicitly requests both.
+
+:BlakKeys lists Blak-registered mappings plus mappings in the current buffer,
+including plugin-owned shortcuts. Inspect other global plugin mappings with
+:BlakPick keymaps, :map, and plugin help.
+
+Native gzip, tar, zip, and Tutor plugins remain enabled. Only the netrw directory
+handler is disabled for Blak's explorer. To disable individual native helpers,
+set the corresponding loaded_* flags in hooks.before (see their Neovim help).
+
+Reload preserves Conform and Blink options from plugins.specs. Removed formatter
+filetypes and LSP settings no longer linger in the rebuilt configuration;
+restart Neovim to apply LSP settings to clients that are already running.
+
 vim:tw=78:ts=8:ft=help:norl:

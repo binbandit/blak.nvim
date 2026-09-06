@@ -96,4 +96,7 @@ editor.telescope
 editor.fzf-lua
 
 ==============================================================================
+Language extras preserve explicit LSP settings and Snacks options in user.lua.
+Installed Mason tools and parsers remain after disabling; uninstall them separately.
+
 vim:tw=78:ts=8:ft=help:norl:

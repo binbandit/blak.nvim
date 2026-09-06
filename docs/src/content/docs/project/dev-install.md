@@ -5,7 +5,7 @@ description: Install your checkout as a real Neovim distribution for end-to-end 
 
 `./dev-install.sh` symlinks the working tree into `$XDG_CONFIG_HOME/<appname>` and drops a launcher in `$HOME/.local/bin`. **Edits in the checkout are live on the next launch** — no reinstall required.
 
-It's the only way to drive Blak end-to-end before pushing.
+Use it for interactive testing alongside the isolated automated smoke tests.
 
 Source: [`dev-install.sh`](https://github.com/binbandit/blak.nvim/blob/main/dev-install.sh).
 
@@ -23,8 +23,8 @@ That's it. Open a buffer, `:BlakDoctor`, exercise the change.
 | Flag | Default | What |
 | --- | --- | --- |
 | `--appname NAME` | `blak-dev` | Use a custom `NVIM_APPNAME` (and matching launcher name). |
-| `--force`, `-f` | off | Replace an existing symlink / launcher of the same name. |
-| `--uninstall`, `-u` | — | Remove the symlink and launcher. Leaves runtime data dirs alone. |
+| `--force`, `-f` | off | Repoint an existing config symlink. Unrelated launchers are preserved. |
+| `--uninstall`, `-u` | — | Remove the symlink to this checkout and a script-managed launcher. Leaves runtime data dirs alone. |
 | `--status`, `-s` | — | Print current install state without changing anything. |
 | `--help`, `-h` | — | Show usage. |
 
@@ -46,12 +46,14 @@ $BLAK_BIN_DIR/<appname>               launcher script (NVIM_APPNAME=<appname> ex
 That's it on the install side. Runtime state lands under the per-appname XDG dirs as Neovim runs:
 
 ```
-$XDG_DATA_HOME/<appname>/             plugins (lazy.nvim install root)
-$XDG_STATE_HOME/<appname>/            extras.json + rollback snapshots
+$XDG_DATA_HOME/<appname>/lazy/        installed plugins
+$XDG_STATE_HOME/<appname>/blak/       extras.json + rollback snapshots
 $XDG_CACHE_HOME/<appname>/            caches
 ```
 
-So `blak` and `blak-dev` are fully isolated — flipping back and forth doesn't poison either.
+Different app names keep plugin installations and runtime state separate.
+App names linked to the same checkout still share source files, `user.lua`,
+and the plugin lockfile. Use separate checkouts for independent configuration.
 
 ## Why a symlink
 
@@ -66,7 +68,8 @@ Want to test two branches at once? Use different appnames:
 ```sh
 cd ~/Developer/blak.nvim
 ./dev-install.sh --appname blak-main
-git checkout feature/zig
+git worktree add ../blak-zig -b feature/zig
+cd ../blak-zig
 ./dev-install.sh --appname blak-zig
 blak-main      # main branch
 blak-zig       # feature branch

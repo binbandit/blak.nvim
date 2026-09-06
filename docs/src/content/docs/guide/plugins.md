@@ -106,3 +106,28 @@ Every plugin here meets one rule from the [philosophy](/guide/philosophy/):
 > A feature belongs in core only if most users benefit from it.
 
 A picker, completion, LSP, formatting, linting, treesitter, delimiter/tag pairing, git status, an icon provider, a discoverable keymap menu, and broad highlight coverage for the default theme — that's the floor for "a Neovim editing experience that doesn't feel raw." Everything else lives in an extra.
+
+## Native helpers
+
+Blak keeps Neovim's bundled gzip support, tar/zip browsing, and `:Tutor` enabled.
+Only the netrw directory handler is disabled because the configured explorer
+replaces it. The corresponding command-line tools must be installed for archive
+and compression operations.
+
+To disable individual helpers, set their guards before startup in `user.lua`:
+
+```lua
+return {
+  hooks = {
+    before = function()
+      vim.g.loaded_gzip = 1
+      vim.g.loaded_tarPlugin = 1
+      vim.g.loaded_zipPlugin = 1
+      vim.g.loaded_tutor_mode_plugin = 1
+    end,
+  },
+}
+```
+
+Keep only the lines for helpers you want disabled, then restart. Remove the
+lines and restart to restore native behavior.

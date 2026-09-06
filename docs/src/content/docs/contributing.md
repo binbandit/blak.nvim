@@ -44,19 +44,20 @@ Edits in the checkout are live on next launch. Plugin state and rollback snapsho
 ## Validate before you push
 
 ```sh
-make validate            # static checks, no Neovim required (< 100 ms)
-make smoke               # headless Neovim + Lazy sync + checkhealth
+make validate            # static checks, no Neovim required
+make smoke               # isolated Neovim tests against committed plugin pins
 ```
 
-Both run in CI on every push and pull request. Details in [Validation & CI](/project/validation/).
+Both run in CI on pushes to main and pull requests. Details in [Validation & CI](/project/validation/).
 
-Run `stylua --check .` locally once Stylua is installed — CI will gate on it soon.
+Use StyLua to check the Lua files you change. CI currently runs the structural
+validator and smoke suites.
 
 ## Code style
 
 - StyLua for formatting (`stylua .`).
 - Two-space indent.
-- No top-level side effects in `require()` graphs — every module is `local M = {}` returning a table.
+- Keep modules cheap to load. Use `local M = {}` for stateful helpers and returned tables for plugin specs and extras.
 - Errors use `error()` with a descriptive message. User-facing notifications go through `require("blak.util").notify`.
 - Comments only when the *why* isn't obvious from the code.
 
@@ -70,7 +71,7 @@ make docs-dev            # http://localhost:4321/
 make docs-build          # produces docs/dist/ for GitHub Pages
 ```
 
-Auto-deploys to [getblak.dev](https://getblak.dev/) on every push to `main` via [`.github/workflows/docs.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/docs.yml).
+Auto-deploys to [getblak.dev](https://getblak.dev/) after successful builds for relevant changes on `main` via [`.github/workflows/docs.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/docs.yml).
 
 When you add a feature, update the relevant page so the site stays the source of truth. New file? Add it to the sidebar in `docs/astro.config.mjs`.
 

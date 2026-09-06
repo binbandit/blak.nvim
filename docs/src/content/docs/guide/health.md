@@ -91,7 +91,7 @@ Mason tools
 
 | Symptom | Fix |
 | --- | --- |
-| `Neovim X.Y is too old` | Upgrade to 0.12+. The native LSP API doesn't exist before. |
+| `Neovim X.Y is too old` | Upgrade to 0.12+. Blak and its current plugins target that version. |
 | `termguicolors disabled` | Set `vim.opt.termguicolors = true` in your terminal config, or check your `$TERM` value. |
 | `git not found` | Install git. Lazy.nvim needs it to clone plugins. |
 | `rg not found` | Install ripgrep. Without it pickers fall back to slow built-in walks. |

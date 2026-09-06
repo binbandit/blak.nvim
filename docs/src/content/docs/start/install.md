@@ -54,6 +54,9 @@ curl -fsSL https://getblak.dev/install.sh | \
 curl -fsSL https://getblak.dev/install.sh | BLAK_REF=feature-branch sh
 ```
 
+App names must start with a letter or digit and contain only letters, digits,
+underscores, or hyphens.
+
 When `BLAK_APPNAME` is set, the config directory and launcher both use that name. For example, `BLAK_APPNAME=blak-dev` creates `~/.config/blak-dev/` and `~/.local/bin/blak-dev`.
 
 ## From a clone (developers)

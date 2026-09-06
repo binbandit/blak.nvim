@@ -204,3 +204,7 @@ Fork when you want to change Blak's public contract for everyone: a different
 default picker, completion engine, explorer strategy, splash, or upgrade path.
 Use `user.lua`, `plugins.specs`, hooks, or an extra when you want to change your
 own setup.
+
+Language extras fill in missing LSP settings and Snacks options; explicit values
+in `user.lua` take precedence. Provider-switching extras intentionally select
+their provider. Avoid enabling two competing provider extras together.

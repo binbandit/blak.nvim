@@ -69,7 +69,7 @@ return {
 
 > Like other lists, this replaces the default wholesale. Include the defaults you still want.
 
-Or via an extra — preferred, because the install is rolled back when you disable.
+Or via an extra, so its configuration is removed when you disable it and restart. Installed tools remain in Mason until you explicitly uninstall them.
 
 ## Mason UI
 
@@ -88,4 +88,4 @@ $XDG_DATA_HOME/<appname>/mason/        " for Blak, usually ~/.local/share/blak/m
   └── bin/                             " shims added to runtime $PATH
 ```
 
-`mason-lspconfig` bridges between Mason package names (`lua-language-server`) and lspconfig server names (`lua_ls`). The `ensure_installed` list it sends to Mason is derived from `lsp.servers` keys.
+`mason-lspconfig` bridges between Mason package names (`lua-language-server`) and lspconfig server names (`lua_ls`). The `ensure_installed` list it sends to Mason is derived from `lsp.servers` keys. Only configured servers are automatically enabled. `mason.automatic_install = false` disables automatic installation of both tools and language servers; `:BlakToolsInstall` explicitly requests both.

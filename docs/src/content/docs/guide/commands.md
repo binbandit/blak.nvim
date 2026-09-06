@@ -100,7 +100,7 @@ For intentional bigger moves — channel changes, major-version bumps, and workf
 2. Restores `lazy-lock.json`, `lua/blak/user.lua`, extras state, migration state, and update state.
 3. Reloads Blak config and runs `:Lazy restore`.
 
-Result: every plugin and tracked config file returns to the state it was in before the last update or upgrade. Works offline.
+Restores tracked config files and asks Lazy to restore pinned plugin commits. Missing commits and build artifacts may require network access. Mason tools and parser installations are outside the snapshot.
 
 See the [Updates & rollback guide](/guide/updates/) for the full machinery.
 

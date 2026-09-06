@@ -1,8 +1,7 @@
 ---
-import type { Props } from "@astrojs/starlight/props";
 import Splash from "./Splash.astro";
 
-const { data } = Astro.props.entry;
+const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline } = data.hero ?? {};
 ---
 

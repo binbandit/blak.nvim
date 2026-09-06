@@ -3,7 +3,9 @@ title: Keymaps
 description: Every keymap registered by Blak core, where it lives, and the rule behind it.
 ---
 
-The rule: **common operations get memorable mappings; uncommon operations get commands and pickers.** Every keymap has a description and appears in `:BlakKeys`.
+The rule: **common operations get memorable mappings; uncommon operations get commands and pickers.** Every Blak-registered keymap has a description and appears in `:BlakKeys`. `:BlakKeys` also lists shortcuts in the current buffer, including plugin-owned
+mappings and Blak UI controls. Inspect other global plugin mappings with
+`:BlakPick keymaps` or `:map`.
 
 The leader is `<Space>`. Local leader is `\`.
 

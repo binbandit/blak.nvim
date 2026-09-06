@@ -22,7 +22,7 @@ The snapshot happens *before* the update, so if `:Lazy update` itself fails, you
 2. Restores the lockfile and config state that existed before the update or upgrade.
 3. Reloads Blak config and runs `:Lazy restore`.
 
-Result: every plugin returns to the exact commit it was at before the last `:BlakUpdate` or `:BlakUpgrade`, and config/extras/migration state return with it. Even with no network, this works.
+The lockfile pins and tracked config state are restored. Lazy then checks out the pinned plugin commits. Network access may be needed for missing repositories, commits, or build artifacts; external tools and plugin-managed data are not included.
 
 ## The convention
 
@@ -33,7 +33,7 @@ Stable updates are conservative. They do not:
 - Swap your LSP wiring strategy.
 - Change `<leader>` or `<localleader>`.
 
-If a change requires any of those, it lands on the **edge** channel, behind an extra, or as a breaking migration that `:BlakUpdate` refuses. A `package.channel` change is also treated as an upgrade-only move. See `package.channel` in [the schema](/reference/schema/).
+Changes to those defaults require an explicit migration and release note; optional alternatives live in extras. A `package.channel` change is also treated as an upgrade-only move. See `package.channel` in [the schema](/reference/schema/).
 
 For intentional bigger moves there's a separate command:
 
@@ -66,5 +66,17 @@ Snapshots accumulate in `stdpath('state')/blak/rollbacks/`. Blak doesn't auto-pr
 Blak supports Neovim stable and nightly. Nightly changes to `vim.lsp.config()` or other native APIs can cause loud errors after a Neovim upgrade. The mitigation:
 
 1. Upgrade Neovim.
-2. `:BlakUpdate` to pick up any compatibility fixes shipped here.
+2. Update the Blak checkout as described below, then run `:BlakUpdate` for plugin fixes.
 3. If something breaks, `:BlakRollback` and report — Blak's CI runs against stable and can lag nightly by a day or two.
+
+## Updating Blak itself
+
+`:BlakUpdate` and `:BlakUpgrade` update plugins; they do not fetch this distribution's Git checkout. Review `NEWS.md`, preserve your local changes, then update the checkout explicitly:
+
+```sh
+git -C ~/.config/blak pull --ff-only
+```
+
+Use your actual XDG config path if different. If Git reports local changes or divergent history, resolve those before proceeding. Restart Blak and run `:BlakUpgrade` for pending migrations. Rollback snapshots do not include the distribution's Git revision.
+
+`package.channel` currently selects Blink's version policy: `stable` uses `1.*`; `edge` and `nightly` both build the development branch with Cargo. Other plugins follow their configured branches. These are not separate Blak release branches, and upstream plugin updates can still introduce breaking changes. Direct `:Lazy` commands bypass Blak's channel/migration checks.

@@ -27,7 +27,8 @@ When the terminal resizes, re-equalize all windows so panes don't stay lopsided.
 
 ### `BufReadPost` — restore cursor
 
-After opening a buffer, jump to the cursor's last known position (skips help buffers and empty marks).
+After opening the current editing buffer, jump to its last known position.
+Background reads and special buffers do not move the visible cursor.
 
 ### `FileType` — close on `q`
 
@@ -53,7 +54,7 @@ Registered in [`lua/blak/core/keymaps.lua`](https://github.com/binbandit/blak.nv
 
 ### `User LazyUpdatePre` — snapshot rollback state
 
-Before any `:Lazy update`, write a rollback snapshot under `$XDG_STATE_HOME/blak/rollbacks/`. The snapshot includes `lazy-lock.json`, `lua/blak/user.lua`, enabled extras state, upgrade migration state, and accepted update state. This means even a manual `:Lazy update` is protected.
+Before any `:Lazy update`, write a rollback snapshot under `stdpath('state')/blak/rollbacks/`. The snapshot includes `lazy-lock.json`, `lua/blak/user.lua`, enabled extras state, upgrade migration state, and accepted update state. This means even a manual `:Lazy update` is protected.
 
 Registered in [`lua/blak/core/update.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/update.lua).
 
@@ -69,7 +70,7 @@ Registered in [`lua/blak/core/treesitter.lua`](https://github.com/binbandit/blak
 
 | Event | When | Where |
 | --- | --- | --- |
-| `User BlakReady` | After Blak's setup completes (all subsystems wired). | [`lua/blak/init.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/init.lua) |
+| `User BlakReady` | After core setup and plugin registration; lazy plugins load later. | [`lua/blak/init.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/init.lua) |
 
 See [User events](/reference/events/) for how to hook them.
 

@@ -1,149 +1,53 @@
 ---
 title: Validation & CI
-description: Static validation, the headless smoke test, and the Makefile targets that wrap them.
+description: What the automated checks cover and where manual verification is still needed.
 ---
 
-Blak has three safety nets every contributor runs locally and CI runs on every push:
-
-- **Static validation** — no Neovim required, runs in seconds.
-- **Smoke test** — boots Neovim headless and asserts setup works end to end.
-- **Installer smoke test** — runs the public installer into temporary XDG directories and boots the sparse runtime checkout.
-
-## `make validate`
-
-Runs [`scripts/validate.py`](https://github.com/binbandit/blak.nvim/blob/main/scripts/validate.py).
-It also syntax-checks `install.sh` and `scripts/smoke-install.sh`.
-
-### What it checks
-
-| Check | Why |
-| --- | --- |
-| Lua syntax: balanced delimiters | Catch `{` without `}`, etc., in 0 ms — no Lua runtime required. |
-| Lua syntax: keyword nesting | `if` / `function` / `for` / `while` / `repeat` close with `end` (or `until` for `repeat`). |
-| Require paths | Every `require("blak.…")` resolves to an actual file. |
-| Unique extra IDs | No two files under `lua/blak/extras/` declare the same `id`. |
-| Plugin loading | Default and extra plugin specs declare `cmd`, `event`, `ft`, `keys`, `lazy = true`, or an approved eager-startup reason. |
-| Splash frame structure | Frame count and color count match. Each frame is 14 rows of 50 braille glyphs. Color spans are well-formed. |
-| Required docs | `README.md`, `CONTRIBUTING.md`, `NOTICE`, `doc/blak.txt`, `doc/blak-extras.txt`, `doc/blak-keymaps.txt`, `.github/workflows/ci.yml` exist. |
-| Legacy identifier cleanup | No leftover `"black"` references from the early-naming migration. |
-
-### Output
-
-```
-Validation passed: 85 Lua files, 36 extras
-```
-
-On failure, every problem is reported in one pass — fix them in a batch rather than running validate → fix → run → fix.
-
-### When to run
-
-- Before committing.
-- Before opening a PR.
-- In a tight loop while refactoring (it's milliseconds).
-
-## `make smoke`
-
-Runs Neovim headless against this checkout four times:
-
-1. First invocation: sets the runtime path, runs `:Lazy! sync` to install plugins, then quits.
-2. Second invocation: cold-boot test — sets the runtime path, executes [`scripts/smoke.lua`](https://github.com/binbandit/blak.nvim/blob/main/scripts/smoke.lua), then quits.
-3. Third invocation: command-contract test — executes [`scripts/commands.lua`](https://github.com/binbandit/blak.nvim/blob/main/scripts/commands.lua), exercises every public `:Blak` command, stubs destructive Lazy actions, verifies extras state changes, and confirms command completion.
-4. Fourth invocation: starts with `.` as the directory argument and checks [`scripts/smoke-directory.lua`](https://github.com/binbandit/blak.nvim/blob/main/scripts/smoke-directory.lua), so `blak .` cannot regress to an empty buffer.
-
-### What smoke.lua does
-
-```lua
-vim.g.blak_config = {
-  ui = { splash = { enabled = false } },
-  mason = { automatic_install = false },
-}
-require("blak").setup()
-assert(require("blak.config").get() ~= nil, "config missing")
-assert(vim.fn.exists(":Lazy") == 2, ":Lazy missing")
-assert(vim.fn.exists(":BlakTerminal") == 2, ":BlakTerminal missing")
-assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep")
-assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal")
-assert(vim.fn.maparg("<leader>le", "n", false, true).desc == "Extras")
-assert(vim.fn.maparg("-", "n") == "")
-assert(require("blak.config").get().explorer.provider == "oil")
-require("blak.core.explorer").open({ explorer = { provider = "snacks" } })
-local lazy_plugins = require("lazy.core.config").plugins
-assert(lazy_plugins["oil.nvim"].lazy == false)
-assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true)
-assert(lazy_plugins["fff"].lazy == true)
-assert(lazy_plugins["nvim-treesitter"].lazy == true)
-assert(lazy_plugins["nvim-lspconfig"].lazy == true)
-vim.cmd("checkhealth blak")
-```
-
-Translation:
-
-- Disable the splash and Mason auto-install (both noisy in headless).
-- Run setup. Any validation error or runtime error fails the test.
-- Confirm the merged config exists.
-- Confirm config merging avoids full runtime-path scans and startup only locates `lua/blak/user.lua` once for reload watching.
-- Confirm lazy.nvim's `:Lazy` command is registered.
-- Confirm Blak's terminal command and core keymaps are registered.
-- Confirm the explorer dispatcher defaults to Oil and can target Snacks.
-- Confirm Oil is eager and owns directory buffers.
-- Confirm file/picker/LSP-heavy defaults defer to lazy triggers.
-- Run `:checkhealth blak` — any error or warning in the health module shows up in output.
-
-### What commands.lua does
-
-The command-contract smoke test asserts every documented `:Blak*` command exists and can be invoked. It exercises overview, health, keys, news, picker dispatch, extras list/enable/disable/sync, update/upgrade/rollback snapshot and migration wiring, tool/parser install no-op paths, formatting, format toggles, terminal, and splash preview.
-
-The update-contract smoke test focuses only on the update trust model: rollback snapshots include lockfile and config state, `:BlakUpdate` blocks channel changes and pending breaking migrations, `:BlakUpgrade` applies migrations and accepts the intended channel, `:BlakRollback` restores every tracked file, automatic `LazyUpdatePre` snapshots are de-duplicated, and legacy lockfile backups still restore.
-
-It stubs Lazy's update/sync/restore commands so CI checks Blak's command behavior without doing network updates in the middle of the test.
-
-### Smoke needs Neovim 0.12+
+Run these checks from the repository root:
 
 ```sh
+make validate
 make smoke
+make smoke-install
+make docs-build
 ```
 
-Uses `NVIM_APPNAME=blak-test` (configurable: `SMOKE_NVIM_APPNAME=foo make smoke`). The state dir is at `$XDG_DATA_HOME/blak-test/` — feel free to wipe between runs.
+`make validate` uses Python for structural Lua checks, local require paths,
+extra IDs, plugin loading rules, documented defaults, required files, and docs
+links. It syntax-checks the installers and smoke runners. The Python checks
+are heuristics, not a Lua parser or proof of runtime correctness.
 
-## `make smoke-install`
+`make smoke` requires Neovim 0.12+ and network access for plugin installation.
+It creates temporary XDG config, data, state, and cache directories, copies the
+committed lockfile, and tests this working tree against those pins. It does not
+modify the checkout's lockfile or existing user/test state. `NVIM_BIN` can
+select a particular Neovim executable.
 
-Runs [`scripts/smoke-install.sh`](https://github.com/binbandit/blak.nvim/blob/main/scripts/smoke-install.sh).
+The suite checks first and subsequent startup, configuration and reload,
+keymaps, completion pairs, real fff file/grep and Snacks picker UI, splash
+rendering, every public command, extras state, update/upgrade/rollback contracts, directory startup, and focused
+regressions, including real Conform/Blink option reload and native helper
+availability. Every shipped Lua module is syntax-compiled; each extra is built
+and validated independently. Lua assertion failures exit nonzero.
 
-The script creates temporary XDG directories, runs `install.sh` against the local checkout, asserts that the install contains runtime files and omits contributor-only directories, then starts Neovim with `NVIM_APPNAME=blak-install-smoke`.
+Command tests use controlled substitutes for network updates, picker dispatch,
+and some tool/plugin operations. Health output is diagnostic; a warning is not
+by itself a failed test. Passing smoke does not verify every external language
+server, debugger adapter, AI account, terminal image protocol, or combination
+of extras. Exercise the specific language/project or external service when
+changing its integration. A restart is required to verify extras unloading.
 
-It specifically checks that `docs/`, `scripts/`, `.github/`, and `assets/blackhole.gif` do not land in the installed checkout, while `init.lua`, `lua/blak/`, `doc/`, `lazy-lock.json`, `NEWS.md`, `.gitignore`, `.ignore`, and `assets/blak-ascii.svg` do.
+`make smoke-install` runs the installer in temporary XDG directories, checks
+the sparse checkout, boots it, then overlays tracked runtime files from the
+working tree and boots again. This checks both the committed install and local
+runtime changes. It also tests installer refusal to overwrite existing paths.
 
-## CI
+`make docs-build` requires Node.js 22.12+ and installed docs dependencies
+(`make docs-install`). CI uses Node.js 24. It builds all documentation routes,
+search indexes, and generated install/social assets. Preview the site when
+changing its layout or upgrading Astro/Starlight.
 
-[`.github/workflows/ci.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/ci.yml) runs these checks on every push and PR.
-
-| Job | Runner | Step |
-| --- | --- | --- |
-| `validate` | `ubuntu-latest` | Run `make validate` |
-| `smoke` | `ubuntu-latest` | Install Neovim stable, run `make smoke` and `make smoke-install` |
-
-[`.github/workflows/docs.yml`](https://github.com/binbandit/blak.nvim/blob/main/.github/workflows/docs.yml) builds and deploys this documentation site to [getblak.dev](https://getblak.dev/) via GitHub Pages on every push to `main`.
-
-## Makefile reference
-
-```makefile
-make validate              # static validator + shell syntax checks
-make smoke                 # headless Neovim + Lazy sync + checkhealth
-make smoke-install         # install.sh into temp XDG dirs + headless boot
-make docs                  # alias for docs-dev
-make docs-install          # cd docs && npm install
-make docs-dev              # cd docs && npm run dev (http://localhost:4321/)
-make docs-build            # cd docs && npm run build
-make zip                   # zip the repo for distribution (excludes git, node_modules, dist)
-```
-
-## Pre-commit checklist
-
-```sh
-make validate              # < 100 ms
-make smoke                 # ~10 s (longer on cold lazy cache)
-make smoke-install         # verifies the public install path
-stylua --check .           # when stylua is installed; CI enforces it eventually
-```
-
-If all three pass locally, CI will pass.
+GitHub Actions runs static, runtime, and installer checks on pushes to main and
+pull requests. The docs workflow builds for docs/installer/workflow changes
+and deploys successful main builds to GitHub Pages. Local checks help catch
+regressions; CI also depends on its OS, network, and upstream services.

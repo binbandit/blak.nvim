@@ -68,7 +68,7 @@ Either via `user.lua`:
 return {
   format = {
     formatters_by_ft = {
-      yaml = { "prettierd", "prettier" },
+      yaml = { "prettierd", "prettier", stop_after_first = true },
       sql  = { "sqlfluff" },
     },
   },
@@ -82,16 +82,27 @@ Or as part of an extra so it's reversible — see [Writing an extra](/project/wr
 
 ## Customizing a formatter
 
-Conform's `formatters` table lets you override how each tool runs. Use the `apply` hook on an extra, or a direct call in `user.lua`:
+Use `plugins.specs` in `user.lua` to pass Conform options, including custom
+formatter arguments:
 
 ```lua
--- in user.lua, after Blak setup
-vim.schedule(function()
-  require("conform").formatters.shfmt = {
-    prepend_args = { "-i", "2", "-ci" },
-  }
-end)
+return {
+  plugins = {
+    specs = {
+      {
+        "stevearc/conform.nvim",
+        opts = {
+          formatters = { shfmt = { prepend_args = { "-i", "2", "-ci" } } },
+        },
+      },
+    },
+  },
+}
 ```
+
+Reload uses the same merged plugin options as startup. Explicit options such as
+`format_on_save = false` stay in effect, and removed filetypes are removed from
+Conform's formatter map.
 
 ## Skip on save without a flag
 
@@ -100,8 +111,6 @@ If you just want to skip once:
 ```vim
 :noautocmd write
 ```
-
-Or hold an option key in your terminal's keybinding to a manual write.
 
 ## Inspecting
 

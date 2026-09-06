@@ -2,6 +2,42 @@
 
 ## Unreleased
 
+- Restored Neovim's built-in compressed-file support, tar/zip browsing, and
+  Tutor. Blak disables only the netrw directory handler that its explorer
+  replaces. See the native-helpers migration for opting out.
+- Reload now discards cached plugin options, preserves custom Conform/Blink
+  options from `plugins.specs`, removes stale formatter filetypes, and replaces
+  removed LSP settings. Live extras refresh their plugin specs before setup.
+- `:BlakKeys` now includes mappings in the current buffer, including Blak's
+  extras UI and plugin-owned shortcuts.
+- Background buffer reads no longer move the visible cursor. Hiding a terminal
+  preserves its tab even when it is the last normal window beside a float.
+
+- Fixed false-positive smoke results: failed Lua assertions now return a failing
+  exit status. Tests use disposable XDG directories and the committed plugin
+  pins, compile all Lua modules, and validate every extra independently.
+- Restricted Mason's automatic LSP activation to configured servers, so disabled
+  extras stay disabled after restart. `mason.automatic_install = false` now
+  covers language servers; `:BlakToolsInstall` explicitly requests both servers
+  and tools. Add manually installed servers to `lsp.servers` to auto-enable them.
+- Fixed stale leader and LSP mappings on reload, preserved user LSP mapping
+  overrides, and prevented `:BlakKeys` from corrupting later registry updates.
+  Disabling lint events or shared clipboard now removes the old behavior.
+- Rollback now validates every snapshot file before restoring anything; failed
+  backups abort updates instead of recording unreadable files as absent.
+- Extras preserve explicit LSP and Snacks settings. Reload reuses one plugin-spec
+  refresh path and leaves unused formatting plugins deferred. Missing parsers
+  no longer replace native indentation, and terminal toggling preserves windows
+  reused for editing.
+- Installers reject unsafe app names and preserve existing launchers and unrelated
+  development symlinks. Installer smoke also checks the current working tree.
+- Refreshed 11 plugin pins while retaining Blink's stable `1.*` release policy.
+  Updated the documentation stack to Astro 7.3.1, Starlight 0.42.0, and Sharp
+  0.35.4; docs development now requires Node.js 22.12+ (CI uses Node.js 24).
+  Updated the GitHub Actions checkout, language setup, and Pages actions.
+- Corrected the advertised theme and clarified update channels, checkout updates,
+  rollback limits, plugin-owned mappings, and retained Mason/parser installations.
+  The docs-link validator now checks the actual root-relative routes.
 - `:BlakDoctor` no longer reports a broken fff picker as healthy. It probed
   `require("fff")`, which resolves to `fff.main` and defers the Rust backend
   into function bodies, so it succeeded even with no native library on disk.

@@ -33,7 +33,7 @@ The rule of thumb: a user should be able to predict a keymap from the category a
 
 ### 3. Do not add hidden keymaps.
 
-Every keymap registered by Blak core, an enabled extra, or `user.lua` has a description and appears in `:BlakKeys`. If you can't see it there, it doesn't exist in Blak. Plugins that add their own un-described mappings are wrapped to give them descriptions.
+Every keymap registered by Blak core, an enabled extra, or `user.lua` has a description and appears in `:BlakKeys`. Plugin-owned buffer mappings and completion presets can be inspected with `:BlakPick keymaps`, `:map`, and the plugin's help.
 
 ### 4. Stable updates must not silently change a user's picker, completion engine, explorer, or LSP strategy.
 
@@ -41,7 +41,7 @@ These are the things that show up in muscle memory. Changing them out from under
 
 ### 5. Extras must be reversible.
 
-Every Treesitter parser, Mason tool, LSP server, formatter, linter, Snacks module, keymap, and plugin spec contributed by an extra is rolled back when the extra is disabled. No orphans.
+Disabling an extra removes it from saved state. Restart to unload its runtime behavior, then run `:Lazy sync` to remove unused plugins. Config-managed extras must be removed from `user.lua`. Installed Mason tools and Treesitter parsers remain on disk; remove them separately if no longer needed.
 
 ### 6. If a smart simple solution solves the problem without compromise, use it.
 

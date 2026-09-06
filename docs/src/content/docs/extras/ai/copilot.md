@@ -58,8 +58,25 @@ Blak intentionally leaves inline suggestions and the Copilot panel disabled in
 the extra's default spec. That prevents the AI integration from taking over
 insert-mode behavior or adding hidden mappings.
 
-If you want a different Copilot UI, create a local extra with your own
-`copilot.lua` options so the behavior remains explicit and easy to remove.
+To enable inline suggestions, override the plugin options in `user.lua`:
+
+```lua
+return {
+  extras = { enabled = { "ai.copilot" } },
+  plugins = {
+    specs = {
+      {
+        "zbirenbaum/copilot.lua",
+        opts = { suggestion = { enabled = true } },
+      },
+    },
+  },
+}
+```
+
+Restart Blak after changing these options. Copilot owns the suggestion shortcuts;
+see `:help copilot` for its keymap options. Remove the override to return to the
+extra's defaults.
 
 ## Disable it
 

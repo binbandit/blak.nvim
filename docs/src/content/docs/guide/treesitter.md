@@ -3,7 +3,7 @@ title: Treesitter
 description: Parser installation, performance gating, and the main-branch API.
 ---
 
-Blak uses the `main` branch of nvim-treesitter — the new API that ships parsers as part of `nvim-treesitter` itself rather than requiring per-parser modules.
+Blak uses the `main` branch of nvim-treesitter — its installer API downloads and builds language grammars; Neovim provides highlighting.
 
 Setup: [`lua/blak/core/treesitter.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/treesitter.lua). Spec: [`lua/blak/plugins/editor.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/editor.lua).
 
@@ -40,7 +40,7 @@ separate `jsonc` grammar — so JSONC highlighting works without its own parser.
 :BlakTreesitterInstall
 ```
 
-Calls `nvim-treesitter.install()` with your merged list and notifies on completion. The compile step needs `tree-sitter` on `$PATH` — Blak ships `tree-sitter-cli` in the default Mason set, so on a first launch `:BlakToolsInstall` followed by `:BlakTreesitterInstall` is enough.
+Calls `nvim-treesitter.install()` with your merged list and notifies on completion. The compile step needs a C compiler and `tree-sitter` on `$PATH` — Blak ships `tree-sitter-cli` in the default Mason set, so on a first launch `:BlakToolsInstall` followed by `:BlakTreesitterInstall` is enough.
 
 You can also install one parser at a time:
 
@@ -53,7 +53,7 @@ You can also install one parser at a time:
 Treesitter only starts on a buffer when:
 
 1. Its `filetype` has an installed parser.
-2. Its line count is below `performance.max_treesitter_lines` (default `10000`).
+2. Its line count is at most `performance.max_treesitter_lines` (default `10000`).
 
 The check happens on `FileType`:
 
@@ -62,8 +62,9 @@ The check happens on `FileType`:
 vim.api.nvim_create_autocmd("FileType", {
   callback = function(args)
     if vim.api.nvim_buf_line_count(args.buf) > max_lines then return end
-    pcall(vim.treesitter.start, args.buf)
-    vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    if pcall(vim.treesitter.start, args.buf) then
+      vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
   end,
 })
 ```

@@ -3,7 +3,7 @@ title: Config schema
 description: What's allowed in user.lua and how Blak validates it.
 ---
 
-Blak validates its merged config on load. Invalid values throw on startup with a clear list of every problem, not the first one. The validation rules live in `lua/blak/config/schema.lua`.
+Blak validates its merged config on load. Known option shapes are checked before runtime setup. Plugin-specific options are validated by their plugins. The validation rules live in `lua/blak/config/schema.lua`.
 
 ## Top-level keys
 
@@ -287,7 +287,7 @@ The Mini extra is intentionally inert until you choose modules:
 return {
   extras = { enabled = { "editor.mini" } },
   mini = {
-    modules = { "ai", "surround", "pairs" },
+    modules = { "ai", "surround" },
     opts = {
       surround = { n_lines = 80 },
     },
@@ -322,7 +322,7 @@ only that the value is mergeable.
 
 | Key | Type | Notes |
 | --- | --- | --- |
-| `ensure_installed` | `string[]` | Parsers installed at startup |
+| `ensure_installed` | `string[]` | Parsers requested on file events when the tree-sitter CLI is available |
 
 Per the deep merge semantics below, setting `ensure_installed` in the simple
 table form **replaces** the default parser list. Use the function form or an
@@ -351,13 +351,13 @@ return {
 
 Language extras add their servers to `lsp.servers` for you; use this table
 directly when you want a server without the rest of an extra. Validation only
-checks that `lsp` is a table.
+checks the LSP table, automatic-enable flag, server tables, and diagnostic table.
 
 ## `mason`
 
 | Key | Type | Notes |
 | --- | --- | --- |
-| `automatic_install` | `boolean` | Install `ensure_installed` tools through Mason on startup |
+| `automatic_install` | `boolean` | Automatically install configured Mason tools and language servers |
 | `ensure_installed` | `string[]` | Mason package names |
 
 ## `format`

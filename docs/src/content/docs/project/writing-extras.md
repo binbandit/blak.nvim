@@ -132,7 +132,8 @@ Describe what the extra adds and why it isn't a core feature. The bar for core i
 
 ## Reversibility checklist
 
-When the extra is disabled, every one of these should be undone automatically because the runtime composes contributions from `enabled()` on each setup:
+After disabling an extra and restarting, its contributions should be absent
+unless another enabled extra or the user configuration also supplies them:
 
 - ✅ Treesitter parsers — removed from the install list (already-installed parsers stay until you uninstall manually; that's fine).
 - ✅ Mason tools — removed from the install list.
