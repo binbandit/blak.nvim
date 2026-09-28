@@ -1,7 +1,13 @@
 local M = {}
 
 local function package_list(config)
-  return require("blak.util").unique(config.mason.ensure_installed or {})
+  local packages = vim.deepcopy(config.mason.ensure_installed or {})
+  -- mason-lspconfig checks receipts, but an installed server can still lack
+  -- its TypeScript runtime (including installations that picked up TS 7).
+  if config.lsp.servers.ts_ls then
+    table.insert(packages, "typescript-language-server")
+  end
+  return require("blak.util").unique(packages)
 end
 
 function M.ensure(config, opts)
@@ -31,12 +37,18 @@ function M.ensure(config, opts)
   local function install_missing()
     for _, name in ipairs(packages) do
       local ok_pkg, pkg = pcall(registry.get_package, name)
+      local repair = ok_pkg
+        and name == "typescript-language-server"
+        and pkg:is_installed()
+        and require("blak.providers.typescript").mason_path() == nil
       if not ok_pkg then
         util.warn("Mason package not found: " .. name)
-      elseif not pkg:is_installed() and not pkg:is_installing() then
-        util.notify("Installing Mason package: " .. name)
+      elseif (not pkg:is_installed() or repair) and not pkg:is_installing() then
+        util.notify(
+          (repair and "Repairing Mason package: " or "Installing Mason package: ") .. name
+        )
         local ok_install, err = pcall(function()
-          pkg:install()
+          pkg:install({ force = repair or false })
         end)
         if not ok_install then
           util.warn("Could not install " .. name .. ": " .. tostring(err))

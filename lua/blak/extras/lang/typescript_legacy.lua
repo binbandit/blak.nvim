@@ -1,13 +1,16 @@
 return {
-  id = "lang.typescript",
-  label = "TypeScript",
-  description = "TypeScript 7 native LSP, prettier, ESLint LSP, TS/JS Treesitter",
-  supersedes = { "lang.typescript-legacy" },
+  id = "lang.typescript-legacy",
+  label = "TypeScript (legacy)",
+  description = "ts_ls with a compatible SDK, prettier, ESLint LSP, TS/JS Treesitter",
   treesitter = { "javascript", "typescript", "tsx", "jsdoc", "json" },
   mason = { "prettier", "prettierd" },
   lsp = {
     servers = {
-      tsc = {},
+      ts_ls = {
+        before_init = function(params, config)
+          require("blak.providers.typescript").before_init(params, config)
+        end,
+      },
       eslint = {},
     },
   },

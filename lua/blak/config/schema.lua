@@ -5,6 +5,23 @@ local valid_pickers = { fff = true, snacks = true, telescope = true, fzf_lua = t
 local valid_explorers = { oil = true, snacks = true }
 local valid_terminals = { native = true, snacks = true }
 local valid_mini_module = "^[%w_%-]+$"
+-- Mode short names accepted by nvim_set_keymap(), including abbreviations.
+local valid_modes = {
+  [""] = true,
+  n = true,
+  v = true,
+  x = true,
+  s = true,
+  o = true,
+  i = true,
+  l = true,
+  c = true,
+  t = true,
+  ["!"] = true,
+  ia = true,
+  ca = true,
+  ["!a"] = true,
+}
 
 local function kind(value)
   if type(value) ~= "table" then
@@ -26,12 +43,19 @@ local function validate_mode(errors, path, mode)
     return
   end
   if type(mode) == "string" then
+    if not valid_modes[mode] then
+      table.insert(errors, path .. " must use a Neovim mode short name (for example n, i, or x)")
+    end
     return
   end
   if type(mode) == "table" and vim.islist(mode) and #mode > 0 then
     for _, item in ipairs(mode) do
       if type(item) ~= "string" then
         table.insert(errors, path .. " entries must be strings")
+        return
+      end
+      if not valid_modes[item] then
+        table.insert(errors, path .. " contains an invalid Neovim mode: " .. item)
         return
       end
     end

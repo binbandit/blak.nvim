@@ -5,6 +5,67 @@ local M = {}
 -- through :BlakUpgrade; non-breaking migrations run on the next :BlakUpgrade.
 local migrations = {
   {
+    id = "v0.3.1.native-typescript",
+    description = "Make native TypeScript 7 the standard TypeScript extra",
+    apply = function(config, context)
+      local enabled = require("blak.extras").enabled(config)
+      if
+        not vim.tbl_contains(enabled, "lang.typescript")
+        and not vim.tbl_contains(enabled, "lang.typescript-tsgo")
+      then
+        return
+      end
+      context.util.notify(
+        "lang.typescript now uses native TypeScript 7 (tsc). lang.typescript-tsgo remains a compatibility alias. "
+          .. "Legacy lsp.servers.tsgo settings are carried into tsc; explicit tsc settings win. "
+          .. "Explicit ts_ls entries are preserved; remove them to use only tsc. "
+          .. "To retain ts_ls, replace the native extra and its alias with lang.typescript-legacy. "
+          .. "Run :BlakToolsInstall, wait, and restart. Existing Mason packages remain installed."
+      )
+    end,
+  },
+  {
+    id = "v0.3.1.python-ruff",
+    description = "Use Ruff LSP diagnostics without running Ruff again through nvim-lint",
+    apply = function(config, context)
+      if not vim.tbl_contains(require("blak.extras").enabled(config), "lang.python") then
+        return
+      end
+      context.util.notify(
+        "lang.python now uses Ruff's language server for lint diagnostics without a duplicate nvim-lint process. "
+          .. 'To opt back in, set lint.linters_by_ft.python = { "ruff" } in user.lua. '
+          .. "Alternate language extras replace only unchanged defaults contributed by the basic extra; "
+          .. "explicit user settings remain in effect."
+      )
+    end,
+  },
+  {
+    id = "v0.3.1.format-keymap",
+    description = "Make the existing format shortcut available without an attached LSP",
+    apply = function(_, context)
+      context.util.notify(
+        "<leader>cf now runs :BlakFormat in any buffer, including standalone formatter workflows. "
+          .. 'To leave it unbound, add { key = "<leader>cf", disable = true } to keymaps. '
+          .. ":BlakFormat also accepts line ranges and visual selections."
+      )
+    end,
+  },
+  {
+    id = "v0.3.1.typescript-runtime",
+    description = "Resolve compatible TypeScript SDKs and repair missing Mason TypeScript runtimes",
+    apply = function(config, context)
+      if not config.lsp.servers.ts_ls then
+        return
+      end
+      context.util.notify(
+        "The legacy TypeScript extra resolves workspace SDKs before falling back to Mason's TypeScript. "
+          .. "Explicit init_options.tsserver.path and before_init overrides are preserved. "
+          .. "Tool installation repairs Mason copies missing tsserver.js; run :BlakToolsInstall, wait, then restart. "
+          .. "Set mason.automatic_install=false to manage installations manually."
+      )
+    end,
+  },
+  {
     id = "v0.3.1.native-helpers",
     description = "Restore native compressed files, archive browsing, and Tutor",
     apply = function(_, context)

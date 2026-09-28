@@ -39,6 +39,7 @@ for _, case in ipairs({
 end
 
 local c = config()
+c.lint.linters_by_ft = { [vim.bo.filetype] = { "fixture" } }
 local lint_calls = 0
 package.loaded.lint = {
   linters = {},

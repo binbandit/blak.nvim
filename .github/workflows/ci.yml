@@ -17,12 +17,20 @@ jobs:
         run: make validate
 
   smoke:
+    name: Smoke (${{ matrix.neovim }})
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.neovim == 'nightly' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        neovim: [stable, nightly]
     steps:
       - uses: actions/checkout@v7
-      - name: Install Neovim stable
+      - name: Install Neovim
+        env:
+          NVIM_RELEASE: ${{ matrix.neovim }}
         run: |
-          curl -fsSL -o nvim.tar.gz https://github.com/neovim/neovim-releases/releases/download/stable/nvim-linux-x86_64.tar.gz
+          curl -fsSL -o nvim.tar.gz "https://github.com/neovim/neovim-releases/releases/download/$NVIM_RELEASE/nvim-linux-x86_64.tar.gz"
           tar xzf nvim.tar.gz
           echo "$PWD/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
       - name: Show Neovim version
@@ -30,4 +38,5 @@ jobs:
       - name: Runtime smoke test
         run: make smoke
       - name: Installer smoke test
+        if: matrix.neovim == 'stable'
         run: make smoke-install

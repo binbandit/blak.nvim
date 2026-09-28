@@ -13,6 +13,14 @@ local function valid_win(win)
   return win and vim.api.nvim_win_is_valid(win)
 end
 
+local function running_terminal(buf)
+  if not valid_buf(buf) then
+    return false
+  end
+  local job = vim.b[buf].terminal_job_id
+  return job and vim.fn.jobwait({ job }, 0)[1] == -1
+end
+
 local function open_window()
   vim.cmd("botright 12split")
   state.win = vim.api.nvim_get_current_win()
@@ -66,9 +74,10 @@ function M.toggle_native(opts)
     open_window()
   end
 
-  if valid_buf(state.buf) and opts.cmd == nil then
+  if running_terminal(state.buf) and opts.cmd == nil then
     vim.api.nvim_win_set_buf(state.win, state.buf)
   else
+    -- Keep exited terminal output available, but reopen with a usable shell.
     vim.cmd.terminal(opts.cmd or vim.o.shell)
     state.buf = vim.api.nvim_get_current_buf()
     vim.bo[state.buf].buflisted = false

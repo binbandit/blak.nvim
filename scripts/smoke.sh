@@ -39,5 +39,14 @@ runtime -c 'lua dofile("scripts/run-test.lua")("scripts/smoke-reload.lua")' -c '
 test_script scripts/commands.lua
 test_script scripts/update-contract.lua
 test_script scripts/regressions.lua
+test_script scripts/smoke-typescript.lua
+test_script scripts/smoke-config-health.lua
+test_script scripts/smoke-qol.lua
+test_script scripts/smoke-native.lua
+test_script scripts/smoke-language-stacks.lua
+test_script scripts/smoke-migrations.lua
+test_script scripts/smoke-extras-ui.lua
+test_script scripts/smoke-watch-config.lua
+test_script scripts/smoke-lint-lifecycle.lua
 runtime . -c 'lua dofile("scripts/run-test.lua")("scripts/smoke-directory.lua")' -c 'qa!'
 printf 'Runtime smoke passed\n'

@@ -15,9 +15,4 @@ return {
       python = { "isort", "black" },
     },
   },
-  lint = {
-    linters_by_ft = {
-      python = { "ruff" },
-    },
-  },
 }

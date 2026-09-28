@@ -4,6 +4,7 @@ local extras_view = require("blak.extras_view")
 local modules = {
   "blak.extras.lang.lua",
   "blak.extras.lang.typescript",
+  "blak.extras.lang.typescript_legacy",
   "blak.extras.lang.typescript_tsgo",
   "blak.extras.lang.python",
   "blak.extras.lang.python_pro",
@@ -72,12 +73,47 @@ local function registry()
   return registry_cache
 end
 
-local function merge_missing_by_ft(target, source)
+local function merge_missing_by_ft(target, source, contributed)
   for ft, value in pairs(source or {}) do
     if target[ft] == nil then
       target[ft] = vim.deepcopy(value)
+      if contributed then
+        contributed[ft] = vim.deepcopy(value)
+      end
     end
   end
+end
+
+-- Alternate language stacks replace only defaults supplied by the basic
+-- extra. Explicit user servers and formatter/linter lists remain untouched.
+local function language_fields(config)
+  return {
+    servers = config.lsp.servers,
+    formatters = config.format.formatters_by_ft,
+    linters = config.lint.linters_by_ft,
+  }
+end
+
+local function supersede(config, id)
+  local fields = language_fields(config)
+  local contributed = config._extra_language_defaults[id] or {}
+  for field, values in pairs(contributed) do
+    for key, value in pairs(values) do
+      if vim.deep_equal(fields[field][key], value) then
+        fields[field][key] = nil
+      end
+    end
+  end
+  config._extra_language_defaults[id] = nil
+end
+
+local function is_superseded(config, id)
+  for applied in pairs(config._extra_applied) do
+    if vim.tbl_contains(registry()[applied].supersedes or {}, id) then
+      return true
+    end
+  end
+  return false
 end
 
 local function contains(list, needle)
@@ -157,6 +193,7 @@ function M.apply_one(config, id)
   config._extra_plugin_specs = config._extra_plugin_specs or {}
   config._extra_keymaps = config._extra_keymaps or {}
   config._extra_applied = config._extra_applied or {}
+  config._extra_language_defaults = config._extra_language_defaults or {}
 
   if config._extra_applied[id] then
     return nil
@@ -168,23 +205,48 @@ function M.apply_one(config, id)
     return nil
   end
 
+  if extra.alias then
+    local changed = extra.apply and extra.apply(config)
+    local applied = M.apply_one(config, extra.alias)
+    config._extra_applied[id] = true
+    -- Refresh an existing canonical stack only if legacy settings were moved.
+    return applied or (changed and registry()[extra.alias] or nil)
+  end
+
+  for _, replaced in ipairs(extra.supersedes or {}) do
+    supersede(config, replaced)
+  end
   if extra.apply then
     extra.apply(config)
   end
   config.treesitter.ensure_installed =
     util.extend_list(config.treesitter.ensure_installed, extra.treesitter)
   config.mason.ensure_installed = util.extend_list(config.mason.ensure_installed, extra.mason)
-  if extra.lsp and extra.lsp.servers then
-    config.lsp.servers = vim.tbl_deep_extend("keep", config.lsp.servers or {}, extra.lsp.servers)
-  end
-  if extra.format and extra.format.formatters_by_ft then
-    merge_missing_by_ft(config.format.formatters_by_ft, extra.format.formatters_by_ft)
-  end
-  if extra.lint and extra.lint.linters_by_ft then
-    merge_missing_by_ft(config.lint.linters_by_ft, extra.lint.linters_by_ft)
+  if not is_superseded(config, id) then
+    local contributed = { servers = {}, formatters = {}, linters = {} }
+    config._extra_language_defaults[id] = contributed
+    if extra.lsp and extra.lsp.servers then
+      for name, server in pairs(extra.lsp.servers) do
+        if config.lsp.servers[name] == nil then
+          contributed.servers[name] = vim.deepcopy(server)
+        end
+      end
+      config.lsp.servers =
+        vim.tbl_deep_extend("keep", config.lsp.servers or {}, vim.deepcopy(extra.lsp.servers))
+    end
+    if extra.format and extra.format.formatters_by_ft then
+      merge_missing_by_ft(
+        config.format.formatters_by_ft,
+        extra.format.formatters_by_ft,
+        contributed.formatters
+      )
+    end
+    if extra.lint and extra.lint.linters_by_ft then
+      merge_missing_by_ft(config.lint.linters_by_ft, extra.lint.linters_by_ft, contributed.linters)
+    end
   end
   if extra.snacks then
-    config.snacks = vim.tbl_deep_extend("keep", config.snacks or {}, extra.snacks)
+    config.snacks = vim.tbl_deep_extend("keep", config.snacks or {}, vim.deepcopy(extra.snacks))
   end
   if extra.keys then
     vim.list_extend(config._extra_keymaps, vim.deepcopy(extra.keys))

@@ -158,6 +158,21 @@ local function harden_linters(lint, linters_by_ft)
   end
 end
 
+local function linters_for_filetype(linters_by_ft, filetype)
+  -- Match nvim-lint: an exact entry (including {}) wins; otherwise combine
+  -- each part of a compound filetype. "*" and "_" are not wildcard entries.
+  if linters_by_ft[filetype] then
+    return linters_by_ft[filetype]
+  end
+  local names = {}
+  for _, part in ipairs(vim.split(filetype, ".", { plain = true })) do
+    for _, name in ipairs(linters_by_ft[part] or {}) do
+      names[name] = true
+    end
+  end
+  return vim.tbl_keys(names)
+end
+
 ---@param config table
 function M.setup(config)
   local ok_lint, lint = pcall(require, "lint")
@@ -177,13 +192,25 @@ function M.setup(config)
 
   vim.api.nvim_create_autocmd(events, {
     group = group,
-    callback = function()
-      -- `ignore_errors` covers spawn failures that slip past the filter, such as
-      -- a linter removed between the check and the spawn.
-      pcall(lint.try_lint, nil, {
-        ignore_errors = true,
-        filter = M.is_available,
-      })
+    callback = function(event)
+      if not vim.api.nvim_buf_is_valid(event.buf) or not vim.api.nvim_buf_is_loaded(event.buf) then
+        return
+      end
+      -- Autocmds can target a background buffer; factories and nvim-lint use
+      -- the current buffer to resolve commands, stdin, and diagnostics.
+      vim.api.nvim_buf_call(event.buf, function()
+        -- `ignore_errors` covers spawn failures that slip past the filter, such
+        -- as a linter removed between the check and the spawn.
+        for _, name in pairs(linters_for_filetype(lint.linters_by_ft, vim.bo.filetype)) do
+          local ok, err = pcall(lint.try_lint, name, {
+            ignore_errors = true,
+            filter = M.is_available,
+          })
+          if not ok then
+            warn_once(name, tostring(err))
+          end
+        end
+      end)
     end,
   })
 end

@@ -346,7 +346,7 @@ local function main()
   local formatted = false
   package.loaded.conform = {
     format = function(opts)
-      formatted = opts and opts.lsp_format == "fallback"
+      formatted = opts ~= nil and opts.lsp_format == nil
     end,
   }
   run("BlakFormat", "BlakFormat")

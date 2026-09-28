@@ -45,9 +45,14 @@ local function normalize_user_value(value, options, base_config)
     local success, result = pcall(value, config, user_context())
     if success then
       if result == nil then
-        return config
+        return config, true
       end
-      return vim.tbl_deep_extend("force", config, normalize_options(result, "lua/blak/user.lua", options.strict_user))
+      return vim.tbl_deep_extend(
+        "force",
+        config,
+        normalize_options(result, "lua/blak/user.lua", options.strict_user)
+      ),
+        true
     end
     if options.strict_user then
       error("Could not evaluate lua/blak/user.lua: " .. tostring(result))
@@ -128,10 +133,13 @@ local function build(opts, options)
   local defaults = require("blak.config.defaults")
   local g_opts = normalize_options(vim.g.blak_config, "vim.g.blak_config")
   local base_config = vim.tbl_deep_extend("force", {}, defaults, g_opts)
-  local user_opts = load_user_options(options, base_config)
+  local user_opts, complete_config = load_user_options(options, base_config)
   opts = normalize_options(opts or {}, "setup(opts)")
 
-  local config = vim.tbl_deep_extend("force", {}, base_config, user_opts, opts)
+  -- Functions already received the defaults; merging them again resurrects
+  -- keys the user deliberately removed from that table.
+  local config =
+    vim.tbl_deep_extend("force", {}, complete_config and {} or base_config, user_opts, opts)
   M.run_hooks(config, "before")
   require("blak.config.schema").validate(config)
   require("blak.extras").apply(config)

@@ -66,9 +66,9 @@ NVIM_APPNAME="$APPNAME" \
 }
 boot
 
-# The clone exercises the committed install. Overlay only tracked runtime files
-# to check local fixes too, without copying ignored personal configuration.
-git -C "$ROOT" ls-files -- init.lua lua doc lazy-lock.json NEWS.md README.md LICENSE NOTICE > "$RUN_DIR/runtime-files"
+# The clone exercises the committed install. Include new runtime modules in the
+# working-tree overlay too, without copying ignored personal configuration.
+git -C "$ROOT" ls-files --cached --others --exclude-standard -- init.lua lua doc lazy-lock.json NEWS.md README.md LICENSE NOTICE > "$RUN_DIR/runtime-files"
 tar -C "$ROOT" -cf "$RUN_DIR/runtime.tar" -T "$RUN_DIR/runtime-files"
 tar -C "$TARGET" -xf "$RUN_DIR/runtime.tar"
 boot -c 'Lazy! restore'

@@ -27,6 +27,17 @@ local function registry_key(mode, lhs)
   return tostring(mode) .. "|" .. tostring(lhs)
 end
 
+local function expand_lhs(lhs)
+  local expanded = lhs
+    :gsub("<[Ll][Ee][Aa][Dd][Ee][Rr]>", function()
+      return vim.g.mapleader or "\\"
+    end)
+    :gsub("<[Ll][Oo][Cc][Aa][Ll][Ll][Ee][Aa][Dd][Ee][Rr]>", function()
+      return vim.g.maplocalleader or "\\"
+    end)
+  return vim.api.nvim_replace_termcodes(expanded, true, true, true)
+end
+
 local function rebuild_registered_lookup()
   registered_lookup = {}
   for index, item in ipairs(registered) do
@@ -122,14 +133,7 @@ local function remember_keymap(mode, lhs, opts)
     buffer = vim.api.nvim_get_current_buf()
   end
 
-  local expanded = lhs
-    :gsub("<[Ll][Ee][Aa][Dd][Ee][Rr]>", function()
-      return vim.g.mapleader or "\\"
-    end)
-    :gsub("<[Ll][Oo][Cc][Aa][Ll][Ll][Ee][Aa][Dd][Ee][Rr]>", function()
-      return vim.g.maplocalleader or "\\"
-    end)
-  expanded = vim.api.nvim_replace_termcodes(expanded, true, true, true)
+  local expanded = expand_lhs(lhs)
   for _, item in ipairs(mode_list(mode)) do
     local keymap = find_keymap(item, expanded, buffer)
     if keymap then
@@ -277,6 +281,10 @@ local function save_buffer()
   vim.cmd("silent update")
 end
 
+local function diagnostic_float(_, bufnr)
+  vim.diagnostic.open_float({ bufnr = bufnr, scope = "cursor", focus = false })
+end
+
 local function delete_buffer()
   local ok, snacks = pcall(require, "snacks")
   if ok and snacks.bufdelete then
@@ -402,14 +410,15 @@ function M.setup(config)
   map("n", "<leader>gd", git_action("diffthis"), "Diff this")
 
   map("n", "<leader>xx", picker("diagnostics"), "Diagnostics")
+  map("n", "<leader>cf", "<cmd>BlakFormat<cr>", "Format")
   map("n", "<leader>xd", function()
     vim.diagnostic.open_float()
   end, "Line diagnostic")
   map("n", "]d", function()
-    vim.diagnostic.jump({ count = 1, float = true })
+    vim.diagnostic.jump({ count = 1, on_jump = diagnostic_float })
   end, "Next diagnostic")
   map("n", "[d", function()
-    vim.diagnostic.jump({ count = -1, float = true })
+    vim.diagnostic.jump({ count = -1, on_jump = diagnostic_float })
   end, "Previous diagnostic")
 
   map("n", "<leader>ll", "<cmd>Lazy<cr>", "Lazy")
@@ -443,12 +452,6 @@ function M.setup(config)
     map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", opts)
     map("n", "<leader>cs", picker("lsp_symbols"), "Document symbols", opts)
     map("n", "<leader>cS", picker("workspace_symbols"), "Workspace symbols", opts)
-    map("n", "<leader>cf", function()
-      local conform = require("blak.util").load_plugin("conform.nvim", "conform")
-      if conform then
-        conform.format({ bufnr = buf, lsp_format = config.format.lsp_format })
-      end
-    end, "Format", opts)
   end
   vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("BlakLspKeys", { clear = true }),
@@ -472,10 +475,32 @@ end
 
 function M.show()
   local buf = vim.api.nvim_get_current_buf()
+  local active = {}
+  local modes = { "n", "x", "s", "o", "i", "c", "t" }
+  for _, mode in ipairs(modes) do
+    for _, item in ipairs(vim.api.nvim_get_keymap(mode)) do
+      active[registry_key(mode, item.lhsraw or expand_lhs(item.lhs))] = {
+        mode = mode,
+        mapping = item,
+        buffer = false,
+      }
+    end
+    -- A buffer-local mapping shadows a global one, even without a description.
+    for _, item in ipairs(vim.api.nvim_buf_get_keymap(buf, mode)) do
+      active[registry_key(mode, item.lhsraw or expand_lhs(item.lhs))] = {
+        mode = mode,
+        mapping = item,
+        buffer = true,
+      }
+    end
+  end
+
   local lines = {
     "# Blak keymaps",
     "",
-    "These are the mappings registered by Blak core, enabled extras, and user.lua.",
+    "Mappings active in this buffer. Buffer-local mappings take precedence over global mappings.",
+    "",
+    "# Blak, enabled extras, and user.lua",
     "",
   }
   local entries = vim.deepcopy(registered)
@@ -483,22 +508,41 @@ function M.show()
     return a.lhs < b.lhs
   end)
   for _, item in ipairs(entries) do
-    local mode = type(item.mode) == "table" and table.concat(item.mode, ",") or item.mode
-    table.insert(lines, string.format("%-5s %-18s %s", mode, item.lhs, item.desc))
+    local key = registry_key(item.mode, expand_lhs(item.lhs))
+    local current = active[key]
+    if current and current.mapping.desc == item.desc then
+      table.insert(lines, string.format("%-5s %-18s %s", item.mode, item.lhs, item.desc))
+      active[key] = nil
+    end
   end
-  table.insert(lines, "")
-  table.insert(lines, "# Current buffer mappings (including plugin-owned shortcuts)")
-  table.insert(lines, "")
-  for _, mode in ipairs({ "n", "x", "s", "o", "i", "c", "t" }) do
-    local mappings = vim.api.nvim_buf_get_keymap(buf, mode)
-    table.sort(mappings, function(a, b)
-      return a.lhs < b.lhs
-    end)
-    for _, item in ipairs(mappings) do
-      table.insert(
-        lines,
-        string.format("%-5s %-18s %s", mode, item.lhs, item.desc or item.rhs or "Callback")
-      )
+  for _, scope in ipairs({
+    { buffer = false, title = "# Other global mappings (including Neovim defaults)" },
+    { buffer = true, title = "# Other current buffer mappings (including plugin shortcuts)" },
+  }) do
+    table.insert(lines, "")
+    table.insert(lines, scope.title)
+    table.insert(lines, "")
+    for _, mode in ipairs(modes) do
+      local mappings = {}
+      for _, current in pairs(active) do
+        local item = current.mapping
+        if
+          current.mode == mode
+          and current.buffer == scope.buffer
+          and (current.buffer or (item.desc and item.desc ~= ""))
+        then
+          table.insert(mappings, item)
+        end
+      end
+      table.sort(mappings, function(a, b)
+        return a.lhs < b.lhs
+      end)
+      for _, item in ipairs(mappings) do
+        table.insert(
+          lines,
+          string.format("%-5s %-18s %s", mode, item.lhs, item.desc or item.rhs or "Callback")
+        )
+      end
     end
   end
   require("blak.util").open_scratch("Blak keymaps", lines)

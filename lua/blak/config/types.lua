@@ -49,6 +49,7 @@
 ---| "lang.tailwind"
 ---| "lang.terraform"
 ---| "lang.typescript"
+---| "lang.typescript-legacy"
 ---| "lang.typescript-tsgo"
 ---| "lang.web"
 ---| "lang.yaml"

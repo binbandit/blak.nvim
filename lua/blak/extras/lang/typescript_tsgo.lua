@@ -1,28 +1,16 @@
 return {
   id = "lang.typescript-tsgo",
-  label = "TypeScript (tsgo)",
-  description = "tsgo, prettier, ESLint LSP, TS/JS Treesitter",
-  treesitter = { "javascript", "typescript", "tsx", "jsdoc", "json" },
-  mason = { "prettier", "prettierd" },
-  lsp = {
-    servers = {
-      tsgo = {},
-      eslint = {},
-    },
-  },
-  format = {
-    formatters_by_ft = {
-      javascript = { "prettierd", "prettier", stop_after_first = true },
-      javascriptreact = { "prettierd", "prettier", stop_after_first = true },
-      typescript = { "prettierd", "prettier", stop_after_first = true },
-      typescriptreact = { "prettierd", "prettier", stop_after_first = true },
-      json = { "prettierd", "prettier", stop_after_first = true },
-      jsonc = { "prettierd", "prettier", stop_after_first = true },
-    },
-  },
+  label = "TypeScript (tsgo compatibility)",
+  description = "Compatibility alias for the native lang.typescript stack",
+  alias = "lang.typescript",
   apply = function(config)
-    if config.lsp and config.lsp.servers then
-      config.lsp.servers.ts_ls = nil
+    local servers = config.lsp.servers
+    if servers.tsgo then
+      -- Keep the saved extra ID and carry existing tsgo overrides forward.
+      -- Explicit settings under the current server name take precedence.
+      servers.tsc = vim.tbl_deep_extend("force", {}, servers.tsgo, servers.tsc or {})
+      servers.tsgo = nil
+      return true
     end
   end,
 }

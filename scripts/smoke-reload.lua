@@ -3,6 +3,7 @@ local util = require("blak.util")
 local user = util.join(vim.fn.stdpath("config"), "lua", "blak", "user.lua")
 local original = util.read_file(user)
 local compressed = vim.fn.tempname()
+local original_get_clients, original_lsp_format
 local ok, err = xpcall(function()
   vim.cmd("Lazy load conform.nvim blink.cmp")
   assert(
@@ -11,13 +12,13 @@ local ok, err = xpcall(function()
     end, 50),
     "Blink keymaps did not finish initializing"
   )
-  local function reload(extra)
+  local function reload(extra, conform_extra)
     util.write_file(user, [[
 return {
   plugins = { specs = {
     { "stevearc/conform.nvim", opts = function(_, opts)
-      opts.format_on_save = false
       opts.formatters_by_ft.custom = { "fixture" }
+]] .. (conform_extra or "opts.format_on_save = false") .. [[
     end },
     { "saghen/blink.cmp", opts = { keymap = { ["<C-space>"] = false, ["<F6>"] = { "show" } } } },
   } },
@@ -40,6 +41,90 @@ return {
     found = found or mapping.lhs == "<F6>"
   end
   assert(found, "reload dropped custom Blink shortcut")
+
+  -- Use Conform's real option resolution with a controlled LSP formatter. This
+  -- catches Blak passing global options that accidentally override a filetype.
+  local conform = require("conform")
+  local lsp_format = require("conform.lsp_format")
+  original_get_clients = lsp_format.get_format_clients
+  original_lsp_format = lsp_format.format
+  local formatted = {}
+  lsp_format.get_format_clients = function()
+    return { {} }
+  end
+  lsp_format.format = function(opts, callback)
+    table.insert(formatted, vim.deepcopy(opts))
+    callback(nil, true)
+  end
+  local previous_buf = vim.api.nvim_get_current_buf()
+  local format_buf = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_set_current_buf(format_buf)
+  vim.bo[format_buf].filetype = "blakformat"
+  reload(
+    [[
+format = {
+  lsp_format = "fallback", timeout_ms = 4321,
+  formatters_by_ft = { blakformat = { lsp_format = "never", timeout_ms = 17 } },
+},]],
+    ""
+  )
+  vim.cmd("BlakFormat")
+  vim.api.nvim_exec_autocmds("BufWritePre", { buffer = format_buf })
+  assert(#formatted == 0, "manual/save formatting ignored the filetype LSP opt-out")
+
+  reload(
+    [[
+format = {
+  lsp_format = "fallback", timeout_ms = 4321,
+  formatters_by_ft = { blakformat = { lsp_format = "prefer", timeout_ms = 17 } },
+},]],
+    ""
+  )
+  vim.cmd("BlakFormat")
+  vim.api.nvim_exec_autocmds("BufWritePre", { buffer = format_buf })
+  assert(#formatted == 2, "manual/save formatting did not reach the LSP formatter")
+  for _, opts in ipairs(formatted) do
+    assert(
+      opts.lsp_format == "prefer" and opts.timeout_ms == 17,
+      "filetype formatting options lost precedence"
+    )
+  end
+
+  vim.bo[format_buf].filetype = "blakdefaultformat"
+  vim.cmd("BlakFormat")
+  vim.api.nvim_exec_autocmds("BufWritePre", { buffer = format_buf })
+  for index = 3, 4 do
+    assert(
+      formatted[index].lsp_format == "fallback" and formatted[index].timeout_ms == 4321,
+      "global formatting defaults were not applied"
+    )
+  end
+
+  reload(
+    'format = { lsp_format = "fallback", timeout_ms = 4321 },',
+    [[
+opts.default_format_opts.lsp_format = "last"
+opts.default_format_opts.timeout_ms = 2468
+opts.default_format_opts.quiet = true
+]]
+  )
+  vim.cmd("BlakFormat")
+  vim.api.nvim_exec_autocmds("BufWritePre", { buffer = format_buf })
+  for index = 5, 6 do
+    assert(
+      formatted[index].lsp_format == "last" and formatted[index].timeout_ms == 2468,
+      "user plugin formatting options lost precedence"
+    )
+  end
+  reload("")
+  assert(
+    conform.default_format_opts.quiet == nil,
+    "removed plugin formatting default survived reload"
+  )
+  lsp_format.get_format_clients = original_get_clients
+  lsp_format.format = original_lsp_format
+  vim.api.nvim_set_current_buf(previous_buf)
+  vim.api.nvim_buf_delete(format_buf, { force = true })
 
   -- Native helpers must remain available when Blak has no replacement.
   assert(vim.g.loaded_gzip == 1, "native compressed-file support disabled")
@@ -69,6 +154,10 @@ return {
   vim.cmd("close")
   vim.api.nvim_buf_delete(extras_buf, { force = true })
 end, debug.traceback)
+if original_get_clients then
+  require("conform.lsp_format").get_format_clients = original_get_clients
+  require("conform.lsp_format").format = original_lsp_format
+end
 vim.fn.delete(compressed)
 vim.fn.delete(compressed .. ".gz")
 if original then

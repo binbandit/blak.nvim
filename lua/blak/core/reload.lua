@@ -3,6 +3,7 @@ local M = {}
 local uv = vim.uv or vim.loop
 local timer
 local watcher
+local watched_file
 local reloading = false
 
 local function normalize_path(path)
@@ -12,12 +13,16 @@ local function normalize_path(path)
   return vim.fn.fnamemodify(path, ":p")
 end
 
-local function is_user_file(path)
+local function path_identity(path)
   path = normalize_path(path)
   if not path then
-    return false
+    return nil
   end
-  return path:gsub("\\", "/"):match("/lua/blak/user%.lua$") ~= nil
+  return uv.fs_realpath(path)
+    or vim.fs.joinpath(
+      uv.fs_realpath(vim.fs.dirname(path)) or vim.fs.dirname(path),
+      vim.fs.basename(path)
+    )
 end
 
 local function user_files()
@@ -47,6 +52,15 @@ local function user_file(paths)
   return nil
 end
 
+local function user_target()
+  local paths = user_files()
+  return user_file(paths) or watched_file or paths[#paths]
+end
+
+local function is_user_file(path)
+  return path ~= nil and path_identity(path) == path_identity(user_target())
+end
+
 local function stop_watcher()
   if watcher and not watcher:is_closing() then
     watcher:stop()
@@ -55,7 +69,12 @@ local function stop_watcher()
   watcher = nil
 end
 
-local function refresh_runtime(config, user_config_path)
+local function file_identity(path)
+  local stat = uv.fs_stat(path)
+  return stat and { stat.dev, stat.ino, stat.size, stat.mtime.sec, stat.mtime.nsec } or nil
+end
+
+local function refresh_runtime(config)
   vim.g.mapleader = config.leader
   vim.g.maplocalleader = config.localleader
 
@@ -71,11 +90,15 @@ local function refresh_runtime(config, user_config_path)
   end
   require("blak.core.formatting").refresh(config)
   require("blak.core.completion").refresh(config)
-  M.watch_user_file(user_config_path)
+  M.watch_user_file()
 end
 
 function M.reload(opts)
   opts = opts or {}
+  if vim.g.blak_loading then
+    M.schedule(opts)
+    return false
+  end
   if reloading then
     return false
   end
@@ -83,7 +106,7 @@ function M.reload(opts)
   reloading = true
   local ok, result = pcall(function()
     local config = require("blak.config").reload()
-    refresh_runtime(config, opts.path)
+    refresh_runtime(config)
     require("blak.config").run_hooks(config, "after")
     vim.api.nvim_exec_autocmds("User", {
       pattern = "BlakConfigReloaded",
@@ -113,7 +136,7 @@ function M.schedule(opts)
     timer = uv.new_timer()
   end
   if not timer then
-    return M.reload(opts)
+    return not vim.g.blak_loading and M.reload(opts) or false
   end
 
   timer:start(
@@ -126,37 +149,61 @@ function M.schedule(opts)
   return true
 end
 
-function M.watch_user_file(path)
-  stop_watcher()
-
-  path = normalize_path(path) or user_file()
-  if not path or vim.fn.filereadable(path) ~= 1 then
+local function watch_user_file(path)
+  path = path_identity(path)
+  if watcher and not watcher:is_closing() and watched_file == path then
     return
   end
+  stop_watcher()
+  watched_file = path
+
+  -- Watch the directory so atomic saves, failed reloads, and file recreation
+  -- keep using the same watch instead of following a replaced file's inode.
+  local directory = path and vim.fs.dirname(path)
+  if not directory or vim.fn.isdirectory(directory) ~= 1 then
+    return
+  end
+  local name = vim.fs.basename(path)
+  local observed = file_identity(path)
 
   watcher = uv.new_fs_event()
   if not watcher then
     return
   end
 
-  local ok = watcher:start(path, {}, function(err)
+  local ok = watcher:start(directory, {}, function(err, filename)
     if err then
       vim.schedule(function()
         require("blak.util").warn("Could not watch lua/blak/user.lua: " .. tostring(err))
       end)
       return
     end
-    M.schedule({ path = path })
+    if filename == nil or filename == name then
+      local current = file_identity(path)
+      -- Directory watches may deliver events queued before registration.
+      -- Ignore unchanged files, including sibling/metadata-only events.
+      if not vim.deep_equal(observed, current) then
+        observed = current
+        M.schedule({ path = path })
+      end
+    end
   end)
   if not ok then
     stop_watcher()
   end
 end
 
+function M.watch_user_file()
+  watch_user_file(user_target())
+end
+
 function M.setup()
   local group = vim.api.nvim_create_augroup("BlakUserConfig", { clear = true })
   local paths = user_files()
   local patterns = vim.deepcopy(paths)
+  for _, path in ipairs(paths) do
+    table.insert(patterns, path_identity(path))
+  end
   table.insert(patterns, "user.lua")
   table.insert(patterns, "*/lua/blak/user.lua")
 
@@ -172,7 +219,7 @@ function M.setup()
     end,
   })
 
-  M.watch_user_file(user_file(paths))
+  watch_user_file(user_file(paths) or watched_file or paths[#paths])
 end
 
 return M

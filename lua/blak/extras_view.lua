@@ -272,18 +272,21 @@ local function render(config)
 
         local description = entry.known and entry.extra.description or "Unknown extra; press x to remove it from saved state if it came from extras.json."
         table.insert(lines, "    " .. description)
+        rows[#lines] = entry
         add_highlight(highlights, #lines, "Comment", 0, -1)
 
         if entry.known then
           local parts = feature_parts(entry.extra, config)
           if #parts > 0 then
             table.insert(lines, "    " .. table.concat(parts, "  "))
+            rows[#lines] = entry
             add_highlight(highlights, #lines, "Special", 0, -1)
           end
         else
           local source = source_label(entry)
           if source then
             table.insert(lines, "    Source: " .. source)
+            rows[#lines] = entry
             add_highlight(highlights, #lines, "Special", 0, -1)
           end
         end
@@ -301,22 +304,22 @@ local function render(config)
 end
 
 local function dimensions()
-  local columns = math.max(vim.o.columns, 80)
-  local screen_lines = math.max(vim.o.lines - vim.o.cmdheight, 20)
-  local width = math.min(110, math.max(64, math.floor(columns * 0.86)))
-  local height = math.min(30, math.max(12, screen_lines - 4))
-  width = math.min(width, columns - 4)
-  height = math.min(height, screen_lines - 4)
+  local columns = math.max(vim.o.columns, 1)
+  local screen_lines = math.max(vim.o.lines - vim.o.cmdheight, 1)
+  local border = columns > 2 and screen_lines > 2
+  local frame = border and 2 or 0
+  local width = math.min(110, math.max(64, math.floor(columns * 0.86)), math.max(1, columns - 4))
+  local height = math.min(30, math.max(1, screen_lines - 4))
 
   return {
     relative = "editor",
     width = width,
     height = height,
-    row = math.max(1, math.floor((screen_lines - height) / 2)),
-    col = math.max(2, math.floor((columns - width) / 2)),
-    border = "rounded",
-    title = " Blak Extras ",
-    title_pos = "center",
+    row = math.max(0, math.floor((screen_lines - height - frame) / 2)),
+    col = math.max(0, math.floor((columns - width - frame) / 2)),
+    border = border and "rounded" or "none",
+    title = border and " Blak Extras " or nil,
+    title_pos = border and "center" or nil,
     style = "minimal",
   }
 end
@@ -336,8 +339,9 @@ local function place_cursor(id)
     return
   end
 
-  for line, entry in pairs(state.rows) do
-    if entry.id == id then
+  for line = 1, vim.api.nvim_buf_line_count(state.buf) do
+    local entry = state.rows[line]
+    if entry and entry.id == id then
       pcall(vim.api.nvim_win_set_cursor, state.win, { line, 0 })
       return
     end
@@ -367,14 +371,7 @@ local function entry_at_cursor()
     return nil
   end
 
-  local line = vim.api.nvim_win_get_cursor(state.win)[1]
-  while line > 0 do
-    if state.rows[line] then
-      return state.rows[line]
-    end
-    line = line - 1
-  end
-  return nil
+  return state.rows[vim.api.nvim_win_get_cursor(state.win)[1]]
 end
 
 local function toggle_current()
@@ -434,6 +431,18 @@ function M.open(config)
   pcall(vim.api.nvim_buf_set_name, state.buf, string.format("BlakExtras://%d", state.buf))
 
   state.win = vim.api.nvim_open_win(state.buf, true, dimensions())
+  vim.api.nvim_create_autocmd("VimResized", {
+    group = vim.api.nvim_create_augroup("BlakExtrasView", { clear = true }),
+    callback = function()
+      if
+        state.win
+        and vim.api.nvim_win_is_valid(state.win)
+        and vim.api.nvim_win_get_buf(state.win) == state.buf
+      then
+        vim.api.nvim_win_set_config(state.win, dimensions())
+      end
+    end,
+  })
   apply_window_options(state.win)
   set_keymaps(state.buf)
   redraw()

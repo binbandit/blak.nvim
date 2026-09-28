@@ -82,7 +82,9 @@ function M.check()
       h.ok(binary .. " found")
     else
       if binary == "tree-sitter" then
-        h.warn("tree-sitter not found. Run :BlakToolsInstall, then :BlakTreesitterInstall to install parsers.")
+        h.warn(
+          "tree-sitter not found. Run :BlakToolsInstall, then :BlakTreesitterInstall to install parsers."
+        )
       else
         h.warn(binary .. " not found. Some picker/search features will be degraded.")
       end
@@ -123,7 +125,9 @@ function M.check()
       if extras.is_known(id) then
         h.ok(id)
       else
-        h.warn("Unknown extra: " .. id .. ". Run :BlakExtras disable " .. id .. " to remove stale state.")
+        h.warn(
+          "Unknown extra: " .. id .. ". Run :BlakExtras disable " .. id .. " to remove stale state."
+        )
       end
     end
   end
@@ -136,11 +140,11 @@ function M.check()
   else
     local ok_lint, lint = pcall(require, "lint")
     for _, name in ipairs(linter_names) do
-      local linter = ok_lint and lint.linters[name] or nil
-      if type(linter) == "function" then
-        local resolved_ok, resolved = pcall(linter)
-        linter = resolved_ok and resolved or nil
-      end
+      local resolved_ok, linter = pcall(function()
+        local definition = ok_lint and lint.linters[name] or nil
+        return type(definition) == "function" and definition() or definition
+      end)
+      linter = resolved_ok and linter or nil
       if type(linter) ~= "table" then
         h.warn(name .. " is configured but nvim-lint has no such linter")
       elseif linting.is_available(linter) then
@@ -148,6 +152,20 @@ function M.check()
       else
         h.warn(name .. " not found; it is skipped until installed. Run :BlakToolsInstall.")
       end
+    end
+  end
+
+  if config.lsp.servers.ts_ls then
+    h.start("TypeScript")
+    local path = require("blak.providers.typescript").mason_path()
+    if path then
+      h.ok("Mason TypeScript fallback: " .. path)
+    else
+      h.warn(
+        "Mason's TypeScript fallback is missing or has no tsserver.js. Run :BlakToolsInstall, "
+          .. "wait for installation, then restart. ts_ls requires TypeScript with tsserver.js (before TS 7); "
+          .. "a compatible workspace SDK or explicit init_options.tsserver.path can also supply it."
+      )
     end
   end
 

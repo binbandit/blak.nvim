@@ -159,12 +159,17 @@ function M.setup(config)
     require("blak.core.terminal").toggle(config, { cmd = opts.args ~= "" and opts.args or nil })
   end, { nargs = "*", desc = "Toggle the configured terminal" })
 
-  vim.api.nvim_create_user_command("BlakFormat", function()
+  vim.api.nvim_create_user_command("BlakFormat", function(opts)
     local conform = require("blak.util").load_plugin("conform.nvim", "conform")
     if conform then
-      conform.format({ lsp_format = config.format.lsp_format })
+      local range
+      if opts.range > 0 then
+        local last_line = vim.api.nvim_buf_get_lines(0, opts.line2 - 1, opts.line2, true)[1]
+        range = { start = { opts.line1, 0 }, ["end"] = { opts.line2, #last_line } }
+      end
+      conform.format({ range = range })
     end
-  end, { desc = "Format current buffer" })
+  end, { range = true, desc = "Format current buffer or selected lines" })
 
   vim.api.nvim_create_user_command("BlakFormatToggle", function(opts)
     local bang = opts.bang
