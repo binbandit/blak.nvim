@@ -148,6 +148,10 @@ return {
 | `disable` | `boolean` | Set `true` to remove this key from Blak |
 | `opts` | `table` | Optional `vim.keymap.set()` options |
 
+Modes must be Neovim short names: `n`, `v`, `x`, `s`, `o`, `i`, `l`, `c`, `t`,
+`!`, or the empty string. Abbreviation modes `ia`, `ca`, and `!a` are also
+accepted. Invalid mode names fail validation before keymap setup runs.
+
 ```lua
 return {
   keymaps = {
@@ -409,6 +413,9 @@ place and return nothing, or return a table of final overrides.
 If validation fails on startup, `require("blak").setup()` raises and Blak does not load. You'll see the original Neovim banner and the error message in `:messages`.
 
 If validation or evaluation fails during an automatic `user.lua` reload, Blak warns and keeps the previous in-session config active. Fix `user.lua` and save it again.
+
+The file watcher also supports external editors that replace the file on save.
+A syntax error does not stop it from noticing the next corrected save.
 
 The error message is verbose on purpose:
 

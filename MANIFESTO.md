@@ -18,6 +18,10 @@ We make extras easy, reversible, and documented.
 
 Blak starts from Neovim's own APIs, then adds plugins only where the editor becomes meaningfully better for most users.
 
+Supported stable Neovim releases are the baseline. Nightly is a compatibility
+target, not a requirement for everyday use. New native capabilities should earn
+their place without forcing users onto an unreleased editor.
+
 Core is for the floor: picker, completion, LSP wiring, formatting, linting, Treesitter, Git signs, discoverable keymaps, a readable explorer, and a coherent first launch.
 
 Extras are for preference, specialization, and weight: language stacks, alternate pickers, sidebar explorers, richer Git workflows, AI integrations, images, zen mode, and animation.

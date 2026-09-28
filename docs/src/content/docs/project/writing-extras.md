@@ -57,6 +57,23 @@ return {
 }
 ```
 
+## Aliases and alternate language stacks
+
+Use `alias = "lang.typescript"` to preserve an older extra ID while delegating
+to the canonical extra. Keep aliases pointed directly at a canonical ID. The
+canonical stack is applied once even when both IDs are enabled; an alias's
+optional `apply` function runs before delegation to migrate old settings.
+
+Use `supersedes = { "lang.python" }` when an alternate language stack replaces
+the basic stack's defaults. This affects only LSP servers, formatter lists, and
+linter lists contributed by the superseded extra. Explicit user settings and
+defaults edited afterward are preserved. The result is independent of which
+extra is enabled first.
+
+Superseding does not disable the saved extra or remove its plugins, parsers,
+or installed tools. Document which extra users should enable, which to disable,
+and when a restart is needed to unload the previous stack.
+
 ## Performance contract
 
 Extras are opt-in, but they still must not become surprise startup cost. Every plugin spec in an extra must lazy-load with one of these:

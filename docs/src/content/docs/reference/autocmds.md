@@ -16,7 +16,7 @@ Highlights the yanked region for 180 ms so you see exactly what was captured.
 ```lua
 vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function()
-    vim.highlight.on_yank({ timeout = 180 })
+    vim.hl.on_yank({ timeout = 180 })
   end,
 })
 ```
@@ -46,7 +46,7 @@ Registered in [`lua/blak/splash/init.lua`](https://github.com/binbandit/blak.nvi
 
 ### `LspAttach` — bind LSP keymaps
 
-When a server attaches to a buffer, bind the buffer-local LSP keymaps (`gd`, `gD`, `gI`, `gr`, `K`, `<leader>ca`, `<leader>cr`, `<leader>cs`, `<leader>cS`, `<leader>cf`).
+When a server attaches to a buffer, bind the buffer-local LSP keymaps (`gd`, `gD`, `gI`, `gr`, `K`, `<leader>ca`, `<leader>cr`, `<leader>cs`, `<leader>cS`). Formatting (`<leader>cf`) is available globally through Conform.
 
 Registered in [`lua/blak/core/keymaps.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/keymaps.lua).
 

@@ -7,6 +7,16 @@ Blak uses [mfussenegger/nvim-lint](https://github.com/mfussenegger/nvim-lint) to
 
 Spec: [`lua/blak/plugins/formatting.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/formatting.lua) (formatting and linting share a file). The runner itself lives in [`lua/blak/core/linting.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/linting.lua).
 
+Configured linters run independently. An unknown name or failing linter factory
+produces a warning without blocking the other linters for the filetype. Use
+`:BlakDoctor` to inspect the configured names and available executables.
+Events aimed at a background buffer lint that buffer without changing the
+visible one.
+
+After removing a linter from your config, restart to clear any diagnostics and
+jobs that were already active. Reload changes future dispatch; it does not
+cancel a running nvim-lint process.
+
 ## Defaults
 
 ```lua
@@ -20,14 +30,13 @@ No linters are configured in core. Linters arrive via [language extras](/guide/e
 
 | Extra | Adds |
 | --- | --- |
-| `lang.python` | `ruff` for python |
 | `lang.go` | `golangcilint` for go |
 | `lang.markdown` | `markdownlint` for markdown |
 | `lang.bash` | `shellcheck` for sh/bash |
 | `lang.docker` | `hadolint` for dockerfile |
 | `lang.terraform` | `tflint` for terraform |
 
-`lang.python-pro` uses Ruff's native LSP diagnostics and code actions instead
+Both Python extras use Ruff's native LSP diagnostics and code actions instead
 of adding a separate nvim-lint entry, so it avoids duplicate Ruff diagnostics.
 The TypeScript extras do the same with ESLint: they enable the `eslint`
 language server rather than running `eslint_d` through nvim-lint. See

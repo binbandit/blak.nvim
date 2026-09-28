@@ -31,9 +31,11 @@ Or enable it from Neovim:
 :BlakExtras disable lang.python
 ```
 
-If both Python extras are enabled, `lang.python-pro` removes the basic extra's
-default `pyright`, Black/isort formatter, and nvim-lint Ruff entry when they are
-still unchanged. Disabling `lang.python` is still cleaner.
+If both Python extras are enabled, `lang.python-pro` replaces the basic extra's
+unchanged `pyright` and Black/isort defaults regardless of activation order.
+Explicit user settings stay in effect, even if they match those defaults.
+Remove an explicit `pyright` entry if you want only BasedPyright. Disabling
+`lang.python` is still cleaner; installed tools are retained.
 
 Because this extra adds a plugin, run:
 

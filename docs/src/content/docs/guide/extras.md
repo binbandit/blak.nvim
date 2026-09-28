@@ -38,6 +38,10 @@ each one contributes, and lets you toggle the row under the cursor with `x` or
 from `lua/blak/user.lua` are marked `[config]`; remove them there when you want
 the UI to stop treating them as enabled.
 
+An extra's description and tool lines select the same extra. Headings and blank
+lines do nothing. The floating menu fits the current terminal and adjusts when
+you resize it.
+
 State persists outside the repo in `stdpath('state')/blak/extras.json`. That means:
 
 - A fresh clone with the same `NVIM_APPNAME` reuses the same enabled extras.
@@ -63,7 +67,7 @@ configuration examples, install notes, and verification path.
 
 | Group | Extras |
 | --- | --- |
-| Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.python-pro`](/extras/lang/python-pro/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/), [`lang.c`](/extras/lang/c/), [`lang.bash`](/extras/lang/bash/), [`lang.web`](/extras/lang/web/), [`lang.tailwind`](/extras/lang/tailwind/), [`lang.docker`](/extras/lang/docker/), [`lang.yaml`](/extras/lang/yaml/), [`lang.json`](/extras/lang/json/), [`lang.terraform`](/extras/lang/terraform/), [`lang.nix`](/extras/lang/nix/), [`lang.zig`](/extras/lang/zig/) |
+| Languages | [`lang.lua`](/extras/lang/lua/), [`lang.typescript`](/extras/lang/typescript/), [`lang.typescript-legacy`](/extras/lang/typescript-legacy/), [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/), [`lang.python`](/extras/lang/python/), [`lang.python-pro`](/extras/lang/python-pro/), [`lang.rust`](/extras/lang/rust/), [`lang.go`](/extras/lang/go/), [`lang.markdown`](/extras/lang/markdown/), [`lang.c`](/extras/lang/c/), [`lang.bash`](/extras/lang/bash/), [`lang.web`](/extras/lang/web/), [`lang.tailwind`](/extras/lang/tailwind/), [`lang.docker`](/extras/lang/docker/), [`lang.yaml`](/extras/lang/yaml/), [`lang.json`](/extras/lang/json/), [`lang.terraform`](/extras/lang/terraform/), [`lang.nix`](/extras/lang/nix/), [`lang.zig`](/extras/lang/zig/) |
 | Debug | [`debug.dap`](/extras/debug/dap/) |
 | Test | [`test.neotest`](/extras/test/neotest/) |
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.indent`](/extras/ui/indent/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
@@ -86,29 +90,36 @@ Lua development — what Blak itself is written in.
 
 ### `lang.typescript`
 
-TypeScript and JavaScript with ESLint + Prettier.
+TypeScript and JavaScript with the native TypeScript 7 `tsc` LSP, ESLint, and Prettier.
 
 | Adds | Value |
 | --- | --- |
 | Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
 | Mason | `prettier`, `prettierd` |
-| LSP | `ts_ls`, `eslint` |
+| LSP | `tsc`, `eslint` |
 | Format | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
 | Lint | ESLint diagnostics come from the `eslint` language server |
+
+Run `:BlakToolsInstall`, wait, and restart after upgrading. Explicit
+`lsp.servers.ts_ls` entries remain; remove them to use only the native server.
+
+### `lang.typescript-legacy`
+
+The optional `ts_ls` stack with compatible workspace SDK resolution and Mason
+fallback. It has the same parsers, formatters, and ESLint integration as the
+standard extra. Use it for projects that need the older server or its plugins.
+
+Disable `lang.typescript` and its beta alias when selecting legacy TypeScript.
+If both stacks are enabled, native replaces only unchanged defaults contributed
+by legacy, regardless of activation order. Explicit user servers and formatter
+settings remain in effect. Restart after switching.
 
 ### `lang.typescript-tsgo`
 
-TypeScript and JavaScript with the experimental native `tsgo` LSP, ESLint, and Prettier.
-
-Enable this instead of `lang.typescript` when you want to try TypeScript's Go-based language server. If both are enabled and this extra applies after `lang.typescript`, it removes `ts_ls` from the merged config for future setup. Restart after switching if `ts_ls` already attached in the current session.
-
-| Adds | Value |
-| --- | --- |
-| Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
-| Mason | `prettier`, `prettierd` |
-| LSP | `tsgo`, `eslint` |
-| Format | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
-| Lint | ESLint diagnostics come from the `eslint` language server |
+Compatibility alias for `lang.typescript`. Existing saved IDs keep working and
+`lsp.servers.tsgo` settings are carried into `tsc`, with explicit `tsc` settings
+winning. Enabling the alias and standard extra applies the stack once. Use
+`lang.typescript` in new configurations.
 
 ### `lang.python`
 
@@ -120,7 +131,7 @@ Python with Pyright + Ruff + Black + isort.
 | Mason | `black`, `isort`, `ruff` |
 | LSP | `pyright`, `ruff` |
 | Format | `isort`, then `black` |
-| Lint | `ruff` |
+| Lint | Ruff language server diagnostics |
 
 ### `lang.python-pro`
 

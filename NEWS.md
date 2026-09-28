@@ -2,6 +2,66 @@
 
 ## Unreleased
 
+- Fixed extras-menu selection: headings and blank lines no longer toggle an
+  unrelated extra. The menu fits small terminals and adjusts when resized.
+- Automatic config reload now survives external editors replacing `user.lua`,
+  including a syntax error followed by a corrected save. Changes to unrelated
+  or unchanged files do not reload Blak, and edits during startup wait until
+  setup finishes. Invalid keymap mode names are rejected before
+  replacing the accepted configuration.
+- One unknown or failing linter no longer prevents the other configured
+  linters from running. Blak reports the failing linter separately and honors
+  the event's target buffer when linting a background buffer.
+- Extras no longer share mutable Snacks option tables between config builds,
+  so changes to an active extra cannot alter its defaults on later reloads.
+- Clarified the manifesto: supported stable Neovim releases are the baseline;
+  nightly is a compatibility target. CI now has a required stable smoke job
+  and an advisory nightly smoke job.
+- Updated deprecated Neovim highlighting and diagnostic navigation APIs while
+  preserving the existing keys. `:BlakKeys` now includes described global
+  mappings, including native defaults, and shows the effective mapping when a
+  buffer-local mapping overrides a global one.
+- `<leader>cf` now works without an attached LSP. `:BlakFormat` accepts line
+  ranges, including `:'<,'>BlakFormat` after a visual selection. Disable the
+  shortcut with `{ key = "<leader>cf", disable = true }` in `keymaps`.
+- Reopening an exited native terminal starts a fresh shell and retains the old
+  output buffer. Running terminal jobs are still reused.
+- Per-filetype Conform options now override Blak's global formatting defaults
+  on save and through `:BlakFormat`. Use `{ lsp_format = "never" }` as a
+  filetype's formatter entry to disable formatting for that filetype; an empty
+  list alone still allows LSP fallback.
+- `lang.typescript` now uses TypeScript 7's native `tsc` language server.
+  This is a deliberate distribution upgrade: review this change before
+  updating the Blak checkout, then run `:BlakUpgrade`, `:BlakToolsInstall`,
+  wait for installation, and restart. To retain `ts_ls`, select the new
+  `lang.typescript-legacy` extra when upgrading. Explicit `lsp.servers.ts_ls`
+  entries remain configured; remove them to use only the native server.
+  `lang.typescript-tsgo` is a compatibility alias for the standard stack and
+  carries `tsgo` overrides into `tsc`, with explicit `tsc` settings winning.
+  Installed tools remain. Plugin-only `:BlakUpdate` does not fetch this change,
+  and rollback snapshots do not restore the Blak checkout revision.
+- Overlapping Python or TypeScript language extras now behave consistently
+  regardless of activation order. Python Pro supersedes basic Python, and
+  native TypeScript supersedes legacy TypeScript. They replace only unchanged
+  extra-contributed defaults, preserving explicit user settings. Changes in
+  one configuration no longer leak through shared extra server tables.
+  Basic Python no longer starts a second Ruff process through nvim-lint; Ruff
+  LSP supplies diagnostics. Opt back in with `lint.linters_by_ft.python = { "ruff" }`.
+
+- Fixed TypeScript initialization when a project-local language server cannot
+  find TypeScript: `lang.typescript-legacy` resolves a compatible workspace SDK first,
+  then Mason's copy, while preserving explicit SDK paths and user hooks.
+  Tool installation repairs Mason packages missing `tsserver.js`, including
+  incompatible TypeScript 7 installations. Run `:BlakToolsInstall`, wait for
+  completion, and restart to recover an existing broken installation.
+  `:BlakDoctor` now checks this dependency. Automatic repair follows
+  `mason.automatic_install`; see the typescript-runtime migration.
+- Configuration functions can remove default LSP servers and formatters without
+  the defaults being silently restored. Table-based overrides and explicit
+  `setup()` overrides retain their existing precedence.
+- Unknown linter names and failing linter factories now produce health warnings
+  instead of aborting `:BlakDoctor` before later checks run.
+
 - Restored Neovim's built-in compressed-file support, tar/zip browsing, and
   Tutor. Blak disables only the netrw directory handler that its explorer
   replaces. See the native-helpers migration for opting out.

@@ -63,11 +63,15 @@ Snapshots accumulate in `stdpath('state')/blak/rollbacks/`. Blak doesn't auto-pr
 
 ## On nightly Neovim
 
-Blak supports Neovim stable and nightly. Nightly changes to `vim.lsp.config()` or other native APIs can cause loud errors after a Neovim upgrade. The mitigation:
+Supported stable Neovim releases are the baseline. CI requires the stable smoke
+and installer checks and runs an advisory nightly smoke job. Nightly remains a
+compatibility target; upstream API changes can still cause errors. If one does:
 
 1. Upgrade Neovim.
 2. Update the Blak checkout as described below, then run `:BlakUpdate` for plugin fixes.
-3. If something breaks, `:BlakRollback` and report — Blak's CI runs against stable and can lag nightly by a day or two.
+3. Use `:BlakRollback` for a plugin regression and report the issue. For a Neovim
+   regression, return to a supported stable Neovim release; Blak's snapshots
+   do not contain the editor executable.
 
 ## Updating Blak itself
 
@@ -78,5 +82,13 @@ git -C ~/.config/blak pull --ff-only
 ```
 
 Use your actual XDG config path if different. If Git reports local changes or divergent history, resolve those before proceeding. Restart Blak and run `:BlakUpgrade` for pending migrations. Rollback snapshots do not include the distribution's Git revision.
+
+Checkout changes take effect on the next startup; `:BlakUpgrade` is not a gate
+on loading manually updated source. For the native TypeScript transition,
+review the release note before updating. If you want to retain `ts_ls`, replace
+`lang.typescript` or `lang.typescript-tsgo` with `lang.typescript-legacy` as part
+of that checkout upgrade, before restarting. Otherwise the standard extra uses
+`tsc`; remove any explicit `lsp.servers.ts_ls` entry to avoid starting both.
+Run `:BlakToolsInstall`, wait for completion, and restart after upgrading.
 
 `package.channel` currently selects Blink's version policy: `stable` uses `1.*`; `edge` and `nightly` both build the development branch with Cargo. Other plugins follow their configured branches. These are not separate Blak release branches, and upstream plugin updates can still introduce breaking changes. Direct `:Lazy` commands bypass Blak's channel/migration checks.

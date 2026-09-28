@@ -38,7 +38,7 @@ Or enable it from Neovim:
 | Mason | `black`, `isort`, `ruff` |
 | LSP | `pyright`, `ruff` |
 | Formatting | `isort`, then `black`, for `python` |
-| Linting | `ruff` for `python` |
+| Linting | Ruff language server diagnostics; no duplicate nvim-lint process |
 
 ## Configure Pyright and Ruff
 
@@ -89,8 +89,9 @@ return {
 }
 ```
 
-To let Ruff lint but stop format-on-save for Python, define an empty formatter
-list for Python:
+To let Ruff lint but disable formatting for Python, use an empty formatter
+list with LSP formatting disabled for that filetype. An empty list alone still
+permits the global LSP fallback:
 
 ```lua
 return {
@@ -99,7 +100,7 @@ return {
   },
   format = {
     formatters_by_ft = {
-      python = {},
+      python = { lsp_format = "never" },
     },
   },
 }
@@ -107,8 +108,8 @@ return {
 
 ## Configure linting
 
-The extra wires `ruff` through nvim-lint. Set an empty list if you want only the
-Ruff LSP diagnostics:
+Ruff LSP supplies diagnostics. If you intentionally want a second Ruff run
+through nvim-lint, add it explicitly:
 
 ```lua
 return {
@@ -117,11 +118,13 @@ return {
   },
   lint = {
     linters_by_ft = {
-      python = {},
+      python = { "ruff" },
     },
   },
 }
 ```
+
+Remove that entry to return to LSP-only diagnostics.
 
 ## Install and verify
 

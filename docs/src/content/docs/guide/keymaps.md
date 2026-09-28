@@ -3,9 +3,7 @@ title: Keymaps
 description: Every keymap registered by Blak core, where it lives, and the rule behind it.
 ---
 
-The rule: **common operations get memorable mappings; uncommon operations get commands and pickers.** Every Blak-registered keymap has a description and appears in `:BlakKeys`. `:BlakKeys` also lists shortcuts in the current buffer, including plugin-owned
-mappings and Blak UI controls. Inspect other global plugin mappings with
-`:BlakPick keymaps` or `:map`.
+The rule: **common operations get memorable mappings; uncommon operations get commands and pickers.** Every Blak-registered keymap has a description. `:BlakKeys` shows effective mappings in the current buffer, including described global Neovim/plugin defaults and buffer-local shortcuts. A buffer-local override takes precedence; shadowed mappings are omitted. Inspect global mappings without descriptions with `:BlakPick keymaps` or `:map`.
 
 The leader is `<Space>`. Local leader is `\`.
 
@@ -41,6 +39,10 @@ Active entries require `description` so they stay discoverable through `:BlakKey
 Use `mode` for one mode or a list of modes, and use a command string or Lua
 function for `action`. Use `disable = true` to disable a Blak mapping. To move a
 default action, disable the old key and add the new one.
+
+Modes use Neovim's short names: `"n"` for Normal, `"i"` for Insert, and `"x"`
+for Visual, for example. Names such as `"normal"` fail config validation before
+the current session's keymaps are refreshed.
 
 ## Edit & navigation
 
@@ -106,6 +108,10 @@ Blak leaves Neovim's native `-` motion alone.
 Change this mapping with `terminal.toggle_key` in `lua/blak/user.lua`. Set it
 to `false` to leave terminal toggling command-only.
 
+In terminal input mode, press `<C-\><C-n>` to return to Normal mode, then
+`<leader>tt` to hide the terminal. Reopening reuses a running shell; after it
+exits, reopening starts a fresh shell and keeps the old output buffer.
+
 ## Git (gitsigns)
 
 | Mode | Mapping | Action |
@@ -135,11 +141,23 @@ These map only when an LSP server attaches to the current buffer.
 | `K` | Hover |
 | `<leader>ca` | Code action |
 | `<leader>cr` | Rename |
-| `<leader>cf` | Format buffer (Conform → LSP fallback) |
 | `<leader>cs` | Document symbols (picker) |
 | `<leader>cS` | Workspace symbols (picker) |
 
 See the [LSP guide](/guide/lsp/).
+
+## Formatting
+
+`<leader>cf` runs `:BlakFormat` in any buffer, with or without an LSP. To format
+selected lines, use `:'<,'>BlakFormat`. Disable the mapping through
+`keymaps = { { key = "<leader>cf", disable = true } }` in `user.lua`.
+
+## Native shortcuts
+
+Neovim's described defaults, such as `grn` for rename and `grt` for type
+definition, appear in `:BlakKeys` alongside Blak's keys when active. They remain
+native mappings. See [Native Neovim tools](/guide/native-neovim/) for other
+built-in capabilities that need no extra plugin.
 
 ## Diagnostics
 

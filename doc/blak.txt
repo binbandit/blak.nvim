@@ -14,8 +14,8 @@ COMMANDS                                                 *blak-commands*
     Run |:checkhealth| for Blak.
 
 :BlakKeys
-    Show keymaps registered by Blak core, enabled extras, and user.lua, plus
-    shortcuts in the current buffer.
+    Show effective Blak/user mappings, described native/plugin globals, and
+    current-buffer shortcuts.
 
 :BlakNews
     Open the Blak release notes.
@@ -131,10 +131,25 @@ building before validation and extras apply: >
 Use hooks.after for Lua that should run after Blak setup and after successful
 user.lua reloads.
 
+Config functions can remove defaults with nil, for example
+config.lsp.servers.lua_ls = nil. Enabled extras apply afterward; disable the
+corresponding extra as well when removing its tooling.
+
 Saving lua/blak/user.lua while Blak is running reloads the merged config and
 refreshes the current session. Run :BlakExtras sync or :Lazy sync after adding
 or removing plugin-backed extras; restart to unload runtime hooks that already
 ran.
+
+Syntax and validation errors leave the accepted config active. Fix the file
+and save again; external editors replacing user.lua are supported too. Keymap
+modes use Neovim short names (n, i, x, etc.); invalid names fail validation
+before active keymaps are refreshed.
+
+A failing or unknown nvim-lint entry warns independently, so other configured
+linters can still run.
+
+Supported stable Neovim releases (0.12+) are the baseline. Nightly is a
+compatibility target, not a requirement for everyday editing.
 
 ==============================================================================
 
@@ -151,13 +166,49 @@ extra and restarting stops its LSP wiring, but installed Mason tools remain.
 mason.automatic_install=false disables automatic tool and server installs;
 :BlakToolsInstall explicitly requests both.
 
-:BlakKeys lists Blak-registered mappings plus mappings in the current buffer,
-including plugin-owned shortcuts. Inspect other global plugin mappings with
-:BlakPick keymaps, :map, and plugin help.
+lang.typescript uses the native TypeScript 7 server, tsc. Run :BlakToolsInstall,
+wait for completion, then restart after updating. Explicit lsp.servers.ts_ls
+entries remain configured; remove them to use only the native server. To retain
+ts_ls, replace lang.typescript with lang.typescript-legacy and restart.
+
+lang.typescript-legacy uses a compatible workspace SDK, then Mason's copy.
+Explicit lsp.servers.ts_ls.init_options.tsserver.path and before_init overrides
+are preserved. ts_ls requires tsserver.js, which TypeScript 7 removed. If it
+reports "Could not find a valid TypeScript installation", run :BlakToolsInstall,
+wait for completion, then restart. Tool installation repairs Mason copies
+missing tsserver.js; automatic repairs respect mason.automatic_install=false.
+:BlakDoctor checks Mason's TypeScript fallback when ts_ls is configured.
+
+:BlakKeys lists effective Blak mappings, described global/native mappings, and
+current-buffer shortcuts. Buffer-local overrides take precedence. Inspect
+global mappings without descriptions with :BlakPick keymaps or :map.
+
+<Space>cf runs :BlakFormat with or without an attached LSP. :2,5BlakFormat and
+:'<,'>BlakFormat format complete selected lines. Per-filetype Conform options
+override global formatting defaults. An empty formatter list still allows LSP
+fallback; { lsp_format = "never" } disables both for that filetype.
+
+In terminal input mode, <C-\><C-n> returns to Normal mode; <Space>tt hides the
+terminal. Reopening an exited shell creates a fresh one and retains its output.
+
+lang.typescript-tsgo is a compatibility alias for lang.typescript. It retains
+its saved ID. Legacy tsgo settings are carried forward; explicit tsc settings
+win. Run :BlakToolsInstall and restart after updating. Basic Python uses Ruff
+LSP diagnostics without also invoking nvim-lint. Python Pro supersedes basic
+Python; native TypeScript supersedes legacy TypeScript. They replace only
+unchanged extra-contributed defaults, regardless of activation order. Explicit
+user settings remain in effect.
 
 Native gzip, tar, zip, and Tutor plugins remain enabled. Only the netrw directory
 handler is disabled for Blak's explorer. To disable individual native helpers,
 set the corresponding loaded_* flags in hooks.before (see their Neovim help).
+
+Stable Neovim 0.12 also bundles optional undo-tree and directory-diff tools:
+  :packadd nvim.undotree | Undotree
+  :packadd nvim.difftool
+  :DiffTool path/to/old path/to/new
+Use :lsp restart to restart clients attached to the current buffer. See
+https://getblak.dev/guide/native-neovim/ for recipes and native completion.
 
 Reload preserves Conform and Blink options from plugins.specs. Removed formatter
 filetypes and LSP settings no longer linger in the rebuilt configuration;

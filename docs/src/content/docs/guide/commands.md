@@ -27,7 +27,10 @@ The health checks live in [`lua/blak/core/health.lua`](https://github.com/binban
 
 ### `:BlakKeys`
 
-Opens a scratch buffer listing every keymap registered by Blak core, enabled extras, and `user.lua`, sorted by key and annotated with mode + description. The "did I bind this myself or did Blak?" question, answered.
+Opens a scratch buffer listing effective Blak, extra, user, native, and plugin
+mappings in the current buffer, grouped by source and scope. Described global
+mappings are included; buffer-local overrides take precedence. Each entry
+shows its mode, key, and description.
 
 ### `:BlakNews`
 
@@ -129,6 +132,10 @@ Without an argument it opens your shell; with an argument it runs that command. 
 ### `:BlakFormat`
 
 Formats the current buffer via Conform, falling back to the LSP based on `format.lsp_format` (default `"fallback"`).
+
+Accepts complete-line ranges: `:2,5BlakFormat` or `:'<,'>BlakFormat` after a
+visual selection. Per-filetype Conform options override the global defaults.
+The `<leader>cf` shortcut also works without an attached LSP.
 
 ### `:BlakFormatToggle[!]`
 

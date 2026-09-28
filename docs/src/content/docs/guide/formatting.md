@@ -27,7 +27,7 @@ format = {
 | --- | --- |
 | `enabled` | Whether format-on-save runs at all. |
 | `timeout_ms` | Per-buffer timeout before Conform gives up. |
-| `lsp_format` | `"never"`, `"fallback"`, `"prefer"`, or `"first"`. Blak defaults to `"fallback"` — use LSP only when no Conform formatter is configured for the filetype. |
+| `lsp_format` | `"never"`, `"fallback"`, `"prefer"`, `"first"`, or `"last"`. Blak defaults to `"fallback"` — use LSP only when no Conform formatter is available for the filetype. |
 | `formatters_by_ft` | Filetype → ordered formatter list. Each formatter must be installable via Mason (or already on `$PATH`). |
 
 Language extras add to `formatters_by_ft`:
@@ -49,7 +49,9 @@ Language extras add to `formatters_by_ft`:
 | Toggle for current buffer | `<leader>uf` or `:BlakFormatToggle` |
 | Toggle globally | `:BlakFormatToggle!` (with bang) |
 | Format current buffer once | `:BlakFormat` |
-| Format inside an LSP-attached buffer | `<leader>cf` |
+| Format with or without an LSP | `<leader>cf` |
+| Format selected lines | `:'<,'>BlakFormat` |
+| Format an explicit line range | `:2,5BlakFormat` |
 
 The flags are simple booleans:
 
@@ -59,6 +61,21 @@ vim.g.blak_disable_autoformat = true   -- global
 ```
 
 You can flip them in your `user.lua`, an autocmd, or interactively.
+
+Global `lsp_format` and `timeout_ms` become Conform defaults. Per-filetype
+options take precedence, including for manual formatting. To disable both
+external and LSP formatting for one filetype:
+
+```lua
+format = {
+  formatters_by_ft = {
+    python = { lsp_format = "never" },
+  },
+}
+```
+
+An empty formatter list alone still allows the global LSP fallback. Remove
+the filetype override to restore its extra's formatting defaults.
 
 ## Adding a formatter
 

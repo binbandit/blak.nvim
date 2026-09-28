@@ -27,6 +27,16 @@ regressions, including real Conform/Blink option reload and native helper
 availability. Every shipped Lua module is syntax-compiled; each extra is built
 and validated independently. Lua assertion failures exit nonzero.
 
+Focused checks cover TypeScript SDK precedence, missing-runtime repair,
+configuration functions removing defaults, and health checks with unknown
+linters. They also cover native shortcut discovery, terminal recovery,
+formatting ranges and per-filetype options, and language-stack activation in
+either order. The SDK checks use temporary fixtures; they do not install or
+start an external TypeScript server.
+
+Further regressions cover extras-menu selection and resizing, invalid keymap
+modes, external config-file replacement, and independent linter failures.
+
 Command tests use controlled substitutes for network updates, picker dispatch,
 and some tool/plugin operations. Health output is diagnostic; a warning is not
 by itself a failed test. Passing smoke does not verify every external language
@@ -35,7 +45,7 @@ of extras. Exercise the specific language/project or external service when
 changing its integration. A restart is required to verify extras unloading.
 
 `make smoke-install` runs the installer in temporary XDG directories, checks
-the sparse checkout, boots it, then overlays tracked runtime files from the
+the sparse checkout, boots it, then overlays tracked and new non-ignored runtime files from the
 working tree and boots again. This checks both the committed install and local
 runtime changes. It also tests installer refusal to overwrite existing paths.
 
@@ -45,6 +55,7 @@ search indexes, and generated install/social assets. Preview the site when
 changing its layout or upgrading Astro/Starlight.
 
 GitHub Actions runs static, runtime, and installer checks on pushes to main and
-pull requests. The docs workflow builds for docs/installer/workflow changes
+pull requests. Stable Neovim smoke and installer checks are required; the
+nightly smoke job is advisory and does not gate stable changes. The docs workflow builds for docs/installer/workflow changes
 and deploys successful main builds to GitHub Pages. Local checks help catch
 regressions; CI also depends on its OS, network, and upstream services.

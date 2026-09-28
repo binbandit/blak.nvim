@@ -213,6 +213,7 @@ export default defineConfig({
           label: "Guide",
           items: [
             { label: "Philosophy", slug: "guide/philosophy" },
+            { label: "Native Neovim tools", slug: "guide/native-neovim" },
             { label: "Plugins", slug: "guide/plugins" },
             { label: "Pickers", slug: "guide/pickers" },
             { label: "LSP", slug: "guide/lsp" },
@@ -235,7 +236,8 @@ export default defineConfig({
             { label: "Overview", slug: "guide/extras" },
             { label: "Lua", slug: "extras/lang/lua" },
             { label: "TypeScript", slug: "extras/lang/typescript" },
-            { label: "TypeScript tsgo", slug: "extras/lang/typescript-tsgo" },
+            { label: "Legacy TypeScript", slug: "extras/lang/typescript-legacy" },
+            { label: "TypeScript tsgo alias", slug: "extras/lang/typescript-tsgo" },
             { label: "Python", slug: "extras/lang/python" },
             { label: "Python Pro", slug: "extras/lang/python-pro" },
             { label: "Rust", slug: "extras/lang/rust" },

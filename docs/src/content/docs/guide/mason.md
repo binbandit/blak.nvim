@@ -33,6 +33,12 @@ When `automatic_install = true`, Blak calls `tools.ensure()` after Mason wakes o
 3. Install anything missing.
 4. Skip anything already installed (silent), or log it if called with `force = true`.
 
+When `ts_ls` is configured, Blak also checks the TypeScript runtime inside
+Mason's `typescript-language-server` package. An installation missing
+`tsserver.js` or package metadata is repaired even when Mason still has an
+installation receipt. Wait for completion and restart to retry failed clients.
+This repair follows `automatic_install`; `:BlakToolsInstall` requests it manually.
+
 Missing packages don't error — they warn so a typo or a Mason-renamed tool doesn't block startup.
 
 ## Manual install

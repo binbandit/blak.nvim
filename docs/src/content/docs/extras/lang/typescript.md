@@ -1,14 +1,16 @@
 ---
 title: TypeScript Extra
-description: Configure lang.typescript for ts_ls, ESLint, Prettier, and JS/TS Treesitter support.
+description: Configure lang.typescript for the TypeScript 7 native LSP with ESLint and Prettier.
 ---
 
-`lang.typescript` is the stable TypeScript and JavaScript stack. It keeps the
-picker, keymaps, and editing model unchanged while adding language tooling for
-JS, TS, JSX, TSX, JSON, and JSONC files.
+`lang.typescript` is the standard TypeScript and JavaScript stack. It uses
+TypeScript 7's native `tsc` language server, ESLint, and Prettier for JS, TS,
+JSX, TSX, JSON, and JSONC files.
 
-Use this extra unless you intentionally want the experimental
-[`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/) extra instead.
+For projects that need `ts_ls` or TypeScript server plugins, use the optional
+[`lang.typescript-legacy`](/extras/lang/typescript-legacy/) extra instead.
+The former [`lang.typescript-tsgo`](/extras/lang/typescript-tsgo/) beta extra
+is a compatibility alias for this stack.
 
 ## Enable it
 
@@ -23,7 +25,7 @@ return {
 }
 ```
 
-You can also enable it from the command line:
+Or toggle it interactively:
 
 ```vim
 :BlakExtras enable lang.typescript
@@ -35,13 +37,21 @@ You can also enable it from the command line:
 | --- | --- |
 | Treesitter | `javascript`, `typescript`, `tsx`, `jsdoc`, `json` |
 | Mason | `prettier`, `prettierd` |
-| LSP | `ts_ls`, `eslint` |
+| LSP | `tsc`, `eslint` |
 | Formatting | `prettierd`, falling back to `prettier`, for JS/TS/JSON filetypes |
 | Linting | ESLint diagnostics come from the `eslint` language server |
+| Stack selection | Replaces defaults contributed by `lang.typescript-legacy`, preserving explicit user settings |
 
-## Configure ts_ls and ESLint
+Mason installs `tsc` through the LSP server list. The pinned nvim-lspconfig
+configuration looks for a compatible native compiler in the project first,
+then on `PATH`. A TypeScript 6 project dependency can stay in place; Mason's
+TypeScript 7 supplies the editor server without changing project dependencies.
+See [upstream's server configuration](https://github.com/neovim/nvim-lspconfig/blob/master/lsp/tsc.lua).
 
-Add LSP settings under the server names that the extra registers:
+## Configure tsc
+
+Put native TypeScript settings under `lsp.servers.tsc`. Its settings namespace
+is `js/ts`:
 
 ```lua
 return {
@@ -50,11 +60,11 @@ return {
   },
   lsp = {
     servers = {
-      ts_ls = {
+      tsc = {
         settings = {
-          typescript = {
+          ["js/ts"] = {
             inlayHints = {
-              includeInlayParameterNameHints = "all",
+              parameterNames = { enabled = "all" },
             },
           },
         },
@@ -69,13 +79,10 @@ return {
 }
 ```
 
-Project ESLint and Prettier config files still live in the project. Blak only
-installs and wires the editor tools.
+## Configure formatting and linting
 
-## Configure formatting
-
-The extra uses `prettierd` first and falls back to `prettier`. If you prefer the
-plain `prettier` CLI, define the filetypes yourself in `user.lua`:
+The extra uses `prettierd` first, falling back to `prettier`. Override the
+filetype entries in `user.lua` to prefer the plain CLI:
 
 ```lua
 return {
@@ -84,32 +91,36 @@ return {
   },
   format = {
     formatters_by_ft = {
-      javascript = { "prettier" },
-      javascriptreact = { "prettier" },
       typescript = { "prettier" },
       typescriptreact = { "prettier" },
-      json = { "prettier" },
-      jsonc = { "prettier" },
     },
   },
 }
 ```
 
-## Where ESLint diagnostics come from
+ESLint diagnostics come from the `eslint` language server, so no nvim-lint entry
+is registered. See [Using eslint_d
+anyway](/guide/linting/#using-eslint_d-anyway) if you want the standalone daemon
+as well.
 
-The extra registers no nvim-lint entries. ESLint diagnostics come from the
-`eslint` language server, which Mason installs as
-`vscode-eslint-language-server` because the extra lists `eslint` under
-`lsp.servers`.
+## Updating an existing TypeScript setup
 
-To run the standalone `eslint_d` daemon in addition, see [Using eslint_d
-anyway](/guide/linting/#using-eslint_d-anyway). To take manual control of which
-servers start, see [Disabling automatic
-enable](/guide/lsp/#disabling-automatic-enable).
+`lang.typescript` now uses native `tsc` in place of `ts_ls`. Run
+`:BlakToolsInstall`, wait for installation, and restart. Review any old
+`lsp.servers.ts_ls` settings: they remain explicit user configuration and can
+start a second server. Remove them when switching to `tsc`; its settings use
+the `js/ts` namespace shown above rather than the old `ts_ls` schema.
+
+To retain `ts_ls`, replace `lang.typescript` with `lang.typescript-legacy` in
+`user.lua` or the extras UI, then restart. Disable the compatibility alias too
+if it is enabled. Installed Mason tools remain until you remove them.
+
+If both native and legacy extras are enabled, the native stack replaces only
+unchanged defaults contributed by the legacy extra, regardless of activation
+order. Explicit user servers and formatter settings stay in effect. Prefer
+enabling one stack so your selection is clear.
 
 ## Install and verify
-
-After enabling the extra, run:
 
 ```vim
 :BlakToolsInstall
@@ -117,4 +128,7 @@ After enabling the extra, run:
 :BlakDoctor
 ```
 
-Open a TypeScript file and check `:LspInfo` for `ts_ls` and `eslint`.
+Wait for installation, restart, then open a TypeScript file and check `:LspInfo`
+for `tsc` and `eslint`. To disable this stack, remove it from `user.lua` or run
+`:BlakExtras disable lang.typescript`, then restart. Disable the compatibility
+alias too if it is enabled.

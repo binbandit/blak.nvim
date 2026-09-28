@@ -5,6 +5,10 @@ description: What you need installed before Blak runs at full speed.
 
 Blak targets **Neovim 0.12+** and is built on the native LSP API. The installer checks this version and Git before creating the checkout.
 
+Use a supported **stable** release for everyday editing. Stable is Blak's
+baseline; nightly is a compatibility target and may contain upstream changes
+that need fixes. Blak's shipped workflows do not require nightly-only APIs.
+
 ## Hard requirements
 
 | Tool | Why |

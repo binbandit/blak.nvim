@@ -24,7 +24,7 @@ Blak is in **v0.3 public preview**: complete enough to use as a daily driver, wi
 
 ## Requirements
 
-- Neovim 0.12+
+- Neovim 0.12+ (stable recommended; nightly is a compatibility target)
 - Git
 - `rg` for search
 - `fd` for faster file discovery
@@ -97,6 +97,16 @@ alternate file toggle.
 Window split shortcuts stay native and predictable: `<Space>ws` splits below
 and `<Space>wv` splits right when those keys are not already mapped.
 
+`<Space>cf` formats with or without an LSP. Use `:'<,'>BlakFormat` to format
+selected lines. `:BlakKeys` also shows described native and plugin global
+shortcuts, with buffer overrides taking precedence.
+
+To leave terminal input mode, press `<C-\><C-n>`, then `<Space>tt` to hide it.
+Reopening a finished shell starts a fresh one and retains its previous output.
+
+Neovim's bundled undo-tree, directory diff, and native LSP completion workflows
+are covered in [Native Neovim tools](https://getblak.dev/guide/native-neovim/).
+
 ## Extras
 
 Extras are opt-in and reversible:
@@ -135,9 +145,23 @@ The `:BlakExtras` UI shows enabled and available extras in sections. Press `x`
 or `<CR>` on an extra to toggle it, `s` to run `:Lazy sync`, and `q` to close.
 Extras listed in `lua/blak/user.lua` are shown as config-managed and should be
 removed there when you want them disabled.
+Headings and blank lines do not toggle extras; the menu fits the current terminal.
 
-Use `lang.typescript-tsgo` instead of `lang.typescript` to try the experimental native TypeScript LSP.
+`lang.typescript` now uses native TypeScript 7 (`tsc`). The former
+`lang.typescript-tsgo` beta extra remains a compatibility alias; existing `tsgo`
+settings are carried forward to `tsc`. Run `:BlakToolsInstall`, wait, and restart
+after updating. Explicit `lsp.servers.ts_ls` entries remain in effect; remove
+them to use only the native server. To keep `ts_ls`, replace the native extra
+with `lang.typescript-legacy` and restart.
 Use `lang.python-pro` instead of `lang.python` when you want BasedPyright, Ruff-first formatting, venv selection, and debugpy tooling.
+
+The legacy TypeScript extra uses a compatible workspace TypeScript SDK, falling
+back to Mason's copy. If `ts_ls` reports "Could not find a valid TypeScript
+installation", run `:BlakToolsInstall`, wait for it to finish, then restart.
+`:BlakDoctor` checks Mason's fallback; `ts_ls` needs `tsserver.js`, which
+TypeScript 7 no longer provides. Explicit `lsp.servers.ts_ls.init_options.tsserver.path`
+settings are preserved. Set `mason.automatic_install = false` to manage tool
+installation and repair manually.
 
 State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Enabling an extra applies its config to the current session; run `:BlakExtras sync` if the extra added plugin specs. Disabling persists immediately, but a restart is still the clean way to unload plugins, keymaps, and runtime hooks that already ran.
 
@@ -235,6 +259,15 @@ When Blak is already running, saving `lua/blak/user.lua` reloads the merged
 config and refreshes the current session. Some loaded plugin settings need a restart. Plugin installs/removals still go
 through `:BlakExtras sync` or `:Lazy sync`; restarting remains the clean way to
 unload plugins, keymaps, or runtime hooks that already ran.
+
+Syntax and validation errors keep the last accepted config active. Correct the
+file and save again, including when editing it in another editor. Keymap modes
+use Neovim's short names, such as `"n"`, `"i"`, and `"x"`.
+
+Config functions can remove defaults with `nil`, for example
+`config.lsp.servers.lua_ls = nil`. Enabled extras apply afterward and may add
+their own settings back; disable the corresponding extra as well when removing
+its tooling.
 
 ## Philosophy
 

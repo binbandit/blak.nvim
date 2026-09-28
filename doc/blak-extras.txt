@@ -16,6 +16,8 @@ Commands: >
 
 :BlakExtras opens a floating extras UI. Press x or <CR> on an extra to toggle
 it, s to run :BlakExtras sync, r to refresh, and q to close.
+Description and tool lines select their extra too; headings and blank lines do
+nothing. The menu fits the terminal and adjusts when resized.
 
 State is stored outside the repository in:
   stdpath('state')/blak/extras.json
@@ -36,6 +38,7 @@ AVAILABLE GROUPS
 
 lang.lua
 lang.typescript
+lang.typescript-legacy
 lang.typescript-tsgo
 lang.python
 lang.python-pro

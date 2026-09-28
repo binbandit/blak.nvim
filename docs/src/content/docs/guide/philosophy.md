@@ -27,6 +27,10 @@ We make extras easy, reversible, and documented.
 
 Neovim 0.12 ships with native LSP configuration, completion sources, diagnostics, snippet support, and tree-sitter helpers. Reach for those first. A plugin should earn its place by adding capability that the native API doesn't have, not by being more familiar.
 
+Supported stable releases are the baseline. Nightly is a compatibility target,
+not a requirement for everyday editing. Evaluate new native features against
+stable before making them part of a shipped workflow.
+
 ### 2. Keep defaults boring, memorable, and documented.
 
 The rule of thumb: a user should be able to predict a keymap from the category and the action. `<leader>f` for find, `<leader>g` for git, `<leader>c` for code. No clever overloading, no chords that require a cheat sheet to remember.

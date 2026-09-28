@@ -54,7 +54,16 @@ you find out it never ran. See [Linting](/guide/linting/) for the details.
 
 ### Mason tools
 
-Lists every tool the merged config wants installed (`mason.ensure_installed` + contributions from enabled extras). Doesn't actually probe Mason — just shows the set. Run `:Mason` to see install status, or `:BlakToolsInstall` to install Blak's configured tool set.
+Lists every tool the merged config wants installed (`mason.ensure_installed` + contributions from enabled extras), plus `typescript-language-server` when `ts_ls` is configured. This list doesn't probe install status. Run `:Mason` to see install status, or `:BlakToolsInstall` to install Blak's configured tool set.
+
+### TypeScript
+
+When `ts_ls` is configured, checks that Mason's fallback TypeScript SDK contains
+`tsserver.js` and package metadata. A missing fallback warns with repair
+instructions: run `:BlakToolsInstall`, wait for completion, and restart. A
+compatible workspace SDK or explicit `init_options.tsserver.path` can supply
+TypeScript independently of Mason. See [TypeScript SDK and initialization
+errors](/extras/lang/typescript-legacy/#typescript-sdk-and-initialization-errors).
 
 ## Sample output
 

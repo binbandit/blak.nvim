@@ -41,9 +41,12 @@ lsp = {
 
 Blak injects `lua_ls.settings.Lua.workspace.library` lazily when LSP setup runs, so config startup does not scan the full runtime path. Set `workspace.library` yourself if you want to replace that generated library.
 
-Other servers ship via [language extras](/guide/extras/#languages): `ts_ls`, `tsgo`, `eslint`, `pyright`, `basedpyright`, `ruff`, `rust_analyzer`, `taplo`, `gopls`, `marksman`.
+Other servers ship via [language extras](/guide/extras/#languages): `ts_ls`, `tsc`, `eslint`, `pyright`, `basedpyright`, `ruff`, `rust_analyzer`, `taplo`, `gopls`, `marksman`.
 
-For TypeScript, use either `lang.typescript` for the stable `ts_ls` path or `lang.typescript-tsgo` for the experimental native `tsgo` language server.
+For TypeScript, `lang.typescript` uses the native TypeScript 7 `tsc` language server.
+Choose `lang.typescript-legacy` for the older `ts_ls` path. The former
+`lang.typescript-tsgo` extra remains a compatibility alias and carries old
+`tsgo` settings forward to `tsc`.
 For Python, use `lang.python` for the basic Pyright path or `lang.python-pro` for BasedPyright plus Ruff's native language server.
 
 ## Adding a server
@@ -68,6 +71,10 @@ return {
 Or as an extra — see [Writing an extra](/project/writing-extras/).
 
 If a server is installed outside Mason and you still want it enabled automatically, register it in `user.lua` and call `vim.lsp.enable("server_name")` from a `User BlakReady` autocmd.
+
+To remove a default server, use a config function, for example
+`return function(config) config.lsp.servers.lua_ls = nil end`. Extras apply
+afterward, so disable the corresponding extra too if it supplies that server.
 
 Reload rebuilds server configuration for future clients. Restart Neovim when
 changing settings for a language server that is already running.
@@ -114,9 +121,11 @@ Bound on `LspAttach` so they're only available when a server is attached:
 | `K` | Hover |
 | `<leader>ca` | Code action |
 | `<leader>cr` | Rename |
-| `<leader>cf` | Format |
 | `<leader>cs` | Document symbols (picker) |
 | `<leader>cS` | Workspace symbols (picker) |
+
+`<leader>cf` formats through Conform in any buffer, with the configured LSP
+fallback when needed. It does not require an attached language server.
 
 ## Disabling automatic enable
 
@@ -134,11 +143,16 @@ Then call `vim.lsp.enable("server_name")` yourself when you want to start it.
 :lua = vim.lsp.get_clients()       " all active clients
 :lua = vim.lsp.config.lua_ls       " the config you registered
 :checkhealth vim.lsp               " native health checks
+:lsp restart                      " restart clients attached to this buffer
+:lsp enable tsc                  " enable a configured server
+:lsp disable tsc                 " disable it for this session
 ```
 
 ## On Neovim nightly
 
-Blak supports stable and nightly. Nightly changes to `vim.lsp.config()` or `vim.lsp.enable()` can cause loud errors after a Neovim upgrade. The mitigation:
+Stable Neovim 0.12+ is Blak's baseline. Nightly is a compatibility target;
+changes to `vim.lsp.config()` or `vim.lsp.enable()` can cause errors after a
+Neovim upgrade. The mitigation:
 
 1. Upgrade Neovim.
 2. Update the Blak Git checkout for distribution fixes and use `:BlakUpdate` for plugin updates. See [Updates](/guide/updates/).
