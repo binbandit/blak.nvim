@@ -476,9 +476,9 @@ function M.news()
     vim.cmd.edit(news)
   else
     require("blak.util").open_scratch("Blak news", {
-      "Blak v0.3.0",
+      "Blak v0.4.0",
       "",
-      "Fifteen new opt-in extras: nine language packs (C/C++, Bash, Web, Docker, YAML, JSON, Terraform, Nix, Zig) plus Flash, grug-far, Neogit, and the Snacks-backed indent guides, git browse, and scratch buffers. No defaults changed.",
+      "Every extra verified end to end, more native Neovim 0.12, and shipped pins for core and extras. Your lockfile moved to stdpath('state'); see NEWS.md before updating the checkout.",
     })
   end
 end

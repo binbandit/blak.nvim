@@ -1,6 +1,119 @@
 # Blak news
 
-## Unreleased
+## v0.4.0
+
+Every extra was tested end to end in a real editor, and the broken ones were
+fixed. Blak now uses more of Neovim 0.12 directly. Plugins install at shipped
+pins, including extras, and your lockfile moved out of the checkout.
+
+### Before you update
+
+- Your lockfile now lives at `stdpath('state')/blak/lazy-lock.json`, so
+  `:BlakUpdate` no longer modifies the checkout. If `git pull --ff-only`
+  refuses because of local changes to `lazy-lock.json`, run
+  `git -C ~/.config/blak checkout lazy-lock.json` and pull again. On the next
+  start Blak records the commits you have installed, so no plugin moves.
+- Run `:BlakUpgrade` after updating. It explains each change below that
+  affects you.
+- Blak no longer maps `gr`, `gI` and `K` in LSP buffers. Neovim's `grr`
+  (references), `gri` (implementation) and `K` (hover) cover them. Bare `gr`
+  used to wait for `timeoutlen` because it shadowed Neovim's `gr` prefix.
+  `]d`/`[d` are Neovim's own jumps now, so counts work and `[D`/`]D` reach the
+  first and last diagnostic; the float still opens after each jump. To restore
+  `gr`, add `{ key = "gr", action = vim.lsp.buf.references, desc = "References" }`
+  to `keymaps`.
+- `ai.supermaven` was removed because the Supermaven service shut down. Use
+  `ai.copilot`.
+
+### Pins and updates
+
+- `lazy-lock.json` in the checkout now holds shipped pins for every plugin
+  that core or any extra can install. A plugin is first installed at the
+  commit Blak was tested with. Your own updates and rollbacks always win.
+  `editor.mini` modules, which you choose, follow their default branch.
+  Maintainers refresh pins with `make pins`, and `make validate` fails for
+  plugins without one.
+- `:BlakExtras sync` installs and cleans at pinned commits and no longer
+  updates every installed plugin, which `:Lazy sync` did.
+- `:BlakRollback` right after `:BlakUpdate` in the same session restored
+  nothing and wrote the post-update pins back. It now restores the snapshot.
+  Rollback also prefers the full snapshot over a legacy lockfile backup taken
+  in the same second.
+- A fresh install no longer modifies the lockfile on first launch. Blak starts
+  lazy.nvim at its pinned commit instead of the newest stable tag.
+- Refreshed core and extra plugin pins. Updated the documentation stack to
+  Astro 7.4.12 and Starlight 0.43.1, with no known vulnerabilities.
+
+### Native Neovim
+
+- Language servers in `lsp.servers` start through `vim.lsp.enable()`, so
+  servers installed outside Mason (Nix, Homebrew, Xcode) work. A missing binary
+  is only logged.
+- Removed the `:LspInfo`-style lazy-load stubs, which do nothing on Neovim
+  0.12. Use `:checkhealth vim.lsp` and `:lsp`.
+- Neovim defaults are back: `smartindent` is no longer enabled (it moved `#`
+  comment lines to column 0 in files without an indent expression),
+  `jumpoptions` keeps `clean` and adds `view`, and `completeopt` keeps `popup`.
+  Removed settings that only repeated Neovim's defaults. `grepprg` is set only
+  when `rg` is installed.
+- The completion menu, documentation, signature and diagnostic float borders
+  follow `ui.winborder`.
+- Restart hints point at `:restart`. Replaced deprecated API calls and removed
+  fallbacks for Neovim versions older than 0.12.
+
+### Core fixes
+
+- The first file you open is now linted on open, not only after a save.
+- Enabling an extra and running `:BlakExtras sync` loads its plugins in the
+  same session, including plugins that load on `VeryLazy`.
+- Mason install failures now warn and point at `:MasonLog`. `:checkhealth blak`
+  checks that Mason tools and enabled extras' plugins are installed.
+- Without a StyLua config, StyLua formats Lua with Blak's indent settings
+  (spaces by default) instead of tabs.
+- Snacks pickers show file icons. which-key names the `<leader>a`, `d`, `h`,
+  `o`, `r`, `s` and `T` groups that extras use.
+- `:BlakKeys` lists Ctrl-key mappings in the Blak section, and reload removes
+  them. Git hunk mappings in Visual mode no longer apply in Select mode.
+- `:Lazy` no longer draws a frame around the whole editor. Long notifications
+  wrap. The notification history has no line numbers.
+- The splash keeps its colors after `:colorscheme`. `:BlakSplash` opens a
+  centered float, and the dashboard hides `~` rows and the ruler.
+- `ui.theme` reaches base46 for scheme names with several dashes.
+- CI checks Lua formatting with StyLua, and the advisory nightly smoke passes
+  again on Neovim 0.13 development builds.
+
+### Extras
+
+- `ai.copilot` showed no suggestions as configured. It now uses
+  copilot-language-server with Neovim's native inline completion: sign in
+  with `:LspCopilotSignIn`, accept with `<M-l>`, cycle with `<M-]>`/`<M-[>`.
+  Existing sign-ins carry over.
+- `git.diffview` uses `dlyongemallo/diffview-plus.nvim`, the maintained fork.
+  Commands and keymaps are unchanged.
+- `debug.dap` and `test.neotest` work out of the box with a language extra:
+  `lang.go` adds Delve and neotest-golang, `lang.python` and `lang.python-pro`
+  add debugpy and neotest-python, and `lang.rust` adds codelldb, which it now
+  installs only when `debug.dap` is enabled. dap-ui shows a session that
+  started before it opened. neotest dropped unneeded dependencies and warns
+  when no adapter exists.
+- Fixed `editor.refactoring` for the rewritten upstream plugin (needs Neovim
+  0.12.5+), `editor.overseer` for overseer v2, and `editor.render-markdown`'s
+  toggle.
+- `lang.tailwind` and `lang.web` start Tailwind only in Tailwind projects.
+  HTML and CSS hovers are readable. `lang.typescript` no longer mixes position
+  encodings.
+- `lang.bash` no longer reports shellcheck twice. `lang.terraform` lints
+  through tflint's language server, so diagnostics land on the right line.
+  `lang.nix` no longer installs nixfmt through Mason, which only supports
+  Linux x64. `lang.rust` enables crates.nvim's hover, actions and completion.
+- `editor.fzf-lua` uses current APIs, live workspace symbols and this
+  session's recent files. Pickers report a missing plugin in one line.
+- Smaller fixes: `editor.aerial`, `editor.harpoon`, `editor.neotree`,
+  `editor.todo-comments`, `ai.claudecode`, `ai.sidekick` (edit suggestions
+  load), `ui.base46` (moved repository), `ui.comfy-line-numbers`,
+  `ui.animations`, `lang.json` and `git.neogit`.
+
+### Earlier changes in this release
 
 - Fixed extras-menu selection: headings and blank lines no longer toggle an
   unrelated extra. The menu fits small terminals and adjusts when resized.
@@ -91,10 +204,8 @@
   reused for editing.
 - Installers reject unsafe app names and preserve existing launchers and unrelated
   development symlinks. Installer smoke also checks the current working tree.
-- Refreshed 11 plugin pins while retaining Blink's stable `1.*` release policy.
-  Updated the documentation stack to Astro 7.3.1, Starlight 0.42.0, and Sharp
-  0.35.4; docs development now requires Node.js 22.12+ (CI uses Node.js 24).
-  Updated the GitHub Actions checkout, language setup, and Pages actions.
+- Docs development now requires Node.js 22.12+ (CI uses Node.js 24). Updated
+  the GitHub Actions checkout, language setup, and Pages actions.
 - Corrected the advertised theme and clarified update channels, checkout updates,
   rollback limits, plugin-owned mappings, and retained Mason/parser installations.
   The docs-link validator now checks the actual root-relative routes.
