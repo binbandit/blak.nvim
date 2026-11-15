@@ -38,7 +38,7 @@ return {
 :BlakSplash
 ```
 
-Opens the animation in a scratch buffer. Useful for tuning terminal color rendering, font choice, or letting someone watch it without restarting.
+Opens the animation in a centered, minimal float sized to the art, so your windows stay as they are. Press `q` or `<Esc>` to close it; it also closes when focus moves to another window. Useful for tuning terminal color rendering, font choice, or letting someone watch it without restarting.
 
 ## How it attaches to the dashboard
 
@@ -54,6 +54,13 @@ vim.api.nvim_create_autocmd("User", {
 
 - `SnacksDashboardOpened` — fires once when the dashboard buffer renders. Blak finds frame 1's anchor row and starts the timer.
 - `SnacksDashboardUpdatePost` — fires whenever Snacks re-renders the dashboard (resize, action toggle). Blak re-paints so its color extmarks aren't lost.
+- `SnacksDashboardUpdatePre` pauses the animation while Snacks re-renders.
+
+Blak also tidies the dashboard window:
+
+- The dashboard window gets a window-local `fillchars` with `eob: `, so no `~` rows show under the splash. Other buffers in that window keep your `fillchars`.
+- Snacks hides the statusline on the startup dashboard, which would put Neovim's ruler in the command line. `BufEnter`/`WinEnter` autocmds turn `'ruler'` off while the dashboard (or a float over it) is focused and restore your value when a regular window takes focus.
+- `:colorscheme` runs `:hi clear`, which wipes the splash colors. A `ColorScheme` autocmd in the `BlakSplashColors` group defines them again.
 
 The animation runs on a `vim.uv.new_timer()`, scheduled with `vim.schedule_wrap`, and is torn down on `BufWipeout` / `BufDelete`.
 

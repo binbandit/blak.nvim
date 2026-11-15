@@ -11,7 +11,6 @@
 ---| "ai.claudecode"
 ---| "ai.copilot"
 ---| "ai.sidekick"
----| "ai.supermaven"
 ---| "debug.dap"
 ---| "editor.aerial"
 ---| "editor.emmet"
@@ -165,7 +164,6 @@
 ---@class blak.AiConfig
 ---@field claudecode? table
 ---@field sidekick? blak.SidekickConfig
----@field supermaven? blak.SupermavenConfig
 
 ---@class blak.SidekickConfig
 ---@field nes? blak.FeatureToggle
@@ -181,14 +179,6 @@
 ---@class blak.SidekickMuxConfig
 ---@field enabled? boolean
 ---@field backend? "tmux"|"zellij"|string
-
----@class blak.SupermavenConfig
----@field disable_inline_completion? boolean
----@field disable_keymaps? boolean
----@field ignore_filetypes? table<string, boolean>|string[]
----@field color? table
----@field log_level? "off"|"error"|"warn"|"info"|"debug"|string
----@field condition? fun(): boolean
 
 ---@class blak.MiniConfig
 ---@field modules? string[]

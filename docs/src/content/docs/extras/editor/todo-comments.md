@@ -35,18 +35,24 @@ Because this extra adds a plugin, run:
 | Keymap | `[t` jumps to the previous TODO comment |
 | Keymap | `<leader>xT` opens TODO comments in the quickfix list |
 
-The keymaps appear in `:BlakKeys`.
+The keymaps appear in `:BlakKeys`. `]t` and `[t` replace Neovim's default
+tag-list mappings (`:tnext` / `:tprevious`); those commands still work, and
+`]T` / `[T` keep their default `:tlast` / `:tfirst` behavior.
 
 ## Use it
 
 ```vim
 :TodoQuickFix
 :TodoLocList
+:lua Snacks.picker.todo_comments()
 :TodoTrouble
 :TodoTelescope
 :TodoFzfLua
-:TodoSnacks
 ```
 
-Some commands depend on the matching picker or Trouble plugin also being
-available. `:TodoQuickFix` works without enabling another Blak extra.
+`:TodoQuickFix`, `:TodoLocList`, and the Snacks picker work without enabling
+another Blak extra. The Snacks picker source is registered when the plugin
+loads, which happens when you open a file; the `:Todo*` commands load it on
+demand. `:TodoTrouble`, `:TodoTelescope`, and `:TodoFzfLua` need
+`editor.trouble`, `editor.telescope`, or `editor.fzf-lua`. Each command accepts
+`cwd=` and `keywords=` filters, for example `:TodoQuickFix keywords=TODO,FIX`.

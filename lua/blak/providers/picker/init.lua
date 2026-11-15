@@ -59,7 +59,12 @@ function M.pick(kind, opts)
         return result
       end
       require("blak.util").warn(
-        string.format("%s picker failed for %s, trying the next provider: %s", name, kind, tostring(result))
+        string.format(
+          "%s picker failed for %s, trying the next provider: %s",
+          name,
+          kind,
+          tostring(result)
+        )
       )
     end
   end

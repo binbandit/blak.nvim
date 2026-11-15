@@ -13,6 +13,12 @@ return {
         "MunifTanjim/nui.nvim",
       },
       opts = {
+        -- "" follows 'winborder', so dialogs match the rest of Blak's floats.
+        popup_border_style = "",
+        -- mini.icons' generic file glyph, for files it has no specific icon for.
+        default_component_configs = {
+          icon = { default = "󰈔" },
+        },
         filesystem = {
           follow_current_file = { enabled = true },
           use_libuv_file_watcher = true,

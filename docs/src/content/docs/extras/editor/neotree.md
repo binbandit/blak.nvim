@@ -33,7 +33,7 @@ Because this extra adds a plugin, run:
 | Plugin | `nvim-neo-tree/neo-tree.nvim` on branch `v3.x` |
 | Dependencies | `plenary.nvim`, `mini.icons`, `nui.nvim` |
 | Keymap | `<leader>E` toggles Neo-tree |
-| Defaults | Follow current file and use libuv file watcher |
+| Defaults | Follow current file, use libuv file watcher, dialogs follow `ui.winborder` |
 
 The keymap appears in `:BlakKeys`.
 
@@ -62,8 +62,19 @@ return {
 }
 ```
 
-Blak does not expose a Neo-tree options table in `user.lua`. For a custom
-Neo-tree layout, create a local extra with your own `neo-tree.nvim` spec.
+To change Neo-tree options, add a matching lazy.nvim spec in `plugins.specs`;
+lazy.nvim merges it with the extra's spec. For example, to dock it on the right:
+
+```lua
+return {
+  extras = { enabled = { "editor.neotree" } },
+  plugins = {
+    specs = {
+      { "nvim-neo-tree/neo-tree.nvim", opts = { window = { position = "right" } } },
+    },
+  },
+}
+```
 
 ## Use it
 

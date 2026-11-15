@@ -1,6 +1,6 @@
 local M = {}
 
-local uv = vim.uv or vim.loop
+local uv = vim.uv
 
 function M.notify(message, level, opts)
   level = level or vim.log.levels.INFO
@@ -42,7 +42,12 @@ function M.load_plugin(plugin, module)
     return value
   end
 
-  M.warn(plugin .. " is not installed or could not be loaded. Run :Lazy sync, then restart.")
+  local spec = vim.tbl_get(package.loaded, "lazy.core.config", "plugins", plugin)
+  if spec and spec._.installed then
+    M.warn(plugin .. " is installed but failed to load: " .. tostring(value):match("[^\n]*"))
+  else
+    M.warn(plugin .. " is not installed. Run :BlakExtras sync, then try again.")
+  end
   return nil
 end
 
@@ -55,17 +60,7 @@ function M.sep()
 end
 
 function M.join(...)
-  if vim.fs and vim.fs.joinpath then
-    return vim.fs.joinpath(...)
-  end
-  local sep = M.sep()
-  local out = {}
-  for _, part in ipairs({ ... }) do
-    if part and part ~= "" then
-      table.insert(out, (tostring(part):gsub("[/\\]+$", "")))
-    end
-  end
-  return table.concat(out, sep)
+  return vim.fs.joinpath(...)
 end
 
 function M.mkdir(path)
@@ -134,22 +129,12 @@ function M.tbl_keys(tbl)
   return keys
 end
 
+-- vim.fs.root also matches `.git` files (worktrees, submodules) and searches
+-- from the cwd for unnamed or special buffers; outside a repository, git
+-- itself has no answer either.
 function M.git_root()
-  local ok, result = pcall(vim.fs.root, 0, { ".git" })
-  if ok and result then
-    return result
-  end
-  local cwd = uv.cwd()
-  local handle =
-    io.popen("git -C " .. vim.fn.shellescape(cwd) .. " rev-parse --show-toplevel 2>/dev/null")
-  if handle then
-    local root = handle:read("*l")
-    handle:close()
-    if root and root ~= "" then
-      return root
-    end
-  end
-  return cwd
+  local ok, root = pcall(vim.fs.root, 0, ".git")
+  return ok and root or uv.cwd()
 end
 
 function M.open_scratch(title, lines)

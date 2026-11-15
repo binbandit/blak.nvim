@@ -5,7 +5,6 @@ return function(config)
     {
       "neovim/nvim-lspconfig",
       event = lsp_events,
-      cmd = { "LspInfo", "LspStart", "LspStop", "LspRestart" },
       config = function()
         require("blak.core.lsp").setup(config)
       end,

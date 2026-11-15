@@ -58,16 +58,16 @@ fzf-lua handles:
 | `files` | `files` |
 | `grep` | `live_grep` |
 | `buffers` | `buffers` |
-| `recent` | `oldfiles` |
+| `recent` | `oldfiles` (includes files opened this session) |
 | `commands` | `commands` |
 | `keymaps` | `keymaps` |
-| `help` | `help_tags` |
+| `help` | `helptags` |
 | `diagnostics` | `diagnostics_workspace` |
 | `lsp_symbols` | `lsp_document_symbols` |
-| `workspace_symbols` | `lsp_workspace_symbols` |
+| `workspace_symbols` | `lsp_live_workspace_symbols` |
 
-Blak does not expose an fzf-lua options table in `user.lua`. For deep fzf-lua
-customization, create a local extra with your own fzf-lua spec.
+To change fzf-lua options, add a matching `ibhagwan/fzf-lua` spec in
+`plugins.specs`; lazy.nvim merges its `opts` with the extra's.
 
 ## Switch back
 

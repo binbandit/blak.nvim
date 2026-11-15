@@ -29,12 +29,12 @@ When you disable an extra and restart, Blak stops registering that extra's plugi
 :BlackExtras list                 " same command, typo-friendly
 :BlakExtras enable lang.rust
 :BlakExtras disable git.lazygit
-:BlakExtras sync                  " run :Lazy sync after changes
+:BlakExtras sync                  " install missing plugins, remove unused ones
 ```
 
 The UI groups enabled extras and available extras, shows the tools and plugins
 each one contributes, and lets you toggle the row under the cursor with `x` or
-`<CR>`. Press `s` to sync lazy.nvim, `r` to refresh, and `q` to close. Extras
+`<CR>`. Press `s` to run `:BlakExtras sync`, `r` to refresh, and `q` to close. Extras
 from `lua/blak/user.lua` are marked `[config]`; remove them there when you want
 the UI to stop treating them as enabled.
 
@@ -54,11 +54,14 @@ If an extra was renamed or removed, `:BlakDoctor` reports it as unknown. Run `:B
 After enabling an extra:
 
 1. Blak applies its config to the current session.
-2. **Run `:BlakExtras sync` or `:Lazy sync`** if plugins were added.
+2. **Run `:BlakExtras sync`** if plugins were added. It installs missing plugins at the
+   commits Blak ships pins for and removes unused ones, but never updates installed plugins;
+   `:Lazy sync` would also update every plugin past its pin. Newly installed plugins load in
+   the current session; no restart is needed.
 3. **Run `:BlakToolsInstall`** to install any new Mason tools required.
 4. **Run `:BlakDoctor`** to check reported dependencies, then exercise the feature.
 
-After disabling an extra, the state file updates immediately. Restart Blak when you want already-loaded plugins, keymaps, and runtime hooks to disappear from the current session, then run `:BlakExtras sync` if plugin specs were removed.
+After disabling an extra, the state file updates immediately. Run `:restart` when you want already-loaded plugins, keymaps, and runtime hooks to disappear from the current session, then run `:BlakExtras sync` if plugin specs were removed.
 
 ## Dedicated pages
 
@@ -72,7 +75,7 @@ configuration examples, install notes, and verification path.
 | Test | [`test.neotest`](/extras/test/neotest/) |
 | UI | [`ui.animations`](/extras/ui/animations/), [`ui.base46`](/extras/ui/base46/), [`ui.comfy-line-numbers`](/extras/ui/comfy-line-numbers/), [`ui.dim`](/extras/ui/dim/), [`ui.image-preview`](/extras/ui/image-preview/), [`ui.indent`](/extras/ui/indent/), [`ui.lualine`](/extras/ui/lualine/), [`ui.zen`](/extras/ui/zen/) |
 | Git | [`git.lazygit`](/extras/git/lazygit/), [`git.diffview`](/extras/git/diffview/), [`git.gitbrowse`](/extras/git/gitbrowse/), [`git.neogit`](/extras/git/neogit/) |
-| AI | [`ai.claudecode`](/extras/ai/claudecode/), [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/), [`ai.supermaven`](/extras/ai/supermaven/) |
+| AI | [`ai.claudecode`](/extras/ai/claudecode/), [`ai.copilot`](/extras/ai/copilot/), [`ai.sidekick`](/extras/ai/sidekick/) |
 | Editor | [`editor.aerial`](/extras/editor/aerial/), [`editor.emmet`](/extras/editor/emmet/), [`editor.flash`](/extras/editor/flash/), [`editor.grug-far`](/extras/editor/grug-far/), [`editor.scratch`](/extras/editor/scratch/), [`editor.harpoon`](/extras/editor/harpoon/), [`editor.mini`](/extras/editor/mini/), [`editor.overseer`](/extras/editor/overseer/), [`editor.refactoring`](/extras/editor/refactoring/), [`editor.render-markdown`](/extras/editor/render-markdown/), [`editor.todo-comments`](/extras/editor/todo-comments/), [`editor.trouble`](/extras/editor/trouble/), [`editor.window-navigation`](/extras/editor/window-navigation/), [`editor.neotree`](/extras/editor/neotree/), [`editor.snacks-explorer`](/extras/editor/snacks-explorer/), [`editor.snacks-terminal`](/extras/editor/snacks-terminal/), [`editor.telescope`](/extras/editor/telescope/), [`editor.fzf-lua`](/extras/editor/fzf-lua/) |
 
 ## Languages
@@ -132,21 +135,24 @@ Python with Pyright + Ruff + Black + isort.
 | LSP | `pyright`, `ruff` |
 | Format | `isort`, then `black` |
 | Lint | Ruff language server diagnostics |
+| With `debug.dap` | debugpy through `nvim-dap-python` |
+| With `test.neotest` | `neotest-python` |
 
 ### `lang.python-pro`
 
-Python with BasedPyright, Ruff-first formatting, venv selection, and debugpy.
+Python with BasedPyright, Ruff-first formatting, and venv selection.
 
 Enable this instead of `lang.python` when you want the richer Python stack.
 
 | Adds | Value |
 | --- | --- |
 | Treesitter | `python`, `requirements` |
-| Mason | `ruff`, `debugpy` |
+| Mason | `ruff` |
 | LSP | `basedpyright`, `ruff` |
 | Format | `ruff_organize_imports`, then `ruff_format` |
 | Plugins | `venv-selector.nvim` |
 | Keys | `<leader>cv` for `:VenvSelect` |
+| With `debug.dap`, `test.neotest` | Same adapters as `lang.python` |
 
 ### `lang.rust`
 
@@ -155,10 +161,10 @@ Rust with rust-analyzer and TOML support.
 | Adds | Value |
 | --- | --- |
 | Treesitter | `rust`, `toml` |
-| Mason | `codelldb` |
 | LSP | `rust_analyzer` (with `cargo.allFeatures` + Clippy), `taplo` |
 | Format | `rustfmt` (LSP fallback), `taplo` (LSP fallback) |
-| Plugins | `saecki/crates.nvim` |
+| Plugins | `saecki/crates.nvim` (in-process LSP in `Cargo.toml`: hover, code actions, completion) |
+| With `debug.dap` | CodeLLDB (Mason `codelldb`), `cargo build` launch config |
 
 ### `lang.go`
 
@@ -171,6 +177,8 @@ Go with gopls and golangci-lint.
 | LSP | `gopls` |
 | Format | `goimports`, `gofumpt` |
 | Lint | `golangcilint` |
+| With `debug.dap` | Delve (Mason `delve`) adapter and launch configs |
+| With `test.neotest` | `neotest-golang`, debugging through Delve |
 
 ### `lang.markdown`
 
@@ -204,8 +212,7 @@ with `shfmt` already ships in Blak core.
 | --- | --- |
 | Treesitter | `bash` |
 | Mason | `shellcheck` |
-| LSP | `bashls` |
-| Lint | `shellcheck` for `sh`, `bash` |
+| LSP | `bashls` (runs shellcheck) |
 
 ### `lang.web`
 
@@ -218,14 +225,19 @@ Frontend HTML, CSS, Tailwind, and Emmet with Prettier.
 | LSP | `html`, `cssls`, `tailwindcss`, `emmet_language_server` |
 | Format | `prettierd` (fallback `prettier`) for `html`, `css`, `scss`, `less` |
 
+`tailwindcss` uses the same server config as `lang.tailwind`, so it attaches
+only in Tailwind projects.
+
 ### `lang.tailwind`
 
-Standalone Tailwind CSS language server — class completion, hovers, and lint
-without the rest of the web stack. Already included in `lang.web`.
+Standalone Tailwind CSS language server: class completion, hovers, and lint
+without the rest of the web stack. Already included in `lang.web`, which shares
+this server config.
 
 | Adds | Value |
 | --- | --- |
 | LSP | `tailwindcss` with `classAttributes` and `classFunctions` tuned for React and class-variance helpers |
+| Root | attaches only in Tailwind projects ([project detection](/extras/lang/tailwind/#project-detection)) |
 
 ### `lang.docker`
 
@@ -257,7 +269,7 @@ JSON with jsonls, SchemaStore schemas, and Prettier.
 
 | Adds | Value |
 | --- | --- |
-| Treesitter | `json`, `jsonc` |
+| Treesitter | `json` (also highlights JSONC) |
 | Mason | `prettier`, `prettierd` |
 | LSP | `jsonls` with SchemaStore schemas |
 | Format | `prettierd` (fallback `prettier`) for `json`, `jsonc` |
@@ -270,10 +282,8 @@ Terraform and HCL with terraform-ls, terraform fmt, and tflint.
 | Adds | Value |
 | --- | --- |
 | Treesitter | `terraform`, `hcl` |
-| Mason | `tflint` |
-| LSP | `terraformls` |
+| LSP | `terraformls`, `tflint` (runs as a language server) |
 | Format | `terraform_fmt` for `terraform`, `terraform-vars` (needs the `terraform` CLI) |
-| Lint | `tflint` for `terraform` |
 
 ### `lang.nix`
 
@@ -282,9 +292,11 @@ Nix with the nil language server and nixfmt.
 | Adds | Value |
 | --- | --- |
 | Treesitter | `nix` |
-| Mason | `nixfmt` |
 | LSP | `nil_ls` |
 | Format | `nixfmt` for `nix` |
+
+Install `nixfmt` with Nix (`nix profile install nixpkgs#nixfmt`); Mason only
+ships it for Linux x64. Formatting skips nixfmt until it is on `$PATH`.
 
 ### `lang.zig`
 
@@ -299,19 +311,19 @@ Zig with the zls language server (formatting via built-in `zig fmt`).
 
 ### `ui.animations`
 
-Smooth scroll and cursor animations via Snacks.
+Smooth scrolling via Snacks.
 
 | Adds | Value |
 | --- | --- |
-| Snacks | `animate.enabled = true`, `scroll.enabled = true` |
+| Snacks | `scroll.enabled = true` |
 
 ### `ui.base46`
 
-[AvengeMedia/base46](https://github.com/AvengeMedia/base46), the NvChad Base46 colorscheme collection as regular Neovim colorschemes.
+[duxlabs-dev/base46](https://github.com/duxlabs-dev/base46) (formerly AvengeMedia/base46), the NvChad Base46 colorscheme collection as Neovim colorschemes.
 
 | Adds | Value |
 | --- | --- |
-| Plugin | `AvengeMedia/base46` |
+| Plugin | `duxlabs-dev/base46` |
 
 Enable the extra, sync plugins, then set `ui.colorscheme` to a Base46 scheme such as `base46-gruvchad`.
 
@@ -391,7 +403,9 @@ Protocol workflows.
 | Deps | `nvim-nio` |
 | Keymaps | `<leader>d*` debug actions |
 
-Language adapters and launch configurations stay explicit in `user.lua`.
+`lang.go`, `lang.python`, `lang.python-pro`, and `lang.rust` add their
+debug adapters and launch configurations when enabled alongside it. Other
+languages go in the `nvim-dap` spec's `opts.adapters` and `opts.configurations`.
 
 ## Test
 
@@ -403,10 +417,11 @@ framework.
 | Adds | Value |
 | --- | --- |
 | Plugin | `nvim-neotest/neotest` |
-| Deps | `nvim-nio`, `plenary.nvim`, `FixCursorHold.nvim`, `nvim-treesitter` |
+| Deps | `nvim-nio`, `plenary.nvim` |
 | Keymaps | `<leader>T*` test actions |
 
-Language-specific adapters stay explicit in `plugins.specs`.
+`lang.go`, `lang.python`, and `lang.python-pro` add their test adapters when
+enabled alongside it. Other adapters go in the `neotest` spec's `opts.adapters`.
 
 ## Git
 
@@ -423,11 +438,13 @@ Requires `lazygit` in `$PATH`.
 
 ### `git.diffview`
 
-[sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim) for richer diffs and file history.
+[diffview-plus.nvim](https://github.com/dlyongemallo/diffview-plus.nvim), the
+maintained fork of `sindrets/diffview.nvim`, for richer diffs and file history.
 
 | Adds | Value |
 | --- | --- |
-| Plugin | `sindrets/diffview.nvim` |
+| Plugin | `dlyongemallo/diffview-plus.nvim` (tagged releases) |
+| Deps | `mini.icons` |
 | Keymap | `<leader>gD` → `:DiffviewOpen` |
 | Keymap | `<leader>gH` → file history |
 
@@ -449,7 +466,6 @@ picker.
 | Adds | Value |
 | --- | --- |
 | Plugin | `NeogitOrg/neogit` |
-| Deps | `plenary.nvim` |
 | Treesitter | `git_config`, `git_rebase`, `gitcommit`, `diff` |
 | Keymap | `<leader>gn` → open Neogit |
 
@@ -496,11 +512,16 @@ return {
 
 ### `ai.copilot`
 
-GitHub Copilot integration via [zbirenbaum/copilot.lua](https://github.com/zbirenbaum/copilot.lua).
+GitHub Copilot inline suggestions through `copilot-language-server` and native
+`vim.lsp.inline_completion`. No Copilot plugin.
 
 | Adds | Value |
 | --- | --- |
-| Plugin | `zbirenbaum/copilot.lua` |
+| LSP | `copilot` (Mason installs `copilot-language-server`) |
+| Keymap | `<M-l>` (insert) -> accept the suggestion |
+| Keymap | `<M-]>` / `<M-[>` (insert) -> next / previous suggestion |
+
+Sign in with `:LspCopilotSignIn` in any buffer the server attached to.
 
 > Never enabled by default. Opt in with `:BlakExtras enable ai.copilot`.
 
@@ -520,6 +541,10 @@ GitHub Copilot integration via [zbirenbaum/copilot.lua](https://github.com/zbire
 | Keymap | `<leader>at` → send `{this}` context |
 | Keymap | `<leader>av` → send the visual selection |
 | Keymap | `<leader>ap` → pick a prompt |
+| Keymap | `<leader>an` -> jump to or apply the next edit suggestion |
+
+Next Edit Suggestions need the Copilot language server, so enable
+[`ai.copilot`](/extras/ai/copilot/) too when you turn on `nes.enabled`.
 
 Enable it, sync plugins, then install at least one AI CLI supported by Sidekick, such as Codex, Claude, Gemini, or OpenCode:
 
@@ -558,42 +583,6 @@ return {
             ["<a-a>"] = { "sidekick_send", mode = { "n", "i" } },
           },
         },
-      },
-    },
-  },
-}
-```
-
-> Never enabled by default. Disable it, restart Blak, then run `:BlakExtras sync` to remove the plugin spec.
-
-### `ai.supermaven`
-
-[supermaven-nvim](https://github.com/supermaven-inc/supermaven-nvim) inline AI
-completion.
-
-| Adds | Value |
-| --- | --- |
-| Plugin | `supermaven-inc/supermaven-nvim` |
-| Commands | `:Supermaven*` command family |
-| Keymap | `<leader>aS` -> toggle Supermaven |
-| Keymap | `<M-l>` -> accept the inline suggestion |
-| Keymap | `<M-w>` -> accept one word |
-| Keymap | `<M-]>` -> clear the inline suggestion |
-
-Blak disables Supermaven's built-in plugin keymaps and registers the mappings
-above through `:BlakKeys` instead. That keeps the extra discoverable and avoids
-quietly taking over `<Tab>`.
-
-Supermaven options are passed through `ai.supermaven`:
-
-```lua
-return {
-  extras = { enabled = { "ai.supermaven" } },
-  ai = {
-    supermaven = {
-      log_level = "info",
-      ignore_filetypes = {
-        markdown = true,
       },
     },
   },
@@ -700,7 +689,7 @@ Treesitter-powered extract, inline, and print-debug refactors.
 | Adds | Value |
 | --- | --- |
 | Plugin | `ThePrimeagen/refactoring.nvim` |
-| Deps | `plenary.nvim`, `nvim-treesitter` |
+| Deps | `lewis6991/async.nvim` |
 | Keymaps | `<leader>r*` refactor actions |
 
 ### `editor.render-markdown`
@@ -726,6 +715,9 @@ and searchable TODO-style comments.
 | Deps | `plenary.nvim` |
 | Keymaps | `]t`, `[t`, `<leader>xT` |
 
+`]t`/`[t` replace Neovim's native tag-matchlist maps (`:tnext`/`:tprevious`)
+while the extra is enabled.
+
 ### `editor.trouble`
 
 [trouble.nvim](https://github.com/folke/trouble.nvim) for richer diagnostics,
@@ -745,8 +737,10 @@ Native window movement on Ctrl-h/j/k/l.
 | --- | --- |
 | Keymaps | `<C-h>` left, `<C-j>` down, `<C-k>` up, `<C-l>` right |
 
-This is an extra instead of a core default because `<C-l>` redraws the screen in
-stock Neovim. Opting in keeps the shortcut explicit and reversible.
+This is an extra instead of a core default because `<C-l>` already means
+`:nohlsearch | diffupdate | redraw` in stock Neovim, and this extra replaces it.
+Blak's `<Esc>` still clears search highlighting. Opting in keeps the shortcut
+explicit and reversible.
 
 ### `editor.neotree`
 
@@ -815,7 +809,6 @@ return {
   label = "Rust",
   description = "rust-analyzer + treesitter",
   treesitter = { "rust", "toml" },
-  mason = { "codelldb" },
   lsp = {
     servers = {
       rust_analyzer = {
@@ -833,6 +826,9 @@ return {
   },
   plugins = { -- optional, lazy.nvim spec list
     { "owner/plugin.nvim", cmd = "Example", opts = {} },
+  },
+  integrations = { -- optional, added only while another extra is enabled too
+    ["debug.dap"] = { mason = { "codelldb" }, plugins = { --[[ nvim-dap opts ]] } },
   },
   apply = function(config) -- optional, runs before declarative contributions
     config.snacks.dim = { enabled = true }

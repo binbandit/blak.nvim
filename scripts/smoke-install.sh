@@ -61,14 +61,17 @@ NVIM_APPNAME="$APPNAME" \
   --cmd 'set loadplugins' \
   --cmd 'lua vim.g.blak_config={ui={splash={enabled=false}},mason={automatic_install=false,ensure_installed={}},treesitter={ensure_installed={}}}' \
   --cmd 'runtime init.lua' \
-  -c 'lua if vim.g.blak_loaded ~= true then vim.api.nvim_err_writeln("Blak did not load from installed runtime checkout"); vim.cmd("cquit 1") end' \
+  -c 'lua if vim.g.blak_loaded ~= true then vim.api.nvim_echo({ { "Blak did not load from installed runtime checkout" } }, true, { err = true }); vim.cmd("cquit 1") end' \
   "$@" -c qa
 }
 boot
 
 # The clone exercises the committed install. Include new runtime modules in the
 # working-tree overlay too, without copying ignored personal configuration.
-git -C "$ROOT" ls-files --cached --others --exclude-standard -- init.lua lua doc lazy-lock.json NEWS.md README.md LICENSE NOTICE > "$RUN_DIR/runtime-files"
+# Skip tracked files deleted in the working tree.
+git -C "$ROOT" ls-files --cached --others --exclude-standard -- init.lua lua doc lazy-lock.json NEWS.md README.md LICENSE NOTICE \
+  | while IFS= read -r file; do [ -e "$ROOT/$file" ] && printf '%s\n' "$file"; done \
+  > "$RUN_DIR/runtime-files"
 tar -C "$ROOT" -cf "$RUN_DIR/runtime.tar" -T "$RUN_DIR/runtime-files"
 tar -C "$TARGET" -xf "$RUN_DIR/runtime.tar"
 boot -c 'Lazy! restore'

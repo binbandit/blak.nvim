@@ -7,20 +7,19 @@ return {
     {
       "MeanderingProgrammer/render-markdown.nvim",
       ft = { "markdown" },
-      cmd = {
-        "RenderMarkdown",
-        "RenderMarkdownEnable",
-        "RenderMarkdownDisable",
-        "RenderMarkdownToggle",
-      },
+      cmd = "RenderMarkdown",
       dependencies = {
         "nvim-treesitter/nvim-treesitter",
         "nvim-mini/mini.icons",
       },
-      opts = {},
+      opts = {
+        -- LaTeX needs a latex parser plus utftex or latex2text; without them
+        -- it renders nothing and only adds :checkhealth warnings.
+        latex = { enabled = false },
+      },
     },
   },
   keys = {
-    { lhs = "<leader>um", rhs = "<cmd>RenderMarkdownToggle<cr>", desc = "Render Markdown" },
+    { lhs = "<leader>um", rhs = "<cmd>RenderMarkdown toggle<cr>", desc = "Render Markdown" },
   },
 }

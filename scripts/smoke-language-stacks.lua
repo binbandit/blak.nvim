@@ -194,4 +194,117 @@ for name, value in pairs(saved) do
   package.loaded[name] = value or nil
 end
 
+-- Language extras add their debug and test adapters only next to debug.dap
+-- and test.neotest, in either activation order, and set each one up once.
+-- Specs are merged by lazy.nvim itself, as on a real startup.
+vim.opt.rtp:append(vim.fn.stdpath("data") .. "/lazy/lazy.nvim")
+require("lazy.core.config").setup({
+  spec = {},
+  pkg = { enabled = false },
+  rocks = { enabled = false },
+  -- Keep this checkout on the runtimepath.
+  performance = { reset_packpath = false, rtp = { reset = false } },
+})
+local Plugin = require("lazy.core.plugin")
+
+local function merged(value, name)
+  local plugin = Plugin.Spec.new(require("blak.plugins").specs(value)).plugins[name]
+  return plugin, plugin and Plugin.values(plugin, "opts", false)
+end
+
+-- Adapter modules, since opts functions may require them while merging.
+local stubs = {}
+local function stub(name, value)
+  stubs[name] = package.loaded[name] or false
+  package.loaded[name] = value
+end
+local created = {}
+for _, name in ipairs({ "neotest-golang", "neotest-python" }) do
+  stub(
+    name,
+    setmetatable({}, {
+      __call = function(_, opts)
+        table.insert(created, name)
+        return { name = name, opts = opts }
+      end,
+    })
+  )
+end
+
+for lang, tool in pairs({
+  ["lang.go"] = "delve",
+  ["lang.python"] = "debugpy",
+  ["lang.python-pro"] = "debugpy",
+  ["lang.rust"] = "codelldb",
+}) do
+  local alone = apply({ lang })
+  assert(not vim.tbl_contains(alone.mason.ensure_installed, tool), lang .. " installed " .. tool)
+  assert(merged(alone, "nvim-dap") == nil, lang .. " added nvim-dap without debug.dap")
+  assert(
+    vim.tbl_contains(apply({ lang, "debug.dap" }).mason.ensure_installed, tool),
+    lang .. " did not install " .. tool .. " for debug.dap"
+  )
+  for _, target in ipairs({ "debug.dap", "test.neotest" }) do
+    local plugin = target == "debug.dap" and "nvim-dap" or "neotest"
+    local forward, reverse = apply({ lang, target }), apply({ target, lang })
+    local _, forward_opts = merged(forward, plugin)
+    local _, reverse_opts = merged(reverse, plugin)
+    assert(vim.deep_equal(forward.mason, reverse.mason), lang .. " tools depend on order")
+    assert(vim.deep_equal(forward_opts, reverse_opts), lang .. " " .. plugin .. " depends on order")
+  end
+end
+
+local everything =
+  apply({ "lang.python", "lang.python-pro", "lang.go", "lang.rust", "debug.dap", "test.neotest" })
+
+local dap = { adapters = {}, configurations = {} }
+stub("dap", dap)
+local dap_plugin, dap_opts = merged(everything, "nvim-dap")
+dap_plugin.config(dap_plugin, dap_opts)
+assert(type(dap.adapters.go) == "function", "Delve adapter was not registered")
+assert(dap.adapters.codelldb.command == "codelldb", "codelldb adapter was not registered")
+assert(#dap.configurations.go == 3 and #dap.configurations.rust == 1, "launch configs changed")
+assert(vim.tbl_contains(dap_plugin.dependencies, "nvim-dap-python"), "nvim-dap-python is missing")
+
+local neotest_setup
+stub("neotest", {
+  setup = function(opts)
+    neotest_setup = opts
+  end,
+})
+created = {}
+local neotest_plugin, neotest_opts = merged(everything, "neotest")
+neotest_plugin.config(neotest_plugin, neotest_opts)
+assert(
+  vim.deep_equal(created, { "neotest-golang", "neotest-python" }),
+  "both Python extras must set neotest-python up once: " .. vim.inspect(created)
+)
+assert(neotest_setup.adapters[1].opts.dap_mode == "manual", "Go tests would need nvim-dap-go")
+
+-- User specs merge with an adapter's options, drop one with `false`, and can
+-- still add adapter objects the documented way.
+created = {}
+everything.plugins.specs = {
+  {
+    "nvim-neotest/neotest",
+    opts = function(_, opts)
+      table.insert(opts.adapters, { name = "custom" })
+      opts.adapters["neotest-golang"].runner = "gotestsum"
+      opts.adapters["neotest-python"] = false
+    end,
+  },
+}
+neotest_plugin, neotest_opts = merged(everything, "neotest")
+neotest_plugin.config(neotest_plugin, neotest_opts)
+assert(vim.deep_equal(created, { "neotest-golang" }), "a disabled adapter was still set up")
+assert(neotest_setup.adapters[1].name == "custom", "a user adapter object was dropped")
+local golang = neotest_setup.adapters[2].opts
+assert(
+  golang.runner == "gotestsum" and golang.dap_mode == "manual",
+  "adapter options did not merge"
+)
+for name, value in pairs(stubs) do
+  package.loaded[name] = value or nil
+end
+
 print("Language stack smoke passed")

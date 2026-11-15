@@ -29,8 +29,12 @@ Because this extra adds a plugin, run:
 
 | Surface | Contribution |
 | --- | --- |
-| Plugin | `AvengeMedia/base46` |
+| Plugin | [`duxlabs-dev/base46`](https://github.com/duxlabs-dev/base46) (formerly `AvengeMedia/base46`) |
 | Colorscheme | Base46 `base46-*` schemes |
+
+The plugin loads at startup so the collection shows up in `:colorscheme
+base46-<Tab>` completion and colorscheme pickers. Loading it only registers the
+schemes; your active colorscheme does not change.
 
 ## Pick a Base46 scheme
 
@@ -50,11 +54,13 @@ return {
 Blak loads `ui.colorscheme` during startup. If the scheme cannot be found, Blak
 warns and falls back to TokyoNight.
 
+To try a scheme for the current session only, run `:colorscheme base46-<name>`.
+Restarting Blak returns to `ui.colorscheme`.
+
 ## Theme options
 
-Blak passes `ui.theme` to colorschemes that expose a Lua `setup()` function.
-Base46 schemes are plain colorschemes, so use Blak's `ui.transparent` option
-for transparent backgrounds:
+Use Blak's `ui.transparent` option for transparent backgrounds. It works with
+every Base46 scheme:
 
 ```lua
 return {
@@ -64,6 +70,22 @@ return {
   ui = {
     colorscheme = "base46-mountain",
     transparent = true,
+  },
+}
+```
+
+Base46's own options (`transparency`, `integrations`, `changed_themes`, and
+the rest of its README) go to the plugin spec:
+
+```lua
+return {
+  extras = {
+    enabled = { "ui.base46" },
+  },
+  plugins = {
+    specs = {
+      { "duxlabs-dev/base46", opts = { term_colors = false } },
+    },
   },
 }
 ```

@@ -1,6 +1,10 @@
 local M = {}
 
 local ns = vim.api.nvim_create_namespace("blak.splash")
+-- Splash color groups by "fg_bg" key. Kept with their colors because
+-- `:colorscheme` runs `hi clear`, which wipes the groups while the extmarks
+-- still point at their names; define_highlights() brings them back.
+---@type table<string, { name: string, fg?: string, bg?: string }>
 local highlights = {}
 local states = {}
 
@@ -48,12 +52,19 @@ local function get_hl(fg, bg)
   end
 
   local key = (fg or "none") .. "_" .. (bg or "none")
-  if not highlights[key] then
-    local name = "BlakSplash_" .. key:gsub("[^%w]", "_")
-    vim.api.nvim_set_hl(0, name, { fg = fg, bg = bg })
-    highlights[key] = name
+  local hl = highlights[key]
+  if not hl then
+    hl = { name = "BlakSplash_" .. key:gsub("[^%w]", "_"), fg = fg, bg = bg }
+    highlights[key] = hl
+    vim.api.nvim_set_hl(0, hl.name, { fg = fg, bg = bg })
   end
-  return highlights[key]
+  return hl.name
+end
+
+local function define_highlights()
+  for _, hl in pairs(highlights) do
+    vim.api.nvim_set_hl(0, hl.name, { fg = hl.fg, bg = hl.bg })
+  end
 end
 
 local function paint_colors(buf, start, line_count, colors, indent)
@@ -168,7 +179,16 @@ function M.play(buf, opts)
     end
 
     local frame_index = existing.frame_index or 1
-    if not set_lines(buf, start, splash.frames[frame_index], width, indent, splash.colors and splash.colors[frame_index]) then
+    if
+      not set_lines(
+        buf,
+        start,
+        splash.frames[frame_index],
+        width,
+        indent,
+        splash.colors and splash.colors[frame_index]
+      )
+    then
       stop_state(buf)
     end
     return
@@ -187,7 +207,7 @@ function M.play(buf, opts)
     return
   end
 
-  local uv = vim.uv or vim.loop
+  local uv = vim.uv
   local timer = uv.new_timer()
   local state = {
     frame_index = 1,
@@ -247,6 +267,32 @@ function M.play(buf, opts)
   )
 end
 
+-- The `~` filler rows under the splash are noise. The local value lives with
+-- the dashboard buffer, so the window gets its own fillchars back as soon as
+-- it shows another buffer.
+local function hide_end_of_buffer(buf)
+  for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+    vim.api.nvim_win_call(win, function()
+      vim.opt_local.fillchars:append({ eob = " " })
+    end)
+  end
+end
+
+-- Snacks drops the statusline (laststatus=0) for the startup dashboard, which
+-- moves the native ruler into the command line. 'ruler' is global, so hide it
+-- while the dashboard is focused, keep it hidden for floats opened over it
+-- (pickers, :BlakSplash), and restore it when a regular window takes focus.
+local saved_ruler
+local function sync_ruler()
+  if vim.bo.filetype == "snacks_dashboard" then
+    if saved_ruler == nil then
+      saved_ruler, vim.o.ruler = vim.o.ruler, false
+    end
+  elseif saved_ruler ~= nil and vim.api.nvim_win_get_config(0).relative == "" then
+    vim.o.ruler, saved_ruler = saved_ruler, nil
+  end
+end
+
 function M.attach_to_snacks(config)
   if not config.ui.splash.enabled then
     return
@@ -264,6 +310,7 @@ function M.attach_to_snacks(config)
     if vim.bo[buf].filetype ~= "snacks_dashboard" then
       return
     end
+    hide_end_of_buffer(buf)
     M.play(buf, { loop = loop, animate = animate })
   end
 
@@ -274,7 +321,13 @@ function M.attach_to_snacks(config)
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
       start(buf)
     end
+    sync_ruler()
   end
+
+  vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
+    group = group,
+    callback = sync_ruler,
+  })
 
   local function pause_all()
     for buf, state in pairs(states) do
@@ -302,17 +355,62 @@ function M.attach_to_snacks(config)
 end
 
 function M.setup(_)
-  -- Autocmds are attached after snacks.nvim setup, because the dashboard buffer belongs to Snacks.
+  -- Dashboard autocmds are attached after snacks.nvim setup (attach_to_snacks),
+  -- because the dashboard buffer belongs to Snacks.
+  vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("BlakSplashColors", { clear = true }),
+    desc = "Restore Blak splash colors after :colorscheme",
+    callback = define_highlights,
+  })
 end
 
+-- A centered float sized to the art, so the preview never disturbs the layout.
 function M.preview()
   local splash = data()
+  local frame = splash.frames[1]
   local buf = vim.api.nvim_create_buf(false, true)
   vim.bo[buf].bufhidden = "wipe"
   vim.bo[buf].filetype = "blak-splash"
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, splash.frames[1])
-  vim.cmd("botright split")
-  vim.api.nvim_win_set_buf(0, buf)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, frame)
+  vim.bo[buf].modifiable = false
+
+  -- The float takes its border from 'winborder'; count it when centering.
+  local border = (vim.o.winborder ~= "" and vim.o.winborder ~= "none") and 2 or 0
+  local columns, lines = vim.o.columns, vim.o.lines - vim.o.cmdheight
+  local width = math.max(1, math.min(splash.cols, columns - border))
+  local height = math.max(1, math.min(#frame, lines - border))
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    style = "minimal",
+    width = width,
+    height = height,
+    row = math.max(0, math.floor((lines - height - border) / 2)),
+    col = math.max(0, math.floor((columns - width - border) / 2)),
+  })
+  vim.wo[win].wrap = false
+
+  local function close()
+    if vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_win_close(win, true)
+    end
+  end
+  for _, lhs in ipairs({ "q", "<Esc>" }) do
+    vim.keymap.set(
+      "n",
+      lhs,
+      close,
+      { buffer = buf, nowait = true, silent = true, desc = "Close splash preview" }
+    )
+  end
+  -- Close once focus moves away so a looping preview never lingers unfocused.
+  vim.api.nvim_create_autocmd("WinLeave", {
+    buffer = buf,
+    once = true,
+    callback = function()
+      vim.schedule(close)
+    end,
+  })
+
   M.play(buf, { loop = true })
 end
 

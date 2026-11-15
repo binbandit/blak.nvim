@@ -41,19 +41,24 @@ function for `action`. Use `disable = true` to disable a Blak mapping. To move a
 default action, disable the old key and add the new one.
 
 Modes use Neovim's short names: `"n"` for Normal, `"i"` for Insert, and `"x"`
-for Visual, for example. Names such as `"normal"` fail config validation before
-the current session's keymaps are refreshed.
+for Visual, for example. `"v"` covers both Visual and Select mode, so Blak
+registers it as `"x"` plus `"s"`; prefer `"x"` unless you also want the mapping
+while typing over a snippet placeholder. Names such as `"normal"` fail config
+validation before the current session's keymaps are refreshed.
 
 ## Edit & navigation
 
 | Mode | Mapping | Action |
 | --- | --- | --- |
 | n | `<Esc>` | Clear search highlight |
-| n,i,x,s | `<C-s>` | Save (where Neovim leaves it free) |
+| n,x | `<C-s>` | Save |
 | n,i,x,s | `<D-s>` | Save (where the UI forwards Command-s) |
 | n | `<leader>qq` | Quit all (`:qa`) |
 
-`<C-s>` and `<D-s>` are bound only if your config or a plugin hasn't already claimed them. See `map_if_available` in the source.
+`<C-s>` and `<D-s>` are bound only if your config, a plugin, or Neovim hasn't
+already claimed them. In insert and select mode `<C-s>` stays Neovim's native
+LSP signature help, so `<C-s>` saves only from normal and visual mode. See
+`map_if_available` in the source.
 
 ## Find (pickers)
 
@@ -119,9 +124,9 @@ exits, reopening starts a fresh shell and keeps the old output buffer.
 | n | `]h` | Next hunk (or `]c` inside a diff) |
 | n | `[h` | Previous hunk (or `[c` inside a diff) |
 | n | `<leader>gs` | Stage hunk |
-| v | `<leader>gs` | Stage selection range |
+| x | `<leader>gs` | Stage selection range |
 | n | `<leader>gr` | Reset hunk |
-| v | `<leader>gr` | Reset selection range |
+| x | `<leader>gr` | Reset selection range |
 | n | `<leader>gS` | Stage buffer |
 | n | `<leader>gR` | Reset buffer |
 | n | `<leader>gp` | Preview hunk |
@@ -136,13 +141,35 @@ These map only when an LSP server attaches to the current buffer.
 | --- | --- |
 | `gd` | Go to definition |
 | `gD` | Go to declaration |
-| `gI` | Go to implementation |
-| `gr` | References |
-| `K` | Hover |
 | `<leader>ca` | Code action |
 | `<leader>cr` | Rename |
 | `<leader>cs` | Document symbols (picker) |
 | `<leader>cS` | Workspace symbols (picker) |
+
+Blak does not map `K`, `gr`, or `gI`. Neovim's own LSP defaults cover them:
+
+| Mode | Mapping | Action |
+| --- | --- | --- |
+| n | `K` | Hover |
+| n | `grr` | References |
+| n | `gri` | Go to implementation |
+| n | `grn` | Rename |
+| n,x | `gra` | Code action |
+| n | `grt` | Go to type definition |
+| n | `grx` | Run code lens |
+| n | `gO` | Document symbols (location list) |
+| i,s | `<C-s>` | Signature help |
+
+To keep a bare `gr` for references, add it back in `user.lua`. It shadows the
+native `gr*` prefix, so every `gr` waits for `timeoutlen` before it runs:
+
+```lua
+return {
+  keymaps = {
+    { key = "gr", action = vim.lsp.buf.references, description = "References" },
+  },
+}
+```
 
 See the [LSP guide](/guide/lsp/).
 
@@ -154,19 +181,24 @@ selected lines, use `:'<,'>BlakFormat`. Disable the mapping through
 
 ## Native shortcuts
 
-Neovim's described defaults, such as `grn` for rename and `grt` for type
-definition, appear in `:BlakKeys` alongside Blak's keys when active. They remain
-native mappings. See [Native Neovim tools](/guide/native-neovim/) for other
-built-in capabilities that need no extra plugin.
+Neovim's described defaults, such as the LSP maps above, `]d`/`[d`, and the
+Treesitter selections `an`/`in` in visual mode, appear in `:BlakKeys` alongside
+Blak's keys when active. They remain native mappings. See
+[Native Neovim tools](/guide/native-neovim/) for other built-in capabilities
+that need no extra plugin.
 
 ## Diagnostics
 
 | Mapping | Action |
 | --- | --- |
-| `]d` | Next diagnostic (jumps + opens float) |
-| `[d` | Previous diagnostic (jumps + opens float) |
+| `]d` / `[d` | Next / previous diagnostic (native, takes a count) |
+| `]D` / `[D` | Last / first diagnostic in the buffer (native) |
 | `<leader>xx` | Diagnostics picker |
 | `<leader>xd` | Line diagnostic float |
+
+The jumps are Neovim's own mappings. Blak sets
+`vim.diagnostic.config({ jump = { on_jump = ... } })` so every jump also opens
+the diagnostic float at the cursor.
 
 ## Blak & Lazy
 
@@ -226,10 +258,9 @@ built-in capabilities that need no extra plugin.
 | `ai.sidekick` | `<leader>at` | Send current context to Sidekick |
 | `ai.sidekick` | `<leader>av` | Send visual selection to Sidekick |
 | `ai.sidekick` | `<leader>ap` | Pick Sidekick prompt |
-| `ai.supermaven` | `<leader>aS` | Toggle Supermaven |
-| `ai.supermaven` | `<M-l>` | Accept inline suggestion |
-| `ai.supermaven` | `<M-w>` | Accept one word |
-| `ai.supermaven` | `<M-]>` | Clear inline suggestion |
+| `ai.sidekick` | `<leader>an` | Jump to or apply the next edit suggestion |
+| `ai.copilot` | `<M-l>` | Accept the inline suggestion (insert) |
+| `ai.copilot` | `<M-]>` / `<M-[>` | Next / previous inline suggestion (insert) |
 | `debug.dap` | `<leader>db` | Toggle breakpoint |
 | `debug.dap` | `<leader>dc` | Continue debugging |
 | `debug.dap` | `<leader>di` / `<leader>do` / `<leader>dO` | Step into / over / out |
@@ -252,7 +283,7 @@ built-in capabilities that need no extra plugin.
 | `editor.scratch` | `<leader>S` | Select scratch buffer |
 | `editor.overseer` | `<leader>oo` | Toggle tasks |
 | `editor.overseer` | `<leader>or` | Run task |
-| `editor.overseer` | `<leader>oq` | Task quick action |
+| `editor.overseer` | `<leader>oq` | Task action (pick a task, then an action) |
 | `editor.refactoring` | `<leader>re` | Extract function |
 | `editor.refactoring` | `<leader>rf` | Extract function to file |
 | `editor.refactoring` | `<leader>rv` | Extract variable |
@@ -279,6 +310,6 @@ built-in capabilities that need no extra plugin.
 ## Design notes
 
 - **No hidden chords.** If a Blak mapping isn't in this page or in `:BlakKeys`, it doesn't exist in core, enabled extras, or `user.lua`.
-- **Mnemonic grouping.** `<leader>f*` find, `<leader>b*` buffers, `<leader>g*` git, `<leader>c*` code, `<leader>x*` diagnostics, `<leader>l*` Lazy/Blak, `<leader>t*` terminal, `<leader>u*` UI toggles, `<leader>w*` windows, `<leader>q*` quit.
+- **Mnemonic grouping.** `<leader>f*` find, `<leader>b*` buffers, `<leader>g*` git, `<leader>c*` code, `<leader>x*` diagnostics, `<leader>l*` Lazy/Blak, `<leader>t*` terminal, `<leader>u*` UI toggles, `<leader>w*` windows, `<leader>q*` quit. Extras use `<leader>a*` AI, `<leader>d*` debug, `<leader>h*` Harpoon, `<leader>o*` tasks, `<leader>r*` refactor, `<leader>s*` search, and `<leader>T*` test; which-key labels these groups once an enabled extra maps a key under them.
 - **`map_if_available`.** Keys like `<C-s>` and `<D-s>` are only set when not already mapped — they yield to native bindings or another plugin's claim.
 - **Extras and user config add to or retarget this list.** Run `:BlakKeys` to see what your enabled extras and `user.lua` have registered.

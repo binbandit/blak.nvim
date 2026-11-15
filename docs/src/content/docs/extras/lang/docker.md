@@ -55,6 +55,6 @@ registers `yaml.docker-compose` for `docker-compose.yml`, `docker-compose.yaml`,
 :BlakDoctor
 ```
 
-Open a `Dockerfile` and check `:LspInfo` for `dockerls`; save it to see
-`hadolint` diagnostics. Open a `docker-compose.yml` and check that
-`docker_compose_language_service` attaches.
+Open a `Dockerfile` and check `:checkhealth vim.lsp` for `dockerls`; `hadolint`
+diagnostics appear on open and refresh on save. Open a `docker-compose.yml` and
+check that `docker_compose_language_service` attaches.

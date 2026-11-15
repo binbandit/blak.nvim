@@ -35,7 +35,7 @@ function M.setup(_)
 
   vim.api.nvim_create_autocmd("FileType", {
     group = group,
-    pattern = { "help", "qf", "man", "checkhealth", "lspinfo", "notify" },
+    pattern = { "help", "qf", "man", "checkhealth" },
     callback = function(event)
       vim.bo[event.buf].buflisted = false
       vim.keymap.set(

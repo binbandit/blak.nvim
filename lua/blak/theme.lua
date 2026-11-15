@@ -53,23 +53,16 @@ function M.setup_tokyonight(config)
   return true
 end
 
-local function add_candidate(candidates, seen, value)
-  if type(value) ~= "string" or value == "" or seen[value] then
-    return
-  end
-  seen[value] = true
-  table.insert(candidates, value)
-end
-
-function M.setup_module_candidates(config, name)
+-- Theme modules are named after the colorscheme or one of its hyphen prefixes,
+-- longest first: `tokyonight-night` -> tokyonight, `base46-catppuccin-latte`
+-- -> base46-catppuccin, then base46.
+function M.setup_module_candidates(_, name)
   local candidates = {}
-  local seen = {}
-
-  add_candidate(candidates, seen, name)
-  if type(name) == "string" then
-    add_candidate(candidates, seen, name:match("^(.*)%-.+$"))
+  local prefix = type(name) == "string" and name or nil
+  while prefix and prefix ~= "" do
+    table.insert(candidates, prefix)
+    prefix = prefix:match("^(.*)%-")
   end
-
   return candidates
 end
 

@@ -4,7 +4,7 @@ description: Configure lang.terraform for terraform-ls, tflint, terraform fmt, a
 ---
 
 `lang.terraform` adds Terraform and HCL support through terraform-ls, with
-`terraform fmt` formatting and `tflint` linting.
+`terraform fmt` formatting and tflint diagnostics.
 
 ## Enable it
 
@@ -30,18 +30,23 @@ Or enable it interactively:
 | Surface | Contribution |
 | --- | --- |
 | Treesitter | `terraform`, `hcl` |
-| Mason | `tflint` |
-| LSP | `terraformls` |
+| LSP | `terraformls`, `tflint` |
 | Formatting | `terraform_fmt` for `terraform`, `terraform-vars` |
-| Linting | `tflint` for `terraform` |
 
-`terraformls` installs automatically through Mason (package `terraform-ls`).
+Both servers install automatically through Mason (packages `terraform-ls` and
+`tflint`). tflint runs as a language server (`tflint --langserver`), so its
+diagnostics update as you type. Put tflint rules and plugins in `.tflint.hcl`.
 
 `terraform_fmt` shells out to the `terraform` CLI, which must be on your
-`$PATH`. terraform-ls does not serve generic `.hcl` files (Packer, Nomad), so
-HCL receives Treesitter highlighting only.
+`$PATH`. Without it, saving falls back to terraform-ls, which reports
+`Terraform (CLI) is required. Please install Terraform or make it available in
+$PATH` and leaves the file unformatted. terraform-ls does not serve generic
+`.hcl` files (Packer, Nomad), so HCL receives Treesitter highlighting only.
 
 ## Configure terraform-ls
+
+terraform-ls reads its options at startup from `init_options`; it ignores
+`settings`:
 
 ```lua
 return {
@@ -49,10 +54,9 @@ return {
   lsp = {
     servers = {
       terraformls = {
-        settings = {
-          terraform = {
-            validation = { enableEnhancedValidation = true },
-          },
+        init_options = {
+          experimentalFeatures = { prefillRequiredFields = true },
+          validation = { enableEnhancedValidation = true },
         },
       },
     },
@@ -68,5 +72,5 @@ return {
 :BlakDoctor
 ```
 
-Open a `.tf` file and check `:LspInfo` for `terraform-ls`. Ensure the
-`terraform` CLI is installed for format-on-save to work.
+Open a `.tf` file and check `:checkhealth vim.lsp` for `terraformls` and
+`tflint`. Ensure the `terraform` CLI is installed for format-on-save to work.

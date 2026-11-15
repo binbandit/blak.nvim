@@ -232,7 +232,10 @@ local function build_entries(config)
 end
 
 local function add_highlight(highlights, line, group, start_col, end_col)
-  table.insert(highlights, { line = line - 1, group = group, start_col = start_col, end_col = end_col })
+  table.insert(
+    highlights,
+    { line = line - 1, group = group, start_col = start_col, end_col = end_col }
+  )
 end
 
 local function render(config)
@@ -270,7 +273,8 @@ local function render(config)
           add_highlight(highlights, #lines, "Comment", #main - #lock, -1)
         end
 
-        local description = entry.known and entry.extra.description or "Unknown extra; press x to remove it from saved state if it came from extras.json."
+        local description = entry.known and entry.extra.description
+          or "Unknown extra; press x to remove it from saved state if it came from extras.json."
         table.insert(lines, "    " .. description)
         rows[#lines] = entry
         add_highlight(highlights, #lines, "Comment", 0, -1)
@@ -360,7 +364,7 @@ local function redraw(opts)
   vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, lines)
   vim.api.nvim_buf_clear_namespace(state.buf, ns, 0, -1)
   for _, hl in ipairs(highlights) do
-    vim.api.nvim_buf_add_highlight(state.buf, ns, hl.group, hl.line, hl.start_col, hl.end_col)
+    vim.hl.range(state.buf, ns, hl.group, { hl.line, hl.start_col }, { hl.line, hl.end_col })
   end
   vim.bo[state.buf].modifiable = false
   place_cursor(opts.cursor_id)
@@ -380,15 +384,13 @@ local function toggle_current()
     return
   end
 
-  local ok = require("blak.extras").toggle(entry.id, state.config)
+  -- toggle() already notifies, including when plugins need :BlakExtras sync.
+  require("blak.extras").toggle(entry.id, state.config)
   redraw({ cursor_id = entry.id })
-  if ok and entry.known and entry.extra and entry.extra.plugins then
-    require("blak.util").notify("Run :BlakExtras sync when you want lazy.nvim to reconcile plugin installs.")
-  end
 end
 
 local function sync()
-  vim.cmd("Lazy sync")
+  require("blak.extras").sync()
 end
 
 local function close()
@@ -399,9 +401,24 @@ end
 
 local function set_keymaps(buf)
   local opts = { buffer = buf, silent = true, nowait = true }
-  vim.keymap.set("n", "x", toggle_current, vim.tbl_extend("force", opts, { desc = "Toggle Blak extra" }))
-  vim.keymap.set("n", "<CR>", toggle_current, vim.tbl_extend("force", opts, { desc = "Toggle Blak extra" }))
-  vim.keymap.set("n", "s", sync, vim.tbl_extend("force", opts, { desc = "Sync Blak extras with lazy.nvim" }))
+  vim.keymap.set(
+    "n",
+    "x",
+    toggle_current,
+    vim.tbl_extend("force", opts, { desc = "Toggle Blak extra" })
+  )
+  vim.keymap.set(
+    "n",
+    "<CR>",
+    toggle_current,
+    vim.tbl_extend("force", opts, { desc = "Toggle Blak extra" })
+  )
+  vim.keymap.set(
+    "n",
+    "s",
+    sync,
+    vim.tbl_extend("force", opts, { desc = "Install or remove extra plugins" })
+  )
   vim.keymap.set("n", "r", function()
     redraw()
   end, vim.tbl_extend("force", opts, { desc = "Refresh Blak extras" }))
@@ -412,7 +429,12 @@ end
 function M.open(config)
   state.config = config or require("blak.config").get()
 
-  if state.win and vim.api.nvim_win_is_valid(state.win) and state.buf and vim.api.nvim_buf_is_valid(state.buf) then
+  if
+    state.win
+    and vim.api.nvim_win_is_valid(state.win)
+    and state.buf
+    and vim.api.nvim_buf_is_valid(state.buf)
+  then
     vim.api.nvim_set_current_win(state.win)
     pcall(vim.api.nvim_win_set_config, state.win, dimensions())
     redraw()

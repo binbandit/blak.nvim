@@ -31,13 +31,13 @@ Loaded eagerly only when the splash dashboard is enabled; otherwise it waits unt
 
 ### which-key (`folke/which-key.nvim`)
 
-Pops up after the leader (or any prefix) showing the registered keymap groups. Blak pre-registers groups for `b` (buffers), `c` (code), `f` (find), `g` (git), `l` (lazy/blak), `q` (quit), `t` (terminal), `u` (toggles), `w` (windows), `x` (diagnostics). Loaded on `VeryLazy`.
+Pops up after the leader (or any prefix) showing the registered keymap groups. Blak pre-registers groups for `b` (buffers), `c` (code), `f` (find), `g` (git), `l` (lazy/blak), `q` (quit/session), `t` (terminal), `u` (toggle/update), `w` (windows), `x` (diagnostics), plus the extras prefixes `a` (ai), `d` (debug), `h` (harpoon), `o` (tasks), `r` (refactor), `s` (search), and `T` (test). which-key hides a group until something is mapped under it. Loaded on `VeryLazy`.
 
 ## Editor
 
 ### mini.icons (`nvim-mini/mini.icons`)
 
-Icon provider. Mocks `nvim-web-devicons` so plugins expecting that API still work without it. Pinned to `version = false` because the icon set changes frequently.
+Icon provider. Mocks `nvim-web-devicons` so plugins expecting that API still work without it; the mock is served on the first `require("nvim-web-devicons")`, so Snacks pickers show file icons before anything else loads mini.icons. Pinned to `version = false` because the icon set changes frequently.
 
 ### nvim-autopairs (`windwp/nvim-autopairs`)
 
@@ -53,7 +53,7 @@ Auto-closes and renames paired HTML/XML-style tags using Treesitter. Loaded on b
 
 ### oil.nvim (`stevearc/oil.nvim`)
 
-The default file explorer when `explorer.provider = "oil"`. Treats directories as buffers you edit. `<leader>e` opens at the current buffer's directory, falling back to the cwd when there is no file. Loaded eagerly so `blak .`, `:edit <directory>`, and Oil's directory takeover behave consistently. Float style: 90 × 90 with rounded border.
+The default file explorer when `explorer.provider = "oil"`. Treats directories as buffers you edit. `<leader>e` opens at the current buffer's directory, falling back to the cwd when there is no file. Loaded eagerly so `blak .`, `:edit <directory>`, and Oil's directory takeover behave consistently. Float style: 90% × 90% with a border from `ui.winborder`.
 
 ## Picker
 
@@ -67,13 +67,13 @@ See [Pickers](/guide/pickers/) for swapping the backend.
 
 ### blink.cmp (`saghen/blink.cmp`)
 
-Native completion engine. On the `stable` channel it pins to the `1.*` release; on `edge`/`nightly` it builds from source via `cargo build --release`. Provides LSP, path, snippet, and buffer sources. Ghost text on, documentation auto-show at 250 ms, auto-brackets, rounded borders. The default keymap preset stays `default`; set `completion.super_tab = true` to use blink.cmp's `super-tab` preset. LSP setup registers completion capabilities without loading blink, so the plugin still wakes on `InsertEnter` or `CmdlineEnter`. Spec: [`lua/blak/plugins/completion.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/completion.lua).
+Native completion engine. On the `stable` channel it pins to the `1.*` release; on `edge`/`nightly` it builds from source via `cargo build --release`. Provides LSP, path, snippet, and buffer sources. Ghost text on, documentation auto-show at 250 ms, auto-brackets, and menu, documentation, and signature borders that follow `ui.winborder`. The default keymap preset stays `default`; set `completion.super_tab = true` to use blink.cmp's `super-tab` preset. LSP setup registers completion capabilities without loading blink, so the plugin still wakes on `InsertEnter` or `CmdlineEnter`. Spec: [`lua/blak/plugins/completion.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/completion.lua).
 
 ## LSP
 
 ### nvim-lspconfig (`neovim/nvim-lspconfig`)
 
-Server configurations only — Blak uses Neovim 0.12's native `vim.lsp.config()` and `vim.lsp.enable()` for the actual wiring. Loaded on `BufReadPre`, `BufNewFile`, or LSP commands so empty dashboard startup avoids LSP cost while the first real file still gets setup before attach. See [LSP](/guide/lsp/).
+Server configurations only. Blak uses Neovim 0.12's native `vim.lsp.config()` and `vim.lsp.enable()` for the actual wiring. Loaded on `BufReadPre` or `BufNewFile` so empty dashboard startup avoids LSP cost while the first real file still gets setup before attach. Its old `:LspInfo`-style commands are gone on Neovim 0.12; use `:checkhealth vim.lsp` and `:lsp`. See [LSP](/guide/lsp/).
 
 ### mason.nvim (`mason-org/mason.nvim`)
 

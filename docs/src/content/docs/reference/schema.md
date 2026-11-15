@@ -59,10 +59,15 @@ Blak config validation failed:
 | `colorscheme` | `string` | Any installed colorscheme name |
 | `transparent` | `boolean` | `true` or `false` |
 | `theme` | `table` | Options passed to a colorscheme Lua `setup()` function when available |
+| `winborder` | `string` | Neovim's `'winborder'` for floats: `"rounded"` (default), `"single"`, `"double"`, `"solid"`, `"shadow"`, `"bold"`, or `"none"`. LSP hover, diagnostic floats, completion menus and docs, and plugin floats follow it |
+| `notify` | `boolean` | Route `vim.notify` through the Snacks notifier (default `true`) |
+| `icons` | `boolean` | File icons in the `ui.lualine` statusline (default `true`) |
+| `splash` | `table` | `enabled`, `animate`, and `loop` booleans for the [splash](/guide/splash/) |
 
 Set `ui.transparent = true` to clear editor background highlights after the
 active colorscheme loads. Use `ui.theme` for colorscheme-native setup options.
-Blak tries the colorscheme name first, then the name before the final dash.
+Blak tries the colorscheme name first, then each shorter dash prefix, longest
+first (`base46-catppuccin-latte` tries `base46-catppuccin`, then `base46`).
 Configure custom themes with unusual setup rules through `plugins.specs`.
 
 ## `editor`
@@ -228,7 +233,6 @@ Hooks receive `(config, blak)`. `config` is the merged Blak config table, and
 | --- | --- | --- |
 | `claudecode` | `table` | Options passed to `coder/claudecode.nvim` when `ai.claudecode` is enabled. Blak sets `terminal.provider = "snacks"` by default. |
 | `sidekick` | `table` | Options passed to `folke/sidekick.nvim` when `ai.sidekick` is enabled. Blak sets `nes.enabled = false` by default. |
-| `supermaven` | `table` | Options passed to `supermaven-inc/supermaven-nvim` when `ai.supermaven` is enabled. Blak always disables the plugin's built-in keymaps. |
 
 Use this table for Claude Code configuration:
 
@@ -259,20 +263,6 @@ return {
       cli = {
         mux = { enabled = true, backend = "tmux" },
       },
-    },
-  },
-}
-```
-
-Use `ai.supermaven` to tune Supermaven without enabling its hidden keymaps:
-
-```lua
-return {
-  extras = { enabled = { "ai.supermaven" } },
-  ai = {
-    supermaven = {
-      ignore_filetypes = { markdown = true },
-      log_level = "info",
     },
   },
 }

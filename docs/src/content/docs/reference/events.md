@@ -37,9 +37,10 @@ inside Neovim. On reload it clears `package.loaded["blak.user"]`, rebuilds the
 merged config, reapplies safe in-session runtime pieces, refreshes lazy.nvim's
 spec graph, and emits this event.
 
-Plugin additions/removals still need `:BlakExtras sync` or `:Lazy sync`.
-Restarting is still the clean way to unload plugins, keymaps, and runtime hooks
-that already ran.
+Plugin additions/removals still need `:BlakExtras sync`, which installs missing
+plugins at their pinned commits and removes unused ones but never updates.
+Restarting (`:restart`) is still the clean way to unload plugins, keymaps, and
+runtime hooks that already ran.
 
 ### Example: post-startup tweaks
 

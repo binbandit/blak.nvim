@@ -90,25 +90,25 @@ local function keymaps(labels)
   local maps = {}
   for index, label in ipairs(labels or DEFAULT_LABELS) do
     table.insert(maps, {
-      mode = { "n", "v", "o" },
+      mode = { "n", "x", "o" },
       lhs = label .. "j",
       rhs = index .. "j",
       desc = direction_desc("down", index),
     })
     table.insert(maps, {
-      mode = { "n", "v", "o" },
+      mode = { "n", "x", "o" },
       lhs = label .. "<Down>",
       rhs = index .. "j",
       desc = direction_desc("down", index),
     })
     table.insert(maps, {
-      mode = { "n", "v", "o" },
+      mode = { "n", "x", "o" },
       lhs = label .. "k",
       rhs = index .. "k",
       desc = direction_desc("up", index),
     })
     table.insert(maps, {
-      mode = { "n", "v", "o" },
+      mode = { "n", "x", "o" },
       lhs = label .. "<Up>",
       rhs = index .. "k",
       desc = direction_desc("up", index),
@@ -117,11 +117,13 @@ local function keymaps(labels)
   return maps
 end
 
+local keys = keymaps(DEFAULT_LABELS)
+
 return {
   id = "ui.comfy-line-numbers",
   label = "Comfy line numbers",
   description = "Left-hand relative line labels for easier vertical motions",
-  keys = keymaps(DEFAULT_LABELS),
+  keys = keys,
   plugins = {
     {
       "mluders/comfy-line-numbers.nvim",
@@ -133,6 +135,17 @@ return {
         hidden_file_types = { "undotree" },
         hidden_buffer_types = { "terminal", "nofile" },
       },
+      config = function(_, opts)
+        require("comfy-line-numbers").setup(opts)
+        -- setup() maps `<label>j/k` again without descriptions, in "v" mode.
+        -- Drop its Select-mode copies so digits typed into snippet
+        -- placeholders stay literal, then restore Blak's described mappings.
+        for _, label in ipairs(opts.labels) do
+          pcall(vim.keymap.del, "s", label .. opts.up_key)
+          pcall(vim.keymap.del, "s", label .. opts.down_key)
+        end
+        require("blak.core.keymaps").apply_extra(keys)
+      end,
     },
   },
 }

@@ -31,7 +31,7 @@ Or enable it interactively:
 | --- | --- |
 | Keymap | `<leader>gB` opens the current file/line on the remote (normal and visual) |
 
-Snacks already ships with Blak, so this extra adds no plugin spec — it binds a
+Snacks already ships with Blak, so this extra adds no plugin spec; it binds a
 keymap to `Snacks.gitbrowse()`. In visual mode the selected line range is used,
 so the URL points at exactly those lines. The keymap appears in `:BlakKeys`.
 

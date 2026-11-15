@@ -3,7 +3,7 @@ title: LSP
 description: How Blak wires LSP — native vim.lsp.config(), no wrapper.
 ---
 
-Blak is built on Neovim 0.12's native LSP API. Servers are configured through `vim.lsp.config` and Mason-backed servers are enabled through `mason-lspconfig`'s `vim.lsp.enable()` integration. There is no `lspconfig.setup()` wrapper call anywhere in the codebase.
+Blak is built on Neovim 0.12's native LSP API. Servers are configured through `vim.lsp.config` and enabled with `vim.lsp.enable()`; `mason-lspconfig` installs the Mason-backed ones. There is no `lspconfig.setup()` wrapper call anywhere in the codebase.
 
 The native plumbing lives in [`lua/blak/plugins/lsp.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/plugins/lsp.lua). LSP keymaps are bound on `LspAttach` in [`lua/blak/core/keymaps.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/keymaps.lua).
 
@@ -12,7 +12,7 @@ The native plumbing lives in [`lua/blak/plugins/lsp.lua`](https://github.com/bin
 1. Blak collects servers from `lsp.servers` in the merged config (defaults + `user.lua` + extras).
 2. For each server, it assigns `vim.lsp.config[name] = settings`. This replaces Blak's previous overrides on reload while retaining the server's upstream runtime defaults.
 3. When `mason.automatic_install` is true, `mason-lspconfig` requests the configured Mason-backed server binaries.
-4. If `lsp.automatic_enable` is true (default), `mason-lspconfig` calls `vim.lsp.enable(name)` for configured, installed Mason-backed servers.
+4. If `lsp.automatic_enable` is true (default), Blak calls `vim.lsp.enable()` for every configured server, whether Mason installed it or not. `mason-lspconfig` also enables each Mason server once its install finishes.
 5. When a buffer matches, Neovim auto-attaches the server and fires `LspAttach`.
 6. Blak's `LspAttach` autocmd binds the buffer-local LSP keymaps.
 
@@ -70,14 +70,15 @@ return {
 
 Or as an extra — see [Writing an extra](/project/writing-extras/).
 
-If a server is installed outside Mason and you still want it enabled automatically, register it in `user.lua` and call `vim.lsp.enable("server_name")` from a `User BlakReady` autocmd.
+Servers installed outside Mason start the same way: `zls` on `$PATH`, `nil` from Nix, or Xcode's `clangd` only need an `lsp.servers` entry. A server whose binary is missing does not start; Neovim records the reason in the LSP log, whose path `:checkhealth vim.lsp` prints.
 
 To remove a default server, use a config function, for example
 `return function(config) config.lsp.servers.lua_ls = nil end`. Extras apply
 afterward, so disable the corresponding extra too if it supplies that server.
 
-Reload rebuilds server configuration for future clients. Restart Neovim when
-changing settings for a language server that is already running.
+Reload rebuilds server configuration for future clients. Run `:restart` after
+changing settings for a language server that is already running; `:lsp restart`
+restarts the server with the settings it started with.
 
 ## Diagnostics
 
@@ -91,9 +92,13 @@ diagnostics = {
   underline = true,
   update_in_insert = false,
   severity_sort = true,
-  float = { border = "rounded", source = "if_many" },
+  float = { source = "if_many" },
 }
 ```
+
+The float border follows `ui.winborder` (Neovim's `'winborder'`), like every
+other Blak float. Blak also sets `jump.on_jump` so Neovim's native `]d`, `[d`,
+`]D`, and `[D` open the diagnostic float after each jump.
 
 Override anything you want in `user.lua`:
 
@@ -116,13 +121,15 @@ Bound on `LspAttach` so they're only available when a server is attached:
 | --- | --- |
 | `gd` | Definition |
 | `gD` | Declaration |
-| `gI` | Implementation |
-| `gr` | References |
-| `K` | Hover |
 | `<leader>ca` | Code action |
 | `<leader>cr` | Rename |
 | `<leader>cs` | Document symbols (picker) |
 | `<leader>cS` | Workspace symbols (picker) |
+
+Neovim's own LSP defaults cover the rest: `K` hover, `grr` references, `gri`
+implementation, `grn` rename, `gra` code action, `grt` type definition, `grx`
+code lens, `gO` document symbols, and `<C-s>` signature help in insert mode.
+See [Keymaps](/guide/keymaps/#lsp-bound-on-lspattach).
 
 `<leader>cf` formats through Conform in any buffer, with the configured LSP
 fallback when needed. It does not require an attached language server.
@@ -135,7 +142,8 @@ return {
 }
 ```
 
-Then call `vim.lsp.enable("server_name")` yourself when you want to start it.
+Then call `vim.lsp.enable("server_name")` (or run `:lsp enable server_name`)
+yourself when you want to start it.
 
 ## Inspecting what's running
 
@@ -143,9 +151,10 @@ Then call `vim.lsp.enable("server_name")` yourself when you want to start it.
 :lua = vim.lsp.get_clients()       " all active clients
 :lua = vim.lsp.config.lua_ls       " the config you registered
 :checkhealth vim.lsp               " native health checks
-:lsp restart                      " restart clients attached to this buffer
-:lsp enable tsc                  " enable a configured server
-:lsp disable tsc                 " disable it for this session
+:lsp restart                       " restart clients attached to this buffer
+:lsp stop                          " stop clients attached to this buffer
+:lsp enable tsc                    " enable a configured server
+:lsp disable tsc                   " disable it for this session
 ```
 
 ## On Neovim nightly

@@ -22,7 +22,8 @@ FIND
   <Space>fh        Help
 
 SAVE
-  <C-s>            Save, in modes where Neovim leaves it free
+  <C-s>            Save, in normal and visual mode (insert and select mode
+                   keep Neovim's LSP signature help)
   <D-s>            Save, where Command-s is forwarded by the UI
 
 BUFFERS
@@ -73,8 +74,8 @@ CUSTOM
 GIT
   [h               Previous git hunk
   ]h               Next git hunk
-  <Space>gs        Stage hunk
-  <Space>gr        Reset hunk
+  <Space>gs        Stage hunk (visual: stage the selected lines)
+  <Space>gr        Reset hunk (visual: reset the selected lines)
   <Space>gS        Stage buffer
   <Space>gR        Reset buffer
   <Space>gp        Preview hunk
@@ -84,17 +85,23 @@ GIT
 CODE
   gd               Definition
   gD               Declaration
-  gr               References
-  K                Hover
   <Space>ca        Code action
   <Space>cr        Rename
+  <Space>cs        Document symbols
+  <Space>cS        Workspace symbols
   <Space>cf        Format
+  Blak binds the LSP keys above when a server attaches. Neovim's defaults
+  cover the rest: K hover, grr references, gri implementation, grn rename,
+  gra code action, grt type definition, gO document symbols, and insert-mode
+  <C-s> signature help. See |lsp-defaults|.
 
 DIAGNOSTICS
-  [d               Previous diagnostic
-  ]d               Next diagnostic
+  [d ]d            Previous/next diagnostic (Neovim's, takes a count)
+  [D ]D            First/last diagnostic (Neovim's)
   <Space>xx        Diagnostics picker
   <Space>xd        Line diagnostic
+  Blak sets the diagnostic jump option on_jump so every jump opens the
+  diagnostic float.
 
 BLAK
   <Space>?         Show Blak keymaps
@@ -119,17 +126,28 @@ EXTRAS
   output.
   editor.aerial maps <Space>co to toggle the code outline.
   editor.overseer maps <Space>oo, <Space>or, and <Space>oq for task workflows.
+  editor.grug-far maps <Space>sr for project-wide search and replace.
+  editor.flash maps s, S, r, R, and command-line <C-s> for Flash motions.
+  editor.scratch maps <Space>. and <Space>S for scratch buffers.
+  editor.neotree maps <Space>E to toggle Neo-tree.
+  git.lazygit, git.diffview, git.gitbrowse, and git.neogit map <Space>gg,
+  <Space>gD/<Space>gH, <Space>gB, and <Space>gn.
+  ui.zen, ui.indent, and lang.python-pro map <Space>uz, <Space>ug, and
+  <Space>cv.
   editor.refactoring maps <Space>r* refactor and print-debug actions.
   editor.render-markdown maps <Space>um to toggle Markdown rendering.
-  editor.todo-comments maps ]t, [t, and <Space>xT for TODO comments.
+  editor.todo-comments maps ]t, [t, and <Space>xT for TODO comments. ]t and
+  [t replace Neovim's :tnext and :tprevious maps.
   editor.trouble maps <Space>xX, <Space>xQ, <Space>xL, <Space>cO, and
   <Space>cR for Trouble lists.
   editor.harpoon maps <Space>ha, <Space>hh, <Space>hp, <Space>hn, and
   <Space>h1 through <Space>h4 for Harpoon file marks.
-  ai.supermaven maps <Space>aS to toggle Supermaven, <M-l> to accept an inline
-  suggestion, <M-w> to accept one word, and <M-]> to clear the suggestion.
+  ai.copilot maps <M-l> to accept and <M-]>/<M-[> to cycle inline suggestions
+  in insert mode.
+  ai.sidekick maps <Space>a* Sidekick CLI actions, and <Space>an jumps to or
+  applies the next edit suggestion.
   editor.window-navigation maps <C-h>, <C-j>, <C-k>, and <C-l> to move
-  between windows.
+  between windows. <C-l> replaces Neovim's redraw key |CTRL-L-default|.
   ui.comfy-line-numbers maps displayed labels with j/k and Up/Down motions.
   Example: 11j and 11<Down> both use the comfy label 11.
   ai.claudecode maps <Space>a* Claude Code actions: toggle, focus, resume,

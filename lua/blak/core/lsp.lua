@@ -62,8 +62,15 @@ local function with_lua_workspace_library(name, server_config)
   return server_config
 end
 
+-- Native ]d/[d/]D/[D jumps (with counts) open the line's diagnostics.
+local function diagnostic_float(_, bufnr)
+  vim.diagnostic.open_float({ bufnr = bufnr, scope = "cursor", focus = false })
+end
+
 function M.setup(config, names)
-  vim.diagnostic.config(config.lsp.diagnostics)
+  vim.diagnostic.config(
+    vim.tbl_deep_extend("force", { jump = { on_jump = diagnostic_float } }, config.lsp.diagnostics)
+  )
 
   if not names then
     for name in pairs(managed_servers) do
@@ -78,7 +85,8 @@ function M.setup(config, names)
   end
 
   local caps = capabilities()
-  for _, name in ipairs(configured_servers(config, names)) do
+  local servers = configured_servers(config, names)
+  for _, name in ipairs(servers) do
     local server = config.lsp.servers[name]
     local server_config = vim.tbl_deep_extend("force", {}, server, {
       capabilities = vim.tbl_deep_extend("force", {}, caps, server.capabilities or {}),
@@ -87,6 +95,13 @@ function M.setup(config, names)
     -- Replace Blak's override; merging would retain settings removed on reload.
     -- Neovim still combines this with the server's runtime lsp/<name>.lua.
     vim.lsp.config[name] = server_config
+  end
+
+  -- mason-lspconfig only enables servers that Mason installed; this also
+  -- starts servers found on PATH (Nix, Homebrew, Xcode). Neovim only logs a
+  -- missing binary, and mason-lspconfig re-enables a server once installed.
+  if config.lsp.automatic_enable and #servers > 0 then
+    vim.lsp.enable(servers)
   end
 end
 

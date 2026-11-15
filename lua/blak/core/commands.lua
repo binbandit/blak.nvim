@@ -145,7 +145,11 @@ function M.setup(config)
 
   vim.api.nvim_create_user_command("BlakDocs", open_docs, { desc = "Open the Blak docs site" })
 
-  vim.api.nvim_create_user_command("BlakConfig", open_user_config, { desc = "Edit lua/blak/user.lua" })
+  vim.api.nvim_create_user_command(
+    "BlakConfig",
+    open_user_config,
+    { desc = "Edit lua/blak/user.lua" }
+  )
 
   vim.api.nvim_create_user_command("BlakToolsInstall", function()
     require("blak.core.tools").ensure(config, { force = true })
@@ -175,10 +179,14 @@ function M.setup(config)
     local bang = opts.bang
     if bang then
       vim.g.blak_disable_autoformat = not vim.g.blak_disable_autoformat
-      require("blak.util").notify("Global autoformat " .. (vim.g.blak_disable_autoformat and "disabled" or "enabled"))
+      require("blak.util").notify(
+        "Global autoformat " .. (vim.g.blak_disable_autoformat and "disabled" or "enabled")
+      )
     else
       vim.b.blak_disable_autoformat = not vim.b.blak_disable_autoformat
-      require("blak.util").notify("Buffer autoformat " .. (vim.b.blak_disable_autoformat and "disabled" or "enabled"))
+      require("blak.util").notify(
+        "Buffer autoformat " .. (vim.b.blak_disable_autoformat and "disabled" or "enabled")
+      )
     end
   end, { bang = true, desc = "Toggle format-on-save. Use ! for global." })
 

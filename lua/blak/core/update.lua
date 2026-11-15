@@ -6,7 +6,7 @@ local function state_path(...)
 end
 
 local function lockfile()
-  return require("blak.util").join(vim.fn.stdpath("config"), "lazy-lock.json")
+  return require("blak.lazy").lockfile()
 end
 
 local function user_config()
@@ -53,7 +53,7 @@ local function next_legacy_backup_path()
     end
   end
 
-  local uv = vim.uv or vim.loop
+  local uv = vim.uv
   return util.join(dir, string.format("lazy-lock-%s-%s.json", stamp, uv.hrtime()))
 end
 
@@ -73,7 +73,7 @@ local function next_snapshot_path()
     end
   end
 
-  local uv = vim.uv or vim.loop
+  local uv = vim.uv
   return util.join(dir, string.format("rollback-%s-%s", stamp, uv.hrtime()))
 end
 
@@ -117,14 +117,17 @@ local function latest_rollback_point()
     )
   end
 
+  -- Snapshots and legacy backups number their same-second suffixes
+  -- independently, and every snapshot also writes a legacy copy, so within one
+  -- second a full snapshot outranks any legacy lockfile.
   table.sort(candidates, function(a, b)
-    if a.stamp == b.stamp then
-      if a.suffix == b.suffix then
-        return a.priority < b.priority
-      end
-      return a.suffix < b.suffix
+    if a.stamp ~= b.stamp then
+      return a.stamp < b.stamp
     end
-    return a.stamp < b.stamp
+    if a.priority ~= b.priority then
+      return a.priority < b.priority
+    end
+    return a.suffix < b.suffix
   end)
   return candidates[#candidates]
 end
@@ -202,7 +205,7 @@ local function snapshot(kind)
       table.insert(manifest.files, entry)
     end
     write_manifest(util.join(pending, "manifest.json"), manifest)
-    assert((vim.uv or vim.loop).fs_rename(pending, path))
+    assert(vim.uv.fs_rename(pending, path))
   end)
   if not ok then
     vim.fn.delete(pending, "rf")
@@ -343,6 +346,7 @@ end
 
 local function lazy_update(kind)
   local dest = snapshot(kind)
+  require("blak.util").notify("Rollback snapshot created: " .. vim.fn.fnamemodify(dest, ":t"))
   skip_next_lazy_update_backup = dest ~= nil
   local ok, err = pcall(vim.cmd, "Lazy update")
   if skip_next_lazy_update_backup then
@@ -455,6 +459,12 @@ function M.rollback()
   end
 
   reload_config()
+  -- lazy.nvim reads its lockfile once per session; without this, a rollback
+  -- after an update in the same session restores (and rewrites) the new pins.
+  local lazy_lock = package.loaded["lazy.manage.lock"]
+  if lazy_lock then
+    lazy_lock._loaded = false
+  end
   util.notify("Restored " .. vim.fn.fnamemodify(latest.path, ":t") .. ". Running :Lazy restore.")
   vim.cmd("Lazy restore")
 end

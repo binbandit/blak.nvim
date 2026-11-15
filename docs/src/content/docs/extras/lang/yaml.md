@@ -74,4 +74,4 @@ return {
 :BlakDoctor
 ```
 
-Open a `.yaml` file and check `:LspInfo` for `yaml-language-server`.
+Open a `.yaml` file and check `:checkhealth vim.lsp` for `yamlls`.

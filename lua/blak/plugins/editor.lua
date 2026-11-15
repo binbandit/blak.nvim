@@ -4,6 +4,14 @@ return function(config)
       "nvim-mini/mini.icons",
       version = false,
       lazy = true,
+      -- Snacks pickers and other plugins look for nvim-web-devicons; serve
+      -- the mini.icons mock on first require instead of generic file icons.
+      init = function()
+        package.preload["nvim-web-devicons"] = function()
+          require("mini.icons").mock_nvim_web_devicons()
+          return package.loaded["nvim-web-devicons"]
+        end
+      end,
       config = function()
         local icons = require("mini.icons")
         icons.setup()
@@ -62,14 +70,23 @@ return function(config)
       opts = {
         preset = "modern",
         delay = 300,
+        -- which-key hides groups without mappings, so prefixes used only by
+        -- extras can be named here unconditionally.
         spec = {
+          { "<leader>a", group = "ai" },
           { "<leader>b", group = "buffers" },
           { "<leader>c", group = "code" },
+          { "<leader>d", group = "debug" },
           { "<leader>f", group = "find" },
           { "<leader>g", group = "git" },
+          { "<leader>h", group = "harpoon" },
           { "<leader>l", group = "lazy/blak" },
+          { "<leader>o", group = "tasks" },
           { "<leader>q", group = "quit/session" },
+          { "<leader>r", group = "refactor" },
+          { "<leader>s", group = "search" },
           { "<leader>t", group = "terminal" },
+          { "<leader>T", group = "test" },
           { "<leader>u", group = "toggle/update" },
           { "<leader>w", group = "windows" },
           { "<leader>x", group = "diagnostics" },

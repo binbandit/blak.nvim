@@ -34,7 +34,12 @@ return {
     { lhs = "s", mode = { "n", "x", "o" }, rhs = flash("jump"), desc = "Flash jump" },
     { lhs = "S", mode = { "n", "x", "o" }, rhs = flash("treesitter"), desc = "Flash Treesitter" },
     { lhs = "r", mode = "o", rhs = flash("remote"), desc = "Flash remote" },
-    { lhs = "R", mode = { "o", "x" }, rhs = flash("treesitter_search"), desc = "Flash Treesitter search" },
+    {
+      lhs = "R",
+      mode = { "o", "x" },
+      rhs = flash("treesitter_search"),
+      desc = "Flash Treesitter search",
+    },
     { lhs = "<c-s>", mode = "c", rhs = flash("toggle"), desc = "Toggle Flash search" },
   },
 }

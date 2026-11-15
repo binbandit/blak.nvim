@@ -57,7 +57,13 @@ With Neovim installed:
 make smoke
 ```
 
-Public CI should run both plus `stylua --check .` once Stylua is available.
+CI also runs `stylua --check .` (StyLua 2.6.0). `.styluaignore` excludes the
+exported splash frames.
+
+Before a release, refresh the shipped pins with `make pins`. It installs every
+plugin that core and the extras can use in temporary directories, syncs them to
+their newest allowed commit, and rewrites `lazy-lock.json`. Run `make smoke` and
+review the diff afterwards.
 
 ## Adding an extra
 
@@ -78,8 +84,15 @@ return {
   snacks = { zen = { enabled = true } },
   keys = { { lhs = "<leader>ux", rhs = function() end, desc = "Example" } },
   plugins = { { "owner/plugin.nvim", cmd = "Example", opts = {} } },
+  -- Applied only when the named extra is enabled too, in either order.
+  integrations = {
+    ["debug.dap"] = { mason = { "example-debugger" }, plugins = {}, keys = {} },
+  },
 }
 ```
+
+New plugins need a shipped pin: run `make pins` and commit the updated
+`lazy-lock.json`. `make validate` fails for plugins without one.
 
 Plugin specs are validated for startup safety. Prefer `cmd`, `ft`, or a narrow event. Use `lazy = true`
 only when Blak keymaps or provider code explicitly load the plugin on demand. Eager defaults need a clear product reason.

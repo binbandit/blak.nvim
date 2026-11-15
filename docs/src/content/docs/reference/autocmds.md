@@ -32,13 +32,36 @@ Background reads and special buffers do not move the visible cursor.
 
 ### `FileType` — close on `q`
 
-For `help`, `qf`, `man`, `checkhealth`, `lspinfo`, `notify`: unlist the buffer and bind `q` to close it.
+For `help`, `qf`, `man`, `checkhealth`: unlist the buffer and bind `q` to close it.
 
 ## Splash (`BlakSplash` group)
 
+### `BufEnter` / `WinEnter` - hide the ruler on the dashboard
+
+Snacks hides the statusline on the startup dashboard, so Neovim would draw the
+ruler in the command line. While the dashboard (or a float over it) is focused,
+Blak turns `'ruler'` off; it restores your value when a regular window takes
+focus.
+
+### `User SnacksDashboardUpdatePre`
+
+Pauses the splash animation while Snacks re-renders the dashboard.
+
 ### `User SnacksDashboardOpened` / `SnacksDashboardUpdatePost`
 
-Starts (or repaints) the black-hole animation on the dashboard buffer. See [Splash](/guide/splash/).
+Starts (or repaints) the black-hole animation on the dashboard buffer, and sets
+the dashboard window's local `fillchars` to `eob: ` so no `~` rows show under it.
+See [Splash](/guide/splash/).
+
+Registered in [`lua/blak/splash/init.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/splash/init.lua).
+
+## Splash colors (`BlakSplashColors` group)
+
+### `ColorScheme` - restore splash colors
+
+`:colorscheme` runs `:hi clear`, which removes the splash highlight groups. Blak
+defines them again after every colorscheme change, so the splash keeps its
+colors.
 
 Registered in [`lua/blak/splash/init.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/splash/init.lua).
 
@@ -46,7 +69,7 @@ Registered in [`lua/blak/splash/init.lua`](https://github.com/binbandit/blak.nvi
 
 ### `LspAttach` — bind LSP keymaps
 
-When a server attaches to a buffer, bind the buffer-local LSP keymaps (`gd`, `gD`, `gI`, `gr`, `K`, `<leader>ca`, `<leader>cr`, `<leader>cs`, `<leader>cS`). Formatting (`<leader>cf`) is available globally through Conform.
+When a server attaches to a buffer, bind the buffer-local LSP keymaps (`gd`, `gD`, `<leader>ca`, `<leader>cr`, `<leader>cs`, `<leader>cS`). Hover, references, implementation, and the other `gr*` maps are Neovim's own LSP defaults. Formatting (`<leader>cf`) is available globally through Conform.
 
 Registered in [`lua/blak/core/keymaps.lua`](https://github.com/binbandit/blak.nvim/blob/main/lua/blak/core/keymaps.lua).
 

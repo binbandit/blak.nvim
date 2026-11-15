@@ -84,8 +84,10 @@ return {
 }
 ```
 
-Blak tries the colorscheme name first, then the name before the final dash. For
-example, `tokyonight-night` can configure `require("tokyonight").setup(...)`.
+Blak tries the colorscheme name first, then each shorter dash prefix, longest
+first. For example, `tokyonight-night` can configure
+`require("tokyonight").setup(...)`, and `base46-catppuccin-latte` tries
+`base46-catppuccin`, then `base46`.
 If the theme does not expose an inferable setup module, configure it where the
 plugin is installed instead:
 

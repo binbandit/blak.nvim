@@ -50,12 +50,35 @@ return {
   plugins = {                               -- lazy.nvim specs added to the set
     { "ziglang/zig.vim", ft = "zig" },
   },
+  integrations = {                          -- only when another extra is enabled too
+    ["debug.dap"] = { mason = { "codelldb" }, plugins = {}, keys = {} },
+  },
   apply = function(config)                  -- runs after merge, before plugin load
     -- escape hatch for anything the declarative fields don't cover
     config.snacks.scroll = { enabled = false }
   end,
 }
 ```
+
+## Integrations with other extras
+
+`integrations` holds what an extra adds only when another extra is enabled
+too. Each entry is keyed by the other extra's ID and may contain `mason`,
+`plugins`, and `keys`. Blak applies it once both extras are enabled, in either
+order, including when one is enabled in the current session. The language
+extras use this to give `debug.dap` and `test.neotest` their adapters, so
+neither installs anything for a language you do not use.
+
+Integration plugin specs are lazy.nvim fragments. They can extend another
+extra's spec, for example by adding a dependency and merging `opts` into
+`nvim-dap` or `neotest`. Keep the merge keyed by name so that two extras that
+add the same adapter do not create it twice.
+
+## Shipped pins
+
+Every plugin an extra installs needs a pin in the checkout's `lazy-lock.json`.
+After adding or renaming a plugin, run `make pins` and commit the updated
+lockfile. `make validate` reports plugins without a pin.
 
 ## Aliases and alternate language stacks
 
@@ -106,7 +129,7 @@ That's the entire registration. The registry caches results and looks up extras 
 blak-dev
 :BlakExtras
 :BlakExtras enable lang.zig
-:Lazy sync                           " if plugins changed
+:BlakExtras sync                     " if plugins changed
 :BlakToolsInstall                    " if mason changed
 :BlakTreesitterInstall               " if parsers changed
 :BlakDoctor                          " confirm everything resolved
@@ -125,6 +148,7 @@ The static checker enforces:
 - The require path in `modules` matches an actual file.
 - The file's `id` field is unique across all extras.
 - Plugin specs lazy-load with `cmd`, `event`, `ft`, `keys`, or explicit `lazy = true`.
+- Every plugin has a shipped pin in `lazy-lock.json`.
 - The file's Lua syntax balances delimiters and keywords.
 
 Then a smoke run:
@@ -157,6 +181,6 @@ unless another enabled extra or the user configuration also supplies them:
 - ✅ LSP servers — the `vim.lsp.config()` entry isn't registered.
 - ✅ Formatters / linters — not added to the by-filetype maps.
 - ✅ Keymaps — not registered.
-- ✅ Plugin specs — lazy.nvim removes them on the next `:Lazy sync`.
+- ✅ Plugin specs: lazy.nvim removes them on the next `:BlakExtras sync`.
 
 If your extra has side effects beyond these (writes a file, mutates a global), undo them in a second function or document them in the extras guide so users know.

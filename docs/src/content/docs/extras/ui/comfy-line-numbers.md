@@ -43,9 +43,14 @@ Or enable it interactively:
 | Keymaps | Label + `j` / `k` motions |
 | Keymaps | Label + `<Down>` / `<Up>` motions |
 
-The plugin's default `j` and `k` motion labels remain enabled. Blak also
-registers matching arrow-key variants automatically, so a label such as `11`
-works with both `11j` and `11<Down>`.
+Blak registers every label with `j`, `k`, `<Down>`, and `<Up>`, so a label such
+as `11` works with both `11j` and `11<Down>`. The plugin also maps the `j`/`k`
+labels when it loads; Blak re-applies its described versions afterwards and
+removes the plugin's Select-mode copies, so digits typed into a snippet
+placeholder stay literal.
+
+The plugin turns on `relativenumber`, since the labels are relative, and adds
+`:ComfyLineNumbers enable|disable|toggle` for the current session.
 
 ## How the labels work
 
@@ -60,7 +65,8 @@ label that Blak maps back to the actual count:
 | `34k` or `34<Up>` | move up 19 lines |
 
 The generated mappings work in normal, visual, and operator-pending mode.
-They appear in `:BlakKeys` with descriptions.
+They appear in `:BlakKeys` with descriptions. Pressing a label digit and
+pausing opens which-key with the matching motions.
 
 ## Disable it
 

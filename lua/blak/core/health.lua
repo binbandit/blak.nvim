@@ -1,16 +1,5 @@
 local M = {}
 
-local function health_api()
-  local h = vim.health or require("health")
-  return {
-    start = h.start or h.report_start,
-    ok = h.ok or h.report_ok,
-    warn = h.warn or h.report_warn,
-    error = h.error or h.report_error,
-    info = h.info or h.report_info,
-  }
-end
-
 ---Path of a verified fff download that was never installed.
 ---
 ---fff.nvim skips the final rename when the old library is still loaded, leaving
@@ -18,7 +7,6 @@ end
 ---require path promotes it, so the state survives restarts.
 ---@return string?
 local function fff_stranded_download()
-  local uv = vim.uv or vim.loop
   local ok, download = pcall(require, "fff.download")
   if not ok or type(download.get_binary_path) ~= "function" then
     return nil
@@ -30,7 +18,7 @@ local function fff_stranded_download()
   end
 
   local tmp = path .. ".tmp"
-  local stat = uv.fs_stat(tmp)
+  local stat = vim.uv.fs_stat(tmp)
   if stat and stat.type == "file" then
     return tmp
   end
@@ -56,10 +44,28 @@ function M.fff_status()
   return "missing-binary"
 end
 
+---Plugins an extra declares that lazy.nvim has not installed.
+---@return string[]
+local function missing_plugins(extra, config)
+  local specs = type(extra.plugins) == "function" and extra.plugins(config) or extra.plugins
+  local ok, plugins = pcall(function()
+    return require("lazy.core.config").plugins
+  end)
+  local missing = {}
+  for _, spec in ipairs(ok and specs or {}) do
+    local name = spec.name or (type(spec[1]) == "string" and spec[1]:match("[^/]+$"))
+    local plugin = name and plugins[name]
+    if plugin and not plugin._.installed then
+      table.insert(missing, name)
+    end
+  end
+  return missing
+end
+
 local BUILD_HINT = ':lua require("fff.download").download_or_build_binary()'
 
 function M.check()
-  local h = health_api()
+  local h = vim.health
   local config = require("blak.config").get()
   local util = require("blak.util")
 
@@ -96,13 +102,13 @@ function M.check()
     if status == "ok" then
       h.ok("fff.nvim is loadable")
     elseif status == "missing-plugin" then
-      h.warn("fff.nvim is not loadable yet. Run :Lazy sync, then restart.")
+      h.warn("fff.nvim is not loadable yet. Run :BlakExtras sync, then :restart.")
     elseif status == "stranded-download" then
       h.warn(
         "fff.nvim downloaded its native library but could not install it, so the picker "
           .. "will not start. Run "
           .. BUILD_HINT
-          .. ", then restart. Stranded download: "
+          .. ", then :restart. Stranded download: "
           .. tostring(fff_stranded_download())
       )
     else
@@ -110,7 +116,7 @@ function M.check()
         "fff.nvim is installed but its native library is missing, so the picker will not "
           .. "start. Run "
           .. BUILD_HINT
-          .. ", then restart."
+          .. ", then :restart."
       )
     end
   end
@@ -123,10 +129,23 @@ function M.check()
   else
     for _, id in ipairs(enabled) do
       if extras.is_known(id) then
-        h.ok(id)
+        local missing = missing_plugins(extras.get(id), config)
+        if #missing == 0 then
+          h.ok(id)
+        else
+          h.warn(
+            id
+              .. " needs plugins that are not installed: "
+              .. table.concat(missing, ", ")
+              .. ". Run :BlakExtras sync, then :restart."
+          )
+        end
       else
         h.warn(
-          "Unknown extra: " .. id .. ". Run :BlakExtras disable " .. id .. " to remove stale state."
+          (extras.removed(id) or ("Unknown extra: " .. id .. "."))
+            .. " Run :BlakExtras disable "
+            .. id
+            .. " to remove stale state."
         )
       end
     end
@@ -163,15 +182,27 @@ function M.check()
     else
       h.warn(
         "Mason's TypeScript fallback is missing or has no tsserver.js. Run :BlakToolsInstall, "
-          .. "wait for installation, then restart. ts_ls requires TypeScript with tsserver.js (before TS 7); "
+          .. "wait for installation, then :restart. ts_ls requires TypeScript with tsserver.js (before TS 7); "
           .. "a compatible workspace SDK or explicit init_options.tsserver.path can also supply it."
       )
     end
   end
 
   h.start("Mason tools")
+  local ok_registry, registry = pcall(require, "mason-registry")
   for _, pkg in ipairs(require("blak.core.tools").list(config)) do
-    h.info(pkg)
+    local ok_pkg, installed = pcall(function()
+      return registry.get_package(pkg):is_installed()
+    end)
+    if not ok_registry then
+      h.info(pkg)
+    elseif not ok_pkg then
+      h.warn(pkg .. " is not a Mason package")
+    elseif installed then
+      h.ok(pkg)
+    else
+      h.warn(pkg .. " is not installed. Run :BlakToolsInstall; see :MasonLog if it keeps failing.")
+    end
   end
 end
 

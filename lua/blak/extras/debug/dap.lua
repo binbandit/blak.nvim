@@ -29,15 +29,31 @@ return {
     {
       "mfussenegger/nvim-dap",
       lazy = true,
+      -- dap-ui must be set up before a session starts: its panels only
+      -- render state from session events they were listening for.
+      dependencies = { "rcarriga/nvim-dap-ui" },
+      -- Language extras add their adapters by name and launch configurations
+      -- by filetype here (:help dap-adapter, :help dap-configuration), so
+      -- user specs can merge with them or replace one language's list.
+      opts = {
+        adapters = {},
+        configurations = {},
+      },
+      config = function(_, opts)
+        local dap = require("dap")
+        for name, adapter in pairs(opts.adapters) do
+          dap.adapters[name] = adapter
+        end
+        for filetype, configurations in pairs(opts.configurations) do
+          dap.configurations[filetype] = configurations
+        end
+      end,
     },
     {
       "rcarriga/nvim-dap-ui",
       lazy = true,
       main = "dapui",
-      dependencies = {
-        "mfussenegger/nvim-dap",
-        "nvim-neotest/nvim-nio",
-      },
+      dependencies = { "nvim-neotest/nvim-nio" },
       opts = {},
     },
   },

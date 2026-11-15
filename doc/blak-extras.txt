@@ -25,10 +25,12 @@ State is stored outside the repository in:
 BlackExtras is an alias for BlakExtras.
 
 Enabling an extra applies its config to the current session. Run :BlakExtras
-sync or :Lazy sync if the enabled set added or removed plugin specs. Disabling
-persists immediately, but restart Blak to unload plugins, keymaps, and runtime
-hooks that already ran. Extras enabled in lua/blak/user.lua are marked as
-config-managed in the UI; remove them there to disable them.
+sync if the enabled set added or removed plugin specs; it installs missing
+plugins at their pinned commits and removes unused ones, but never updates.
+Newly installed extra plugins load in the current session without a restart.
+Disabling persists immediately, but run :restart to unload plugins, keymaps,
+and runtime hooks that already ran. Extras enabled in lua/blak/user.lua are
+marked as config-managed in the UI; remove them there to disable them.
 
 Extra plugin specs are startup-safe by contract. They lazy-load through
 commands, filetypes, events, key handlers, or explicit on-demand loading.
@@ -77,7 +79,6 @@ git.neogit
 ai.claudecode
 ai.copilot
 ai.sidekick
-ai.supermaven
 
 editor.aerial
 editor.emmet

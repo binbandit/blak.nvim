@@ -5,7 +5,20 @@ return {
   plugins = {
     {
       "stevearc/aerial.nvim",
-      cmd = { "AerialToggle", "AerialOpen", "AerialClose", "AerialNavToggle" },
+      cmd = {
+        "AerialToggle",
+        "AerialOpen",
+        "AerialOpenAll",
+        "AerialClose",
+        "AerialCloseAll",
+        "AerialNext",
+        "AerialPrev",
+        "AerialGo",
+        "AerialInfo",
+        "AerialNavToggle",
+        "AerialNavOpen",
+        "AerialNavClose",
+      },
       dependencies = { "nvim-mini/mini.icons" },
       opts = {},
     },

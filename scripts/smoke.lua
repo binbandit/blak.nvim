@@ -32,7 +32,9 @@ end
 local user_file = join(vim.fn.stdpath("config"), "lua", "blak", "user.lua")
 local original_user_file = read_file(user_file)
 vim.fn.delete(user_file)
-write_file(user_file, [[
+write_file(
+  user_file,
+  [[
 return function(config)
   config.editor.confirm = false
   config.editor.relative_number = false
@@ -42,7 +44,8 @@ return function(config)
     vim.g.blak_smoke_after_hook = (vim.g.blak_smoke_after_hook or 0) + 1
   end
 end
-]])
+]]
+)
 vim.opt.rtp:prepend(vim.fn.stdpath("config"))
 
 vim.g.blak_config = {
@@ -63,12 +66,18 @@ vim.api.nvim_get_runtime_file = function(name, all)
 end
 require("blak.config").setup()
 assert(full_runtime_scans == 0, "config setup should not scan the full runtime path")
-assert(user_config_runtime_lookups == 0, "config setup should let require locate lua/blak/user.lua directly")
+assert(
+  user_config_runtime_lookups == 0,
+  "config setup should let require locate lua/blak/user.lua directly"
+)
 full_runtime_scans = 0
 user_config_runtime_lookups = 0
 require("blak").setup()
 vim.opt.rtp:prepend(vim.fn.getcwd())
-assert(user_config_runtime_lookups == 1, "startup should only locate lua/blak/user.lua once for reload watching")
+assert(
+  user_config_runtime_lookups == 1,
+  "startup should only locate lua/blak/user.lua once for reload watching"
+)
 assert(require("blak.config").get())
 assert(vim.g.blak_smoke_after_hook == 1, "user.lua after hook did not run during startup")
 assert(require("blak.config").get().editor.relative_number == false, "user.lua was not loaded")
@@ -76,19 +85,50 @@ assert(
   require("blak.config").get().plugins.specs[1][1] == "folke/trouble.nvim",
   "user.lua plugin specs were not loaded"
 )
-assert(require("blak.config").get().explorer.provider == "oil", "Oil should be the default explorer provider")
-assert(require("blak.config").get().terminal.provider == "native", "native should be the default terminal provider")
-assert(require("blak.config").get().terminal.toggle_key == "<leader>tt", "<leader>tt should be the default terminal key")
-assert(require("blak.config.defaults").editor.confirm == true, "confirm should be enabled by default")
-assert(require("blak.config").get().editor.confirm == false, "user.lua should be able to disable confirm")
 assert(
-  vim.tbl_get(require("blak.config.defaults"), "lsp", "servers", "lua_ls", "settings", "Lua", "workspace", "library")
-    == nil,
+  require("blak.config").get().explorer.provider == "oil",
+  "Oil should be the default explorer provider"
+)
+assert(
+  require("blak.config").get().terminal.provider == "native",
+  "native should be the default terminal provider"
+)
+assert(
+  require("blak.config").get().terminal.toggle_key == "<leader>tt",
+  "<leader>tt should be the default terminal key"
+)
+assert(
+  require("blak.config.defaults").editor.confirm == true,
+  "confirm should be enabled by default"
+)
+assert(
+  require("blak.config").get().editor.confirm == false,
+  "user.lua should be able to disable confirm"
+)
+assert(
+  vim.tbl_get(
+    require("blak.config.defaults"),
+    "lsp",
+    "servers",
+    "lua_ls",
+    "settings",
+    "Lua",
+    "workspace",
+    "library"
+  ) == nil,
   "lua_ls runtime library should not be computed in config defaults"
 )
 assert(
-  vim.tbl_get(require("blak.config").get(), "lsp", "servers", "lua_ls", "settings", "Lua", "workspace", "library")
-    == nil,
+  vim.tbl_get(
+    require("blak.config").get(),
+    "lsp",
+    "servers",
+    "lua_ls",
+    "settings",
+    "Lua",
+    "workspace",
+    "library"
+  ) == nil,
   "lua_ls runtime library should not be computed while building user config"
 )
 local lsp = require("blak.core.lsp")
@@ -104,18 +144,36 @@ assert(
 assert(package.loaded["blink.cmp"] == nil, "LSP setup should not load blink.cmp")
 local lua_runtime_library =
   vim.tbl_get(vim.lsp.config.lua_ls, "settings", "Lua", "workspace", "library")
-assert(type(lua_runtime_library) == "table" and #lua_runtime_library > 0, "lua_ls runtime library was not configured")
 assert(
-  vim.tbl_get(vim.lsp.config.lua_ls, "capabilities", "textDocument", "completion", "completionItem", "labelDetailsSupport")
-    == true,
+  type(lua_runtime_library) == "table" and #lua_runtime_library > 0,
+  "lua_ls runtime library was not configured"
+)
+assert(
+  vim.tbl_get(
+    vim.lsp.config.lua_ls,
+    "capabilities",
+    "textDocument",
+    "completion",
+    "completionItem",
+    "labelDetailsSupport"
+  ) == true,
   "LSP capabilities should include completion label details without loading blink.cmp"
 )
 lsp.setup(require("blak.config").get(), { "lua_ls" })
-assert(full_runtime_scans == full_runtime_scans_before_lsp + 1, "lua_ls runtime library should be cached")
+assert(
+  full_runtime_scans == full_runtime_scans_before_lsp + 1,
+  "lua_ls runtime library should be cached"
+)
 vim.api.nvim_get_runtime_file = original_get_runtime_file
 assert(vim.o.confirm == false, "editor.confirm=false should disable confirm prompts")
-assert(vim.o.autoindent == true, "autoindent should be enabled by default")
-assert(vim.o.smartindent == true, "smartindent should be enabled by default")
+assert(vim.o.autoindent == true, "Neovim's default autoindent should stay enabled")
+-- smartindent dedents `#` lines to column 0 wherever no indentexpr is set.
+assert(vim.o.smartindent == false, "smartindent should stay at Neovim's default (off)")
+assert(vim.o.jumpoptions == "clean,view", "jumpoptions should keep Neovim's clean and add view")
+assert(
+  vim.o.completeopt == "menu,menuone,noselect,popup",
+  "completeopt should keep the popup preview"
+)
 assert(require("blak.config").get().completion.super_tab == false, "SuperTab should be opt-in")
 do
   local editor_specs = require("blak.plugins.editor")(require("blak.config").get())
@@ -127,12 +185,18 @@ do
   assert(plugins["windwp/nvim-ts-autotag"], "nvim-ts-autotag should be a default editor plugin")
 end
 local completion_specs = require("blak.plugins.completion")(require("blak.config").get())
-assert(completion_specs[1].opts.keymap.preset == "default", "default completion keymap preset should be unchanged")
+assert(
+  completion_specs[1].opts.keymap.preset == "default",
+  "default completion keymap preset should be unchanged"
+)
 local super_tab_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
   completion = { super_tab = true },
 })
 completion_specs = require("blak.plugins.completion")(super_tab_config)
-assert(completion_specs[1].opts.keymap.preset == "super-tab", "SuperTab config should use blink.cmp super-tab")
+assert(
+  completion_specs[1].opts.keymap.preset == "super-tab",
+  "SuperTab config should use blink.cmp super-tab"
+)
 do
   local previous_blink = package.loaded["blink.cmp"]
   local previous_blink_config = package.loaded["blink.cmp.config"]
@@ -164,7 +228,10 @@ do
   vim.keymap.set("i", "<Tab>", function() end, { buffer = 0, desc = "blink.cmp: default" })
   require("blak.lazy").refresh(super_tab_config)
   require("blak.core.completion").refresh(super_tab_config)
-  assert(applied_preset == "super-tab", "completion refresh should rebuild blink keymaps from Blak config")
+  assert(
+    applied_preset == "super-tab",
+    "completion refresh should rebuild blink keymaps from Blak config"
+  )
   assert(
     vim.fn.maparg("<Tab>", "i", false, true).desc == "blink.cmp: super-tab",
     "completion refresh should replace stale blink Tab mapping"
@@ -180,12 +247,30 @@ do
 end
 assert(vim.fn.exists(":Lazy") == 2, "lazy.nvim command was not registered")
 assert(vim.fn.exists(":BlakTerminal") == 2, "BlakTerminal command was not registered")
-assert(vim.fn.maparg("<leader><space>", "n", false, true).desc == "Find files", "<leader><leader> files mapping missing")
-assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "<leader>/ grep mapping missing")
-assert(vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal", "<leader>tt terminal mapping missing")
-assert(vim.fn.maparg("<leader>`", "n", false, true).desc == "Toggle last file", "<leader>` alternate file mapping missing")
-assert(vim.fn.maparg("<leader>ws", "n", false, true).desc == "Split window below", "<leader>ws split mapping missing")
-assert(vim.fn.maparg("<leader>wv", "n", false, true).desc == "Split window right", "<leader>wv split mapping missing")
+assert(
+  vim.fn.maparg("<leader><space>", "n", false, true).desc == "Find files",
+  "<leader><leader> files mapping missing"
+)
+assert(
+  vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep",
+  "<leader>/ grep mapping missing"
+)
+assert(
+  vim.fn.maparg("<leader>tt", "n", false, true).desc == "Terminal",
+  "<leader>tt terminal mapping missing"
+)
+assert(
+  vim.fn.maparg("<leader>`", "n", false, true).desc == "Toggle last file",
+  "<leader>` alternate file mapping missing"
+)
+assert(
+  vim.fn.maparg("<leader>ws", "n", false, true).desc == "Split window below",
+  "<leader>ws split mapping missing"
+)
+assert(
+  vim.fn.maparg("<leader>wv", "n", false, true).desc == "Split window right",
+  "<leader>wv split mapping missing"
+)
 
 -- Linting must stay quiet when a linter is missing, and linter output that
 -- cannot be parsed must never reach the buffer as a diagnostic.
@@ -325,13 +410,22 @@ assert(
 )
 pcall(vim.keymap.del, "n", "<leader>`")
 require("blak.core.keymaps").setup(require("blak.config").get())
-assert(vim.fn.maparg("<leader>`", "n", false, true).desc == "Toggle last file", "<leader>` alternate file mapping missing after restore")
+assert(
+  vim.fn.maparg("<leader>`", "n", false, true).desc == "Toggle last file",
+  "<leader>` alternate file mapping missing after restore"
+)
 local terminal_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
   terminal = { toggle_key = "<leader>to" },
 })
 require("blak.core.keymaps").setup(terminal_config)
-assert(vim.fn.maparg("<leader>to", "n", false, true).desc == "Terminal", "custom terminal mapping missing")
-assert(vim.fn.maparg("<leader>tt", "n", false, true).desc ~= "Terminal", "old terminal mapping should be removed")
+assert(
+  vim.fn.maparg("<leader>to", "n", false, true).desc == "Terminal",
+  "custom terminal mapping missing"
+)
+assert(
+  vim.fn.maparg("<leader>tt", "n", false, true).desc ~= "Terminal",
+  "old terminal mapping should be removed"
+)
 require("blak.core.keymaps").setup(require("blak.config").get())
 local user_keymaps_config = vim.tbl_deep_extend("force", {}, require("blak.config").get(), {
   keymaps = {
@@ -351,20 +445,44 @@ local user_keymaps_config = vim.tbl_deep_extend("force", {}, require("blak.confi
 require("blak.config.schema").validate(user_keymaps_config)
 require("blak.core.keymaps").setup(user_keymaps_config)
 assert(vim.fn.maparg("<leader>/", "n") == "", "disabled user keymap should be removed")
-assert(vim.fn.maparg("<leader>sg", "n", false, true).desc == "Search grep", "custom user keymap missing")
-assert(vim.fn.maparg("<leader>ff", "n", false, true).desc == "Recent override", "user keymap override missing")
+assert(
+  vim.fn.maparg("<leader>sg", "n", false, true).desc == "Search grep",
+  "custom user keymap missing"
+)
+assert(
+  vim.fn.maparg("<leader>ff", "n", false, true).desc == "Recent override",
+  "user keymap override missing"
+)
 local user_callback_keymap = vim.fn.maparg("<leader>mx", "n", false, true)
-assert(user_callback_keymap.desc == "Multi-mode callback", "multi-mode function keymap missing in normal mode")
-assert(vim.fn.maparg("<leader>mx", "x", false, true).desc == "Multi-mode callback", "multi-mode function keymap missing in visual mode")
+assert(
+  user_callback_keymap.desc == "Multi-mode callback",
+  "multi-mode function keymap missing in normal mode"
+)
+assert(
+  vim.fn.maparg("<leader>mx", "x", false, true).desc == "Multi-mode callback",
+  "multi-mode function keymap missing in visual mode"
+)
 assert(type(user_callback_keymap.callback) == "function", "user function keymap callback missing")
 user_callback_keymap.callback()
 assert(vim.g.blak_smoke_user_keymap_callback == 1, "user function keymap callback did not run")
 require("blak.core.keymaps").setup(require("blak.config").get())
 assert(vim.fn.maparg("<leader>sg", "n") == "", "removed user keymap should be removed")
-assert(vim.fn.maparg("<leader>mx", "n") == "", "removed normal-mode user function keymap should be removed")
-assert(vim.fn.maparg("<leader>mx", "x") == "", "removed visual-mode user function keymap should be removed")
-assert(vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep", "removed user keymap disable should restore default")
-assert(vim.fn.maparg("<leader>ff", "n", false, true).desc == "Find files", "removed user keymap override should restore default")
+assert(
+  vim.fn.maparg("<leader>mx", "n") == "",
+  "removed normal-mode user function keymap should be removed"
+)
+assert(
+  vim.fn.maparg("<leader>mx", "x") == "",
+  "removed visual-mode user function keymap should be removed"
+)
+assert(
+  vim.fn.maparg("<leader>/", "n", false, true).desc == "Grep",
+  "removed user keymap disable should restore default"
+)
+assert(
+  vim.fn.maparg("<leader>ff", "n", false, true).desc == "Find files",
+  "removed user keymap override should restore default"
+)
 local blak_keymaps = {
   ["<leader>lc"] = "Blak config",
   ["<leader>le"] = "Extras",
@@ -420,7 +538,10 @@ previous_snacks = package.loaded.snacks
 package.loaded.snacks = {
   picker = {
     get = function(opts)
-      assert(opts and opts.source == "explorer", "snacks explorer lookup should be scoped to explorer pickers")
+      assert(
+        opts and opts.source == "explorer",
+        "snacks explorer lookup should be scoped to explorer pickers"
+      )
       return {
         {
           close = function()
@@ -441,7 +562,10 @@ local snacks_explorer_config = vim.tbl_deep_extend("force", {}, require("blak.co
   explorer = { provider = "snacks" },
 })
 local snacks_ui_opts = require("blak.plugins.ui")(snacks_explorer_config)[1].opts()
-assert(vim.tbl_get(snacks_ui_opts, "explorer", "enabled") == true, "snacks explorer should enable Snacks.explorer")
+assert(
+  vim.tbl_get(snacks_ui_opts, "explorer", "enabled") == true,
+  "snacks explorer should enable Snacks.explorer"
+)
 assert(
   vim.tbl_get(snacks_ui_opts, "picker", "sources", "explorer", "auto_close") == true,
   "snacks explorer should auto-close when it loses focus"
@@ -467,7 +591,10 @@ previous_snacks = package.loaded.snacks
 package.loaded.snacks = {
   terminal = {
     toggle = function(cmd, opts)
-      snack_terminal_called = cmd == "printf blak" and opts and opts.win and opts.win.position == "right"
+      snack_terminal_called = cmd == "printf blak"
+        and opts
+        and opts.win
+        and opts.win.position == "right"
     end,
   },
 }
@@ -483,14 +610,23 @@ package.loaded.snacks = previous_snacks
 assert(snack_terminal_called, "snacks terminal provider did not call Snacks.terminal.toggle")
 local extra_config = vim.deepcopy(require("blak.config.defaults"))
 require("blak.extras").apply_one(extra_config, "editor.snacks-terminal")
-assert(extra_config.terminal.provider == "snacks", "snacks terminal extra did not set terminal provider")
-assert(vim.tbl_get(extra_config, "snacks", "terminal", "enabled") == true, "snacks terminal extra did not enable Snacks terminal")
+assert(
+  extra_config.terminal.provider == "snacks",
+  "snacks terminal extra did not set terminal provider"
+)
+assert(
+  vim.tbl_get(extra_config, "snacks", "terminal", "enabled") == true,
+  "snacks terminal extra did not enable Snacks terminal"
+)
 local mini_config = vim.deepcopy(require("blak.config.defaults"))
 mini_config.mini.modules = { "ai", "mini.surround", "ai", "icons", "pairs" }
 mini_config.mini.opts = { surround = { n_lines = 80 } }
 require("blak.extras").apply_one(mini_config, "editor.mini")
 local mini_specs = mini_config._extra_plugin_specs or {}
-assert(#mini_specs == 2, "mini extra should create one spec per unique configured module and skip built-in modules")
+assert(
+  #mini_specs == 2,
+  "mini extra should create one spec per unique configured module and skip built-in modules"
+)
 assert(mini_specs[1][1] == "nvim-mini/mini.ai", "mini extra missed mini.ai spec")
 assert(mini_specs[2][1] == "nvim-mini/mini.surround", "mini extra missed mini.surround spec")
 assert(vim.tbl_get(mini_specs[2], "opts", "n_lines") == 80, "mini extra did not pass module opts")
@@ -557,9 +693,36 @@ assert(
   "tokyonight.nvim must load before UI plugins"
 )
 if lazy_plugins["tokyonight.nvim"]._.loaded then
-  assert(vim.g.colors_name == "tokyonight-night", "TokyoNight Night should be the default colorscheme")
+  assert(
+    vim.g.colors_name == "tokyonight-night",
+    "TokyoNight Night should be the default colorscheme"
+  )
 end
 local theme = require("blak.theme")
+assert(
+  vim.deep_equal(
+    theme.setup_module_candidates(nil, "base46-catppuccin-latte"),
+    { "base46-catppuccin-latte", "base46-catppuccin", "base46" }
+  ),
+  "ui.theme should reach the module behind every dash prefix"
+)
+-- :colorscheme clears every group; the splash must redefine its colors.
+local function splash_colors()
+  local count = 0
+  for name, attrs in pairs(vim.api.nvim_get_hl(0, {})) do
+    if name:match("^BlakSplash_") and next(attrs) ~= nil then
+      count = count + 1
+    end
+  end
+  return count
+end
+assert(splash_colors() > 0, "splash colors should be defined after playing")
+local colors_before = vim.g.colors_name
+vim.cmd.colorscheme("default")
+assert(splash_colors() > 0, "splash colors should survive :colorscheme")
+if colors_before then
+  vim.cmd.colorscheme(colors_before)
+end
 assert(
   theme.theme_opts({ ui = { transparent = true } }).transparent == true,
   "ui.transparent should enable theme transparency"
@@ -587,13 +750,28 @@ local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
 assert(normal_hl.bg == nil, "theme transparent option should clear Normal background")
 assert(lazy_plugins["oil.nvim"], "oil.nvim spec missing")
 assert(lazy_plugins["oil.nvim"].lazy == false, "oil.nvim must load eagerly for directory args")
-assert(lazy_plugins["oil.nvim"].opts.default_file_explorer == true, "oil.nvim must take directory buffers")
-assert(lazy_plugins["snacks.nvim"].lazy == true, "Snacks should defer when the splash dashboard is disabled")
+assert(
+  lazy_plugins["oil.nvim"].opts.default_file_explorer == true,
+  "oil.nvim must take directory buffers"
+)
+assert(
+  lazy_plugins["snacks.nvim"].lazy == true,
+  "Snacks should defer when the splash dashboard is disabled"
+)
 assert(lazy_plugins["fff"].lazy == true, "fff.nvim should load on first picker use")
 assert(lazy_plugins["nvim-treesitter"].lazy == true, "nvim-treesitter should load on file events")
-assert(lazy_plugins["nvim-lspconfig"].lazy == true, "nvim-lspconfig should load on file events or LSP commands")
-assert(lazy_plugins["mason.nvim"].lazy == true, "mason.nvim should load on command, VeryLazy, or LSP dependency")
-assert(lazy_plugins["mason-lspconfig.nvim"].lazy == true, "mason-lspconfig should load on file events")
+assert(
+  lazy_plugins["nvim-lspconfig"].lazy == true,
+  "nvim-lspconfig should load on file events or LSP commands"
+)
+assert(
+  lazy_plugins["mason.nvim"].lazy == true,
+  "mason.nvim should load on command, VeryLazy, or LSP dependency"
+)
+assert(
+  lazy_plugins["mason-lspconfig.nvim"].lazy == true,
+  "mason-lspconfig should load on file events"
+)
 local reload_seen = false
 vim.api.nvim_create_autocmd("User", {
   pattern = "BlakConfigReloaded",
@@ -613,14 +791,25 @@ vim.api.nvim_buf_set_lines(0, 0, -1, false, {
 })
 vim.cmd.write()
 vim.wait(1000, function()
-  return reload_seen and vim.g.blak_smoke_reload_hook and require("blak.config").get().picker.provider == "snacks"
+  return reload_seen
+    and vim.g.blak_smoke_reload_hook
+    and require("blak.config").get().picker.provider == "snacks"
 end)
 assert(reload_seen, "saving user.lua did not emit BlakConfigReloaded")
 assert(vim.g.blak_smoke_reload_hook, "user.lua after hook did not run during reload")
-assert(require("blak.config").get().editor.relative_number == true, "saving user.lua did not reload config")
-assert(require("blak.config").get().editor.confirm == true, "saving user.lua should restore omitted editor defaults")
+assert(
+  require("blak.config").get().editor.relative_number == true,
+  "saving user.lua did not reload config"
+)
+assert(
+  require("blak.config").get().editor.confirm == true,
+  "saving user.lua should restore omitted editor defaults"
+)
 assert(vim.o.confirm == true, "reloaded default editor.confirm should re-enable confirm prompts")
-assert(require("blak.config").get().picker.provider == "snacks", "saving user.lua did not refresh picker config")
+assert(
+  require("blak.config").get().picker.provider == "snacks",
+  "saving user.lua did not refresh picker config"
+)
 vim.cmd("checkhealth blak")
 if original_user_file then
   write_file(user_file, original_user_file)

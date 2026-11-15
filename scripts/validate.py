@@ -7,6 +7,7 @@ require paths, unbalanced delimiters, duplicate extra ids, and missing docs.
 """
 from __future__ import annotations
 
+import json
 import os
 import re
 import sys
@@ -489,6 +490,43 @@ def check_default_plugin_loading() -> list[str]:
     return errors
 
 
+# A plugin repository in a spec or dependency list. Concatenated names, such as
+# editor.mini's user-chosen "nvim-mini/mini." .. name, cannot be pinned ahead.
+PLUGIN_REPO_RE = re.compile(r"""["']([\w.-]+/[\w.-]+)["'](?!\s*\.\.)""")
+PLUGIN_REPO_CONTEXT_RE = re.compile(
+    r"""(?:\{\s*|dependencies\s*=\s*\{[^}]*?)["'][\w.-]+/[\w.-]+["'](?!\s*\.\.)"""
+)
+
+
+def check_plugin_pins() -> list[str]:
+    """Every plugin core or an extra can install needs a shipped pin in
+    lazy-lock.json, so its first install uses the commit Blak was tested with."""
+    lock_path = ROOT / "lazy-lock.json"
+    try:
+        pins = set(json.loads(lock_path.read_text(encoding="utf-8")))
+    except (OSError, ValueError) as err:
+        return [f"lazy-lock.json: cannot read shipped pins ({err})"]
+
+    paths = list((ROOT / "lua" / "blak" / "plugins").glob("*.lua"))
+    paths += [
+        path
+        for path in (ROOT / "lua" / "blak" / "extras").rglob("*.lua")
+        if path.name not in {"init.lua", "state.lua"}
+    ]
+    errors: list[str] = []
+    for path in sorted(paths):
+        text = path.read_text(encoding="utf-8")
+        for context in PLUGIN_REPO_CONTEXT_RE.finditer(text):
+            for repo in PLUGIN_REPO_RE.findall(context.group(0)):
+                name = repo.rsplit("/", 1)[1].removesuffix(".git")
+                if name not in pins:
+                    errors.append(
+                        f"{path.relative_to(ROOT)}:{line_number(text, context.start())}: "
+                        f"plugin {repo!r} has no shipped pin in lazy-lock.json; run make pins"
+                    )
+    return errors
+
+
 def check_extra_id_type_alias(extra_ids: set[str]) -> list[str]:
     path = ROOT / "lua" / "blak" / "config" / "types.lua"
     text = path.read_text(encoding="utf-8")
@@ -592,6 +630,7 @@ def main() -> int:
     errors.extend(check_extra_id_type_alias(set(seen)))
     errors.extend(check_contract_defaults())
     errors.extend(check_schema_doc_keys())
+    errors.extend(check_plugin_pins())
 
     for rel in [
         "README.md",

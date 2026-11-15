@@ -10,7 +10,7 @@ type an abbreviation, and the completion menu offers the expanded markup. Type
 `<div class="block"></div>`.
 
 If you already enable [`lang.web`](/extras/lang/web/), the Emmet server is
-included there and you do not need this extra — enable this one when you want
+included there and you do not need this extra. Enable this one when you want
 Emmet without the rest of the web stack.
 
 ## Enable it
@@ -63,7 +63,8 @@ Emmet integrates through completion, not a separate keymap:
 
 1. Type an abbreviation: `.block`, `ul>li*3`, `section#hero.dark`.
 2. The completion menu shows the expanded markup as a snippet suggestion.
-3. Accept it and the cursor lands inside the generated element.
+3. Accept it with `<C-y>` (or `<Tab>` with `completion.super_tab = true`) and
+   the cursor lands inside the generated element.
 
 JSX and TSX buffers expand with `className`, matching VS Code's built-in
 Emmet.
@@ -75,8 +76,8 @@ Emmet.
 :BlakDoctor
 ```
 
-Open an `.html` or `.tsx` file, check `:LspInfo` for `emmet_language_server`,
-type `.block`, and accept the completion.
+Open an `.html` or `.tsx` file, check `:checkhealth vim.lsp` for
+`emmet_language_server`, type `.block`, and accept the completion.
 
 ## Disable it
 

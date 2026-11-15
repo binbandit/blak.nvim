@@ -16,15 +16,35 @@ local function call(name, opts)
   return p[name](opts or {})
 end
 
-function M.files(opts) return call("files", opts) end
-function M.grep(opts) return call("grep", opts) end
-function M.buffers(opts) return call("buffers", opts) end
-function M.recent(opts) return call("recent", opts) end
-function M.commands(opts) return call("commands", opts) end
-function M.keymaps(opts) return call("keymaps", opts) end
-function M.help(opts) return call("help", opts) end
-function M.diagnostics(opts) return call("diagnostics", opts) end
-function M.lsp_symbols(opts) return call("lsp_symbols", opts) end
-function M.workspace_symbols(opts) return call("lsp_workspace_symbols", opts) end
+function M.files(opts)
+  return call("files", opts)
+end
+function M.grep(opts)
+  return call("grep", opts)
+end
+function M.buffers(opts)
+  return call("buffers", opts)
+end
+function M.recent(opts)
+  return call("recent", opts)
+end
+function M.commands(opts)
+  return call("commands", opts)
+end
+function M.keymaps(opts)
+  return call("keymaps", opts)
+end
+function M.help(opts)
+  return call("help", opts)
+end
+function M.diagnostics(opts)
+  return call("diagnostics", opts)
+end
+function M.lsp_symbols(opts)
+  return call("lsp_symbols", opts)
+end
+function M.workspace_symbols(opts)
+  return call("lsp_workspace_symbols", opts)
+end
 
 return M

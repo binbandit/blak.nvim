@@ -119,6 +119,130 @@ local migrations = {
       )
     end,
   },
+  {
+    id = "v0.4.0.native-lsp-keys",
+    description = "Use Neovim's LSP and diagnostic keys instead of Blak's gr, gI, K, ]d and [d",
+    apply = function(_, context)
+      context.util.notify(
+        "Blak no longer maps gr, gI and K in LSP buffers: use Neovim's grr (references), "
+          .. "gri (implementation) and K (hover), plus grn, gra, grt and gO. "
+          .. "Bare gr used to wait for timeoutlen because it shadowed the native gr prefix. "
+          .. "]d and [d are Neovim's own jumps now, so counts work and [D/]D jump to the first/last; "
+          .. "the diagnostic float still opens after a jump. "
+          .. 'To restore gr, add { key = "gr", action = vim.lsp.buf.references, desc = "References" } to keymaps. '
+          .. "Run :restart to drop the old buffer-local mappings."
+      )
+    end,
+  },
+  {
+    id = "v0.4.0.native-editing-options",
+    description = "Keep Neovim's smartindent, jumpoptions and completeopt defaults",
+    apply = function(_, context)
+      context.util.notify(
+        "Blak no longer enables smartindent, which moved # comment lines to column 0 in files "
+          .. "without an indent expression. jumpoptions is now clean,view, which restores Neovim's "
+          .. "default pruning of unloaded buffers from the jumplist. completeopt adds Neovim's default "
+          .. "popup, so native completion shows documentation. Set vim.opt values in hooks.after "
+          .. "to override any of them. Run :restart to apply."
+      )
+    end,
+  },
+  {
+    id = "v0.4.0.stylua-indent",
+    description = "Format Lua with the editor's indent settings when no StyLua config exists",
+    apply = function(_, context)
+      context.util.notify(
+        "Without a project StyLua config (.stylua.toml, stylua.toml or .editorconfig) or a global one, "
+          .. "StyLua now formats Lua with Blak's expandtab and shiftwidth (spaces by default) instead of "
+          .. 'tabs. Add a stylua.toml with indent_type = "Tabs" to keep tabs.'
+      )
+    end,
+  },
+  {
+    id = "v0.4.0.native-copilot",
+    description = "ai.copilot uses copilot-language-server with native inline completion",
+    apply = function(config, context)
+      if not vim.tbl_contains(require("blak.extras").enabled(config), "ai.copilot") then
+        return
+      end
+      context.util.notify(
+        "ai.copilot now runs copilot-language-server with Neovim's native inline completion "
+          .. "instead of copilot.lua, which showed no suggestions as configured. Sign in with "
+          .. ":LspCopilotSignIn; existing copilot.lua sign-ins carry over. Accept with <M-l> and "
+          .. "cycle with <M-]>/<M-[>. Run :BlakExtras sync to install the server and remove "
+          .. "copilot.lua, then :restart. If you configured copilot.lua yourself in plugins.specs, "
+          .. "remove that spec to avoid duplicate suggestions."
+      )
+    end,
+  },
+  {
+    id = "v0.4.0.diffview-plus",
+    description = "git.diffview uses the maintained diffview-plus.nvim fork",
+    apply = function(config, context)
+      if not vim.tbl_contains(require("blak.extras").enabled(config), "git.diffview") then
+        return
+      end
+      context.util.notify(
+        "git.diffview now installs dlyongemallo/diffview-plus.nvim, the maintained fork of "
+          .. "sindrets/diffview.nvim. Commands and keymaps are unchanged. Run :BlakExtras sync to "
+          .. "install it and remove the old plugin, then :restart. Rename any sindrets/diffview.nvim "
+          .. "spec in plugins.specs to dlyongemallo/diffview-plus.nvim."
+      )
+    end,
+  },
+  {
+    id = "v0.4.0.telescope-preview-fix",
+    description = "Check that telescope.nvim includes the fix for shell execution in file previews",
+    apply = function(config, context)
+      if not vim.tbl_contains(require("blak.extras").enabled(config), "editor.telescope") then
+        return
+      end
+      -- telescope.nvim before 1e1bab7 passed previewed file names to a shell,
+      -- so a file named like `$(cmd)` ran `cmd` when previewed.
+      local plugin = vim.tbl_get(package.loaded, "lazy.core.config", "plugins", "telescope.nvim")
+      local dir = plugin and plugin._.installed and plugin.dir
+      if dir then
+        vim.fn.system({
+          "git",
+          "-C",
+          dir,
+          "merge-base",
+          "--is-ancestor",
+          "1e1bab730218eaf97fce743be3f56e51075928ac",
+          "HEAD",
+        })
+        if vim.v.shell_error == 0 then
+          return
+        end
+      end
+      context.util.warn(
+        "Your telescope.nvim may predate a fix for shell execution when previewing files with "
+          .. "crafted names (upstream 1e1bab7). This upgrade updates it; if :Lazy still shows an "
+          .. "older commit, run :Lazy update telescope.nvim."
+      )
+    end,
+  },
+  {
+    id = "v0.4.0.remove-supermaven",
+    description = "Remove the ai.supermaven extra; the Supermaven service shut down",
+    apply = function(config, context)
+      local id = "ai.supermaven"
+      local in_state = vim.tbl_contains(require("blak.extras.state").read(), id)
+      local in_user = vim.tbl_contains(config.extras.enabled or {}, id)
+      if not in_state and not in_user then
+        return
+      end
+      if in_state then
+        require("blak.extras").set_enabled("disable", id, config, { notify = false })
+      end
+      context.util.notify(
+        "ai.supermaven was removed because the Supermaven service shut down"
+          .. (in_user and "; remove it from extras.enabled in user.lua" or " and was disabled")
+          .. ". Run :BlakExtras sync to uninstall its plugin. "
+          .. "ai.copilot provides inline suggestions through Neovim's native inline completion."
+      )
+    end,
+  },
 }
 
 local function state_path()

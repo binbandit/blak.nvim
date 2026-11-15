@@ -1,7 +1,18 @@
--- LSP servers install through mason-lspconfig: html/cssls map to
--- vscode-langservers-extracted, tailwindcss to tailwindcss-language-server,
--- and emmet_language_server to emmet-language-server. Only the Prettier
+-- LSP servers install through mason-lspconfig: html/cssls map to html-lsp and
+-- css-lsp, tailwindcss to tailwindcss-language-server, and
+-- emmet_language_server to emmet-language-server. Only the Prettier
 -- formatters need an explicit mason entry here.
+
+-- The HTML and CSS servers embed a base64 "Baseline" badge image in Markdown
+-- docs. Neovim floats wrap on the raw image text, so hovers and completion
+-- docs fill with blank rows. Their plaintext docs carry the same text.
+local plaintext_docs = {
+  textDocument = {
+    hover = { contentFormat = { "plaintext" } },
+    completion = { completionItem = { documentationFormat = { "plaintext" } } },
+  },
+}
+
 return {
   id = "lang.web",
   label = "Web",
@@ -10,9 +21,10 @@ return {
   mason = { "prettier", "prettierd" },
   lsp = {
     servers = {
-      html = {},
-      cssls = {},
-      tailwindcss = {},
+      html = { capabilities = plaintext_docs },
+      cssls = { capabilities = plaintext_docs },
+      -- The same server config as lang.tailwind, so enabling both is a no-op.
+      tailwindcss = require("blak.extras.lang.tailwind").lsp.servers.tailwindcss,
       emmet_language_server = {},
     },
   },

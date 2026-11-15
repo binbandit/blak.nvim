@@ -6,7 +6,7 @@
 return {
   id = "editor.emmet",
   label = "Emmet",
-  description = "Emmet abbreviations (.block → <div class=\"block\">) through completion",
+  description = 'Emmet abbreviations (.block → <div class="block">) through completion',
   lsp = {
     servers = {
       emmet_language_server = {

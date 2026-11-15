@@ -6,8 +6,11 @@ description: Configure editor.window-navigation for Ctrl-h/j/k/l window movement
 `editor.window-navigation` adds normal-mode Ctrl-h/j/k/l window movement using
 Neovim's native `:wincmd`.
 
-It is opt-in because `<C-l>` is stock Neovim's redraw key. Enabling this extra
-is an explicit choice to trade that native mapping for faster pane movement.
+It is opt-in because `<C-l>` is stock Neovim's redraw key: by default it runs
+`:nohlsearch | diffupdate | redraw` (`:help CTRL-L-default`). Enabling this
+extra is an explicit choice to trade that native mapping for faster pane
+movement. Blak's `<Esc>` still clears search highlighting, and `:redraw` and
+`:diffupdate` still work.
 
 ## Enable it
 

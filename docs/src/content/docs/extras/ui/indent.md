@@ -33,7 +33,7 @@ Or enable it interactively:
 | Keymap | `<leader>ug` toggles indent guides |
 
 Snacks already ships with Blak for dashboard/input/notifier/picker support, so
-this extra does not add a plugin spec — core ships indent disabled and this
+this extra does not add a plugin spec. Core ships indent disabled and this
 flips it on. The keymap appears in `:BlakKeys`.
 
 ## Configure the guides

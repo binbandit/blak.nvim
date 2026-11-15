@@ -19,7 +19,7 @@ blak.nvim/
 ├── NOTICE                  Third-party attribution
 ├── LICENSE                 MIT
 ├── VALIDATION.md           CI validation notes
-├── lazy-lock.json          Committed lockfile (what the world gets on first run)
+├── lazy-lock.json          Shipped pins for core and every extra (never written at runtime)
 ├── .stylua.toml            Lua formatter config
 ├── .editorconfig
 ├── doc/                    Vim helpfiles (:help blak)
@@ -102,8 +102,7 @@ lua/blak/
 │   ├── ai/
 │   │   ├── claudecode.lua
 │   │   ├── copilot.lua
-│   │   ├── sidekick.lua
-│   │   └── supermaven.lua
+│   │   └── sidekick.lua
 │   └── editor/
 │       ├── neotree.lua
 │       ├── snacks_explorer.lua
@@ -153,11 +152,12 @@ docs/
 ```text
 $XDG_CONFIG_HOME/blak/                          The clone (NVIM_APPNAME=blak)
 $XDG_CONFIG_HOME/blak/lua/blak/user.lua         Your overrides (gitignored)
-$XDG_CONFIG_HOME/lazy-lock.json                 Current lockfile
 
 $XDG_DATA_HOME/blak/                            Plugin install root (lazy.nvim)
 $XDG_DATA_HOME/blak/lazy/                       Cloned plugins
 $XDG_DATA_HOME/blak/mason/                      Mason packages (binaries + shims)
+
+$XDG_STATE_HOME/blak/blak/lazy-lock.json        Your lockfile (seeded from the shipped pins)
 
 $XDG_STATE_HOME/blak/extras.json                Enabled extras
 $XDG_STATE_HOME/blak/migrations.json            Applied upgrade migrations

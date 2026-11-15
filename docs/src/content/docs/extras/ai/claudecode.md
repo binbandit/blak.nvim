@@ -60,11 +60,16 @@ The plugin also exposes commands for less common actions:
 :ClaudeCodeStatus
 :ClaudeCodeSelectModel
 :ClaudeCodeSend
+:ClaudeCodeSendText <text>
 :ClaudeCodeAdd %
 :ClaudeCodeTreeAdd
 :ClaudeCodeDiffAccept
 :ClaudeCodeDiffDeny
+:ClaudeCodeCloseAllDiffs
 ```
+
+Commands that send context, such as `<leader>ab`, open Claude Code first when
+no session is connected.
 
 ## Configure Claude Code
 
@@ -91,7 +96,9 @@ return {
 }
 ```
 
-Set `terminal_cmd` if your Claude Code CLI is installed somewhere unusual:
+Blak runs `claude` from `PATH`, which covers the native installer
+(`~/.local/bin/claude`) and npm installs. Set `terminal_cmd` if your Claude
+Code CLI is installed somewhere else:
 
 ```lua
 return {
@@ -113,8 +120,11 @@ Install the Claude Code CLI, then run:
 ```vim
 :ClaudeCode
 :ClaudeCodeStatus
-:BlakDoctor
+:checkhealth claudecode
 ```
+
+`:checkhealth claudecode` shows the CLI path and version, the WebSocket server
+port, and whether a Claude Code session is connected.
 
 ## Disable it
 

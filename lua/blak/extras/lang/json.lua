@@ -4,7 +4,8 @@ return {
   id = "lang.json",
   label = "JSON",
   description = "jsonls with SchemaStore schemas, Prettier, JSON Treesitter",
-  treesitter = { "json", "jsonc" },
+  -- JSONC buffers use the json parser; nvim-treesitter ships no jsonc grammar.
+  treesitter = { "json" },
   mason = { "prettier", "prettierd" },
   lsp = {
     servers = {
@@ -21,10 +22,8 @@ return {
           end
           client_config.settings = client_config.settings or {}
           client_config.settings.json = client_config.settings.json or {}
-          client_config.settings.json.schemas = vim.list_extend(
-            client_config.settings.json.schemas or {},
-            store.json.schemas()
-          )
+          client_config.settings.json.schemas =
+            vim.list_extend(client_config.settings.json.schemas or {}, store.json.schemas())
         end,
       },
     },

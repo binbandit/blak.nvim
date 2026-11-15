@@ -13,7 +13,16 @@ export XDG_STATE_HOME="$RUN_DIR/state"
 export XDG_CACHE_HOME="$RUN_DIR/cache"
 export NVIM_APPNAME=blak-test
 export PATH="$(dirname "$NVIM_BIN"):$PATH"
-cd "$ROOT"
+# Test a copy of the tracked and new working-tree files, so a developer's
+# ignored lua/blak/user.lua (dev-install.sh setups) cannot leak into the run.
+SRC="$RUN_DIR/src"
+mkdir -p "$SRC"
+git -C "$ROOT" ls-files --cached --others --exclude-standard \
+  -- init.lua lua doc scripts lazy-lock.json NEWS.md README.md LICENSE NOTICE \
+  | while IFS= read -r file; do [ -e "$ROOT/$file" ] && printf '%s\n' "$file"; done \
+  > "$RUN_DIR/runtime-files"
+tar -C "$ROOT" -cf - -T "$RUN_DIR/runtime-files" | tar -C "$SRC" -xf -
+cd "$SRC"
 mkdir -p "$XDG_CONFIG_HOME/$NVIM_APPNAME"
 cp lazy-lock.json "$XDG_CONFIG_HOME/$NVIM_APPNAME/lazy-lock.json"
 

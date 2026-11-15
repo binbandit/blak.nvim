@@ -39,37 +39,51 @@ return function(config)
             enabled = true,
             size = config.performance.bigfile_size,
           },
-          dashboard = config.ui.splash.enabled and {
-            enabled = true,
-            preset = {
-              header = table.concat(splash.header(), "\n"),
-              keys = {
-                { icon = " ", key = "f", desc = "Find file", action = ":BlakPick files" },
-                { icon = " ", key = "r", desc = "Recent files", action = ":BlakPick recent" },
-                { icon = "󰱼 ", key = "g", desc = "Grep", action = ":BlakPick grep" },
-                { icon = "󰈔 ", key = "n", desc = "New file", action = ":ene | startinsert" },
-                { icon = " ", key = "c", desc = "Config", action = ":BlakConfig" },
-                {
-                  icon = "󰙅 ",
-                  key = "e",
-                  desc = "Explorer",
-                  action = function()
-                    require("blak.core.explorer").open(config)
-                  end,
+          dashboard = config.ui.splash.enabled
+              and {
+                enabled = true,
+                preset = {
+                  header = table.concat(splash.header(), "\n"),
+                  keys = {
+                    { icon = " ", key = "f", desc = "Find file", action = ":BlakPick files" },
+                    {
+                      icon = " ",
+                      key = "r",
+                      desc = "Recent files",
+                      action = ":BlakPick recent",
+                    },
+                    { icon = "󰱼 ", key = "g", desc = "Grep", action = ":BlakPick grep" },
+                    { icon = "󰈔 ", key = "n", desc = "New file", action = ":ene | startinsert" },
+                    { icon = " ", key = "c", desc = "Config", action = ":BlakConfig" },
+                    {
+                      icon = "󰙅 ",
+                      key = "e",
+                      desc = "Explorer",
+                      action = function()
+                        require("blak.core.explorer").open(config)
+                      end,
+                    },
+                    { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
+                    { icon = "󰊳 ", key = "d", desc = "Doctor", action = ":BlakDoctor" },
+                    { icon = "󰗼 ", key = "q", desc = "Quit", action = ":qa" },
+                  },
                 },
-                { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
-                { icon = "󰊳 ", key = "d", desc = "Doctor", action = ":BlakDoctor" },
-                { icon = "󰗼 ", key = "q", desc = "Quit", action = ":qa" },
-              },
-            },
-            sections = {
-              { section = "header", padding = 1 },
-              { section = "keys", gap = 1, padding = 1 },
-              { section = "startup" },
-            },
-          } or { enabled = false },
+                sections = {
+                  { section = "header", padding = 1 },
+                  { section = "keys", gap = 1, padding = 1 },
+                  { section = "startup" },
+                },
+              }
+            or { enabled = false },
           input = { enabled = true },
           notifier = { enabled = config.ui.notify ~= false },
+          styles = {
+            -- Blak's hints are single long lines; wrap them instead of clipping
+            -- the instruction at the toast's edge.
+            notification = { wo = { wrap = true } },
+            -- Keep global line numbers out of the history pane.
+            notification_history = { minimal = true },
+          },
           picker = { enabled = true },
           quickfile = { enabled = true },
           words = { enabled = true },

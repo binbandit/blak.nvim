@@ -77,10 +77,10 @@ The old `smart` kind is still accepted as a compatibility alias for `files`.
 :BlackExtras list                 " alias for :BlakExtras
 :BlakExtras enable lang.rust      " turn on the rust extra
 :BlakExtras disable lang.rust     " turn it off
-:BlakExtras sync                  " run :Lazy sync to install/uninstall plugins
+:BlakExtras sync                  " install missing plugins, remove unused ones
 ```
 
-The UI uses `x` or `<CR>` to toggle the extra under the cursor, `s` to sync lazy.nvim, `r` to refresh, and `q` to close. State lives in `stdpath('state')/blak/extras.json`. Enabling applies config to the current session; disabling persists immediately but already-loaded runtime pieces may remain until restart. See the [Extras guide](/guide/extras/) for the full list.
+The UI uses `x` or `<CR>` to toggle the extra under the cursor, `s` to run `:BlakExtras sync`, `r` to refresh, and `q` to close. State lives in `stdpath('state')/blak/extras.json`. Enabling applies config to the current session; disabling persists immediately but already-loaded runtime pieces may remain until restart. See the [Extras guide](/guide/extras/) for the full list.
 
 ## Update & rollback
 
@@ -150,7 +150,7 @@ The keymap `<leader>uf` calls the buffer version. See the [Formatting guide](/gu
 
 ### `:BlakSplash`
 
-Plays the black-hole animation in a scratch buffer. Useful for tweaking your terminal's color rendering — and a fun cold open. See the [Splash guide](/guide/splash/).
+Plays the black-hole animation in a centered, minimal float over your current layout. Press `q` or `<Esc>` to close it; it also closes when focus moves to another window. Useful for tweaking your terminal's color rendering. See the [Splash guide](/guide/splash/).
 
 ## Cheat sheet
 
@@ -166,7 +166,7 @@ Plays the black-hole animation in a scratch buffer. Useful for tweaking your ter
 :BlackExtras list          alias for :BlakExtras
 :BlakExtras enable {id}    turn on an extra
 :BlakExtras disable {id}   turn off an extra
-:BlakExtras sync           :Lazy sync after changes
+:BlakExtras sync           install/remove plugins, never updates
 :BlakUpdate                channel-safe update + rollback snapshot
 :BlakRollback              restore last rollback snapshot
 :BlakUpgrade               migrations + explicit bigger moves

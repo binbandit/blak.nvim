@@ -29,7 +29,7 @@ function M.ensure(config, opts)
   local registry = util.load_plugin("mason.nvim", "mason-registry")
   if not registry then
     util.warn(
-      "Mason registry is not available yet. Run :Lazy sync, restart, then retry :BlakToolsInstall."
+      "Mason registry is not available yet. Run :BlakExtras sync, then :restart and retry :BlakToolsInstall."
     )
     return
   end
@@ -48,7 +48,20 @@ function M.ensure(config, opts)
           (repair and "Repairing Mason package: " or "Installing Mason package: ") .. name
         )
         local ok_install, err = pcall(function()
-          pkg:install({ force = repair or false })
+          pkg:install(
+            { force = repair or false },
+            vim.schedule_wrap(function(success, result)
+              if not success then
+                util.warn(
+                  "Could not install Mason package "
+                    .. name
+                    .. ": "
+                    .. tostring(result)
+                    .. ". See :MasonLog."
+                )
+              end
+            end)
+          )
         end)
         if not ok_install then
           util.warn("Could not install " .. name .. ": " .. tostring(err))

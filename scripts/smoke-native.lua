@@ -26,7 +26,13 @@ assert(vim.fn.maparg("<leader>cf", "n") == "", "disabled format key was restored
 config.keymaps = {}
 keys.setup(config)
 
--- Diagnostic navigation still opens an unfocused cursor float in both directions.
+-- Neovim's own ]d/[d jumps (which honor counts) open an unfocused cursor float
+-- through Blak's diagnostic config, in both directions.
+require("blak.core.lsp").setup(config, {})
+for _, lhs in ipairs({ "]d", "[d" }) do
+  local desc = vim.fn.maparg(lhs, "n", false, true).desc or ""
+  assert(desc:find("^Jump to the"), lhs .. " should be Neovim's mapping, got " .. desc)
+end
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "first", "second", "third" })
 local namespace = vim.api.nvim_create_namespace("BlakNativeSmoke")
 vim.diagnostic.set(namespace, 0, {
