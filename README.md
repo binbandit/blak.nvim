@@ -52,11 +52,11 @@ NVIM_APPNAME=blak nvim
 
 Blak's defaults are intentionally small. They cover the editing floor and leave preference-heavy features as extras.
 
-- Package backend: `lazy.nvim`, committed lockfile, config-aware rollback snapshots
+- Package backend: `lazy.nvim`, shipped pins for core and every extra, config-aware rollback snapshots
 - Picker: `fff.nvim` for files and grep, with Snacks fallback for broader picker actions
 - UI: Snacks dashboard/input/notifier/picker/quickfile/bigfile/words, plus the animated black-hole splash
 - Completion: `blink.cmp` on the stable `1.*` line
-- LSP: native `vim.lsp.config()` with `mason-lspconfig` handling Mason-backed `vim.lsp.enable()`
+- LSP: native `vim.lsp.config()` and `vim.lsp.enable()` for every configured server, with `mason-lspconfig` installing Mason-backed ones; Neovim's own `K`, `grr`, `gri`, `grn`, `gra`, and `]d`/`[d` keys
 - Tools: Mason, Conform, nvim-lint, nvim-treesitter
 - Editing: Oil file explorer, native terminal split, Gitsigns, which-key, `mini.icons`, `nvim-autopairs`, `nvim-ts-autotag`
 - Native helpers: compressed files, tar/zip browsing, and `:Tutor` remain available
@@ -126,7 +126,6 @@ Extras are opt-in and reversible:
 :BlakExtras enable ui.lualine
 :BlakExtras enable ai.claudecode
 :BlakExtras enable ai.sidekick
-:BlakExtras enable ai.supermaven
 :BlakExtras enable editor.trouble
 :BlakExtras enable editor.aerial
 :BlakExtras enable editor.todo-comments
@@ -142,7 +141,7 @@ Extras are opt-in and reversible:
 ```
 
 The `:BlakExtras` UI shows enabled and available extras in sections. Press `x`
-or `<CR>` on an extra to toggle it, `s` to run `:Lazy sync`, and `q` to close.
+or `<CR>` on an extra to toggle it, `s` to run `:BlakExtras sync`, and `q` to close.
 Extras listed in `lua/blak/user.lua` are shown as config-managed and should be
 removed there when you want them disabled.
 Headings and blank lines do not toggle extras; the menu fits the current terminal.
@@ -163,7 +162,7 @@ TypeScript 7 no longer provides. Explicit `lsp.servers.ts_ls.init_options.tsserv
 settings are preserved. Set `mason.automatic_install = false` to manage tool
 installation and repair manually.
 
-State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Enabling an extra applies its config to the current session; run `:BlakExtras sync` if the extra added plugin specs. Disabling persists immediately, but a restart is still the clean way to unload plugins, keymaps, and runtime hooks that already ran.
+State is stored in `stdpath('state')/blak/extras.json`, not in the repo. Enabling an extra applies its config to the current session; run `:BlakExtras sync` if the extra added plugin specs, and the new plugins load without a restart. Disabling persists immediately, but `:restart` is still the clean way to unload plugins, keymaps, and runtime hooks that already ran.
 
 Default and extra plugins are kept startup-safe: they lazy-load through commands, filetypes, events, or explicit on-demand loading. `make validate` rejects unapproved eager specs so optional features do not quietly become default startup cost.
 
@@ -256,9 +255,11 @@ end
 ```
 
 When Blak is already running, saving `lua/blak/user.lua` reloads the merged
-config and refreshes the current session. Some loaded plugin settings need a restart. Plugin installs/removals still go
-through `:BlakExtras sync` or `:Lazy sync`; restarting remains the clean way to
-unload plugins, keymaps, or runtime hooks that already ran.
+config and refreshes the current session. Some loaded plugin settings need a
+restart. Plugin installs/removals still go through `:BlakExtras sync`, which
+installs missing plugins at their pinned commits and removes unused ones but
+never updates. Restarting (`:restart`) remains the clean way to unload plugins,
+keymaps, or runtime hooks that already ran.
 
 Syntax and validation errors keep the last accepted config active. Correct the
 file and save again, including when editing it in another editor. Keymap modes

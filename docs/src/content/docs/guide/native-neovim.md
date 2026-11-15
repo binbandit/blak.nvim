@@ -36,18 +36,39 @@ call in `hooks.after`. Remove that call and restart to return to the default.
 
 ## LSP recovery and shortcuts
 
-Use native commands to restart attached clients or control a configured server:
+Use native commands to inspect, restart, or control a configured server:
 
 ```vim
+:checkhealth vim.lsp     " clients, attached buffers, settings, and the log path
 :lsp restart
+:lsp stop
 :lsp enable tsc
 :lsp disable tsc
 ```
 
+nvim-lspconfig's old `:LspInfo`, `:LspStart`, `:LspStop`, `:LspRestart`, and
+`:LspLog` commands do not exist on Neovim 0.12; use the commands above instead.
 Session enable/disable choices do not change `user.lua` or saved extras.
-`:BlakKeys` includes described native defaults such as `grn` for rename and
-`grt` for type definition, alongside Blak's existing shortcuts. The
+
+Neovim's LSP defaults handle most code navigation: `K` hover, `grr` references,
+`gri` implementation, `grn` rename, `gra` code action, `grt` type definition,
+and `gO` for a document outline in the location list. `:BlakKeys` lists them
+alongside Blak's own shortcuts. The
 [LSP reference](https://neovim.io/doc/user/lsp/) covers native commands and mappings.
+
+## Select by syntax node
+
+In visual mode, `an` expands the selection to the surrounding Treesitter node
+and `in` shrinks it to a child node; repeat either to keep going. `]n` and `[n`
+select the next and previous node. Without a Treesitter parser they fall back
+to the language server's selection ranges. Use them after `v`, or with an
+operator such as `dan`. See `:help v_an`.
+
+## Restart in place
+
+`:restart` restarts Neovim and restores the current session, which is the
+quickest way to apply a change that needs a restart. `:restart!` starts fresh
+without restoring the session, and `ZR` is the normal-mode shortcut.
 
 ## Try native LSP completion
 
@@ -61,13 +82,16 @@ return {
   },
   hooks = {
     after = function()
-      vim.opt.completeopt = { "menu", "menuone", "noselect", "popup" }
+      vim.o.autocomplete = true
+      vim.o.pumborder = vim.o.winborder
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("UserNativeCompletion", { clear = true }),
         callback = function(event)
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client:supports_method("textDocument/completion", event.buf) then
-            vim.lsp.completion.enable(true, client.id, event.buf, { autotrigger = true })
+            vim.lsp.completion.enable(true, client.id, event.buf)
+            -- Complete from the server only, so buffer words don't duplicate its items.
+            vim.bo[event.buf].complete = "o"
           end
         end,
       })
@@ -76,14 +100,22 @@ return {
 }
 ```
 
-Restart after applying this. Completion opens on the server's trigger
-characters; `<C-x><C-o>` requests it explicitly. Use `<C-n>`/`<C-p>` to move
-and `<C-y>` to accept. This recipe supplies native LSP completion, with different
-sources, matching, and bracket behavior from Blink. See
-[`vim.lsp.completion`](https://neovim.io/doc/user/lsp/#lsp-completion).
+Run `:restart` after applying this. `'autocomplete'` opens the menu as you
+type. In buffers with a language server, `'complete'` is set to `"o"`, so the
+menu shows the server's items through `vim.lsp.omnifunc`; other buffers keep
+Neovim's default buffer-word sources. Use `<C-n>`/`<C-p>` to move and `<C-y>`
+to accept. Blak's `completeopt` already includes `popup`, so selecting an item
+shows its documentation, and `'pumborder'` borders the menu like other floats.
+Add `vim.opt.completeopt:append("fuzzy")` for fuzzy matching.
 
-Remove the recipe and restart to restore Blink. For optional plugins affected
-by that change, run `:Lazy sync` as usual.
+With lua_ls on Neovim 0.12, the first as-you-type request of a session can
+show no menu; the next keystroke brings it up. Native completion has no snippet source, ghost text, auto-brackets, or
+separate signature window (`<C-s>` in insert mode shows signature help). See
+[`vim.lsp.completion`](https://neovim.io/doc/user/lsp/#lsp-completion) and
+`:help ins-autocompletion`.
+
+Remove the recipe and run `:restart` to restore Blink. For optional plugins affected
+by that change, run `:BlakExtras sync` as usual.
 
 ## Why the package manager stays
 

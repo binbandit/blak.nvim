@@ -32,7 +32,7 @@ Or enable it interactively:
 | Keymap | `<leader>.` toggles a scratch buffer |
 | Keymap | `<leader>S` selects from existing scratch buffers |
 
-Snacks already ships with Blak, so this extra adds no plugin spec — it binds
+Snacks already ships with Blak, so this extra adds no plugin spec. It binds
 keymaps to `Snacks.scratch()` and `Snacks.scratch.select()`. The keymaps appear
 in `:BlakKeys`.
 

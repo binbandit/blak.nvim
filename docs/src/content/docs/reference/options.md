@@ -22,6 +22,7 @@ Anything here can be overridden in your `user.lua` (via the `editor.*` table) or
 | `wrap` | `false` | Hard newlines only. |
 | `linebreak` | `true` | When wrap is on (you turned it on), break on word boundaries. |
 | `breakindent` | `true` | Wrapped lines keep their indent. |
+| `winborder` | from `ui.winborder` (default `"rounded"`) | Border for floating windows. LSP hover, diagnostic floats, the completion menu and docs, and plugin floats that read `'winborder'` all follow it. |
 
 ### Splits
 
@@ -37,7 +38,7 @@ Anything here can be overridden in your `user.lua` (via the `editor.*` table) or
 | `ignorecase` | `true` | Case-insensitive search… |
 | `smartcase` | `true` | …unless the query has uppercase. |
 | `inccommand` | `"split"` | `:s` previews matches live in a split. |
-| `grepprg` | `rg --vimgrep --smart-case --hidden` | `:grep` uses ripgrep. |
+| `grepprg` | `rg --vimgrep --smart-case --hidden`, only when `rg` is executable | `:grep` uses ripgrep and respects ignore files (Neovim's own `rg` default passes `-uu`). Without `rg`, Neovim's `grep` fallback stays. `grepformat` is left to Neovim, which sets the matching value. |
 
 ### Persistence
 
@@ -54,8 +55,8 @@ Anything here can be overridden in your `user.lua` (via the `editor.*` table) or
 | --- | --- | --- |
 | `scrolloff` | from `editor.scrolloff` (default `8`) | Keep context above/below cursor. |
 | `sidescrolloff` | from `editor.sidescrolloff` (default `8`) | Same horizontally. |
-| `smoothscroll` | `true` (if available) | Smooth scroll on Neovim 0.10+. |
-| `jumpoptions` | `"view"` (if available) | Jumps remember view position. |
+| `smoothscroll` | `true` | Scroll by screen line, so long wrapped lines scroll smoothly. |
+| `jumpoptions` | `"clean,view"` | Keep Neovim's default `clean` (unloaded buffers leave the jumplist) and restore the view when jumping. |
 
 ### Indent
 
@@ -63,21 +64,24 @@ Anything here can be overridden in your `user.lua` (via the `editor.*` table) or
 | --- | --- | --- |
 | `tabstop` | from `editor.tabstop` (default `2`) | Spaces a tab character displays as. |
 | `shiftwidth` | from `editor.shiftwidth` (default `2`) | Spaces for `<<` / `>>`. |
+| `softtabstop` | from `editor.shiftwidth` (default `2`) | `<Tab>` and `<BS>` in insert mode move by one indent level. |
 | `expandtab` | from `editor.expandtab` (default `true`) | Use spaces, not tabs. |
-| `autoindent` | `true` | Carry the current line's indent when opening a new line. |
-| `smartindent` | `true` | Add simple syntax-aware indent after opening braces when no language indent is active. |
+
+Blak leaves `autoindent` at Neovim's default (on) and does not set
+`smartindent`. Language indentation comes from filetype indent plugins and
+Treesitter `indentexpr`.
 
 ### Completion
 
 | Option | Value | Why |
 | --- | --- | --- |
-| `completeopt` | `"menu,menuone,noselect"` | Show menu always, don't auto-select. |
+| `completeopt` | `"menu,menuone,noselect,popup"` | Show the menu even for one match, don't auto-select, and show extra info in a popup. Blink.cmp draws its own menu; these apply to native completion such as `<C-x><C-o>`. |
 
 ### Clipboard
 
 | Option | Value | Why |
 | --- | --- | --- |
-| `clipboard` | `"unnamedplus"` if `editor.clipboard` (default true) | Yank and paste use the system clipboard. |
+| `clipboard` | `"unnamedplus"` if `editor.clipboard` (default true) | Yank and paste use the system clipboard. With `editor.clipboard = false`, Blak removes `unnamed` and `unnamedplus`. |
 
 ## Overriding
 

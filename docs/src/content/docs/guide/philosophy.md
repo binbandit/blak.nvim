@@ -45,7 +45,7 @@ These are the things that show up in muscle memory. Changing them out from under
 
 ### 5. Extras must be reversible.
 
-Disabling an extra removes it from saved state. Restart to unload its runtime behavior, then run `:Lazy sync` to remove unused plugins. Config-managed extras must be removed from `user.lua`. Installed Mason tools and Treesitter parsers remain on disk; remove them separately if no longer needed.
+Disabling an extra removes it from saved state. Restart to unload its runtime behavior, then run `:BlakExtras sync` to remove unused plugins. Config-managed extras must be removed from `user.lua`. Installed Mason tools and Treesitter parsers remain on disk; remove them separately if no longer needed.
 
 ### 6. If a smart simple solution solves the problem without compromise, use it.
 

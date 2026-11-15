@@ -32,12 +32,13 @@ No linters are configured in core. Linters arrive via [language extras](/guide/e
 | --- | --- |
 | `lang.go` | `golangcilint` for go |
 | `lang.markdown` | `markdownlint` for markdown |
-| `lang.bash` | `shellcheck` for sh/bash |
 | `lang.docker` | `hadolint` for dockerfile |
-| `lang.terraform` | `tflint` for terraform |
 
-Both Python extras use Ruff's native LSP diagnostics and code actions instead
-of adding a separate nvim-lint entry, so it avoids duplicate Ruff diagnostics.
+Some extras lint through a language server instead. `lang.bash` relies on
+`bashls`, which runs shellcheck itself, and `lang.terraform` runs tflint as a
+language server (`tflint --langserver`). Both Python extras use Ruff's native
+LSP diagnostics and code actions instead of adding a separate nvim-lint entry,
+so they avoid duplicate Ruff diagnostics.
 The TypeScript extras do the same with ESLint: they enable the `eslint`
 language server rather than running `eslint_d` through nvim-lint. See
 [Using eslint_d anyway](#using-eslint_d-anyway) if you want the standalone
@@ -60,7 +61,8 @@ return {
 }
 ```
 
-Or wrap it in an extra so it's reversible.
+Or wrap it in an extra so it's reversible. Skip the `sh` entry if you enable
+`lang.bash`: its language server already reports shellcheck diagnostics.
 
 ## Tuning when it runs
 

@@ -15,8 +15,18 @@ local nvim_builtin_keys = {
   },
 }
 
+-- "v" covers Visual and Select. Split it so registry entries line up with
+-- the per-mode results of nvim_get_keymap, which :BlakKeys compares against.
 local function mode_list(mode)
-  return type(mode) == "table" and mode or { mode or "n" }
+  local out = {}
+  for _, item in ipairs(type(mode) == "table" and mode or { mode or "n" }) do
+    if item == "v" then
+      vim.list_extend(out, { "x", "s" })
+    else
+      table.insert(out, item)
+    end
+  end
+  return out
 end
 
 local function is_nvim_builtin_key(mode, lhs)
@@ -103,7 +113,13 @@ local function find_keymap(mode, lhs, buffer)
   end
   local maps = buffer and vim.api.nvim_buf_get_keymap(buffer, mode) or vim.api.nvim_get_keymap(mode)
   for _, candidate in ipairs(maps) do
-    if (candidate.lhsraw or candidate.lhs) == lhs then
+    -- Ctrl keys are stored as "<80><fc>..." in lhsraw; their single-byte form
+    -- (e.g. "\b" for <C-h>) is in lhsrawalt, and only lhs can be deleted.
+    if
+      candidate.lhs == lhs
+      or (candidate.lhsraw or candidate.lhs) == lhs
+      or candidate.lhsrawalt == lhs
+    then
       return candidate
     end
   end
@@ -140,7 +156,7 @@ local function remember_keymap(mode, lhs, opts)
       owned_keymaps[registry_key(item, lhs) .. "|" .. tostring(buffer)] = {
         buffer = buffer,
         mode = item,
-        lhs = keymap.lhsraw or keymap.lhs,
+        lhs = keymap.lhs,
         desc = keymap.desc or "",
         rhs = keymap.rhs,
         callback = keymap.callback,
@@ -281,10 +297,6 @@ local function save_buffer()
   vim.cmd("silent update")
 end
 
-local function diagnostic_float(_, bufnr)
-  vim.diagnostic.open_float({ bufnr = bufnr, scope = "cursor", focus = false })
-end
-
 local function delete_buffer()
   local ok, snacks = pcall(require, "snacks")
   if ok and snacks.bufdelete then
@@ -400,9 +412,9 @@ function M.setup(config)
   map("n", "]h", git_nav("next"), "Next git hunk")
   map("n", "[h", git_nav("prev"), "Previous git hunk")
   map("n", "<leader>gs", git_action("stage_hunk"), "Stage hunk")
-  map("v", "<leader>gs", git_range_action("stage_hunk"), "Stage hunk")
+  map("x", "<leader>gs", git_range_action("stage_hunk"), "Stage hunk")
   map("n", "<leader>gr", git_action("reset_hunk"), "Reset hunk")
-  map("v", "<leader>gr", git_range_action("reset_hunk"), "Reset hunk")
+  map("x", "<leader>gr", git_range_action("reset_hunk"), "Reset hunk")
   map("n", "<leader>gS", git_action("stage_buffer"), "Stage buffer")
   map("n", "<leader>gR", git_action("reset_buffer"), "Reset buffer")
   map("n", "<leader>gp", git_action("preview_hunk"), "Preview hunk")
@@ -414,12 +426,6 @@ function M.setup(config)
   map("n", "<leader>xd", function()
     vim.diagnostic.open_float()
   end, "Line diagnostic")
-  map("n", "]d", function()
-    vim.diagnostic.jump({ count = 1, on_jump = diagnostic_float })
-  end, "Next diagnostic")
-  map("n", "[d", function()
-    vim.diagnostic.jump({ count = -1, on_jump = diagnostic_float })
-  end, "Previous diagnostic")
 
   map("n", "<leader>ll", "<cmd>Lazy<cr>", "Lazy")
   map("n", "<leader>lo", "<cmd>Blak<cr>", "Blak overview")
@@ -441,13 +447,12 @@ function M.setup(config)
 
   map("n", "<leader>qq", "<cmd>qa<cr>", "Quit all")
 
+  -- Neovim's defaults already cover K (hover), grr (references), gri
+  -- (implementation), grn, gra, grt, gO and the ]d/[d diagnostic jumps.
   local function lsp_keys(buf)
     local opts = { buffer = buf }
     map("n", "gd", vim.lsp.buf.definition, "Go to definition", opts)
     map("n", "gD", vim.lsp.buf.declaration, "Go to declaration", opts)
-    map("n", "gI", vim.lsp.buf.implementation, "Go to implementation", opts)
-    map("n", "gr", vim.lsp.buf.references, "References", opts)
-    map("n", "K", vim.lsp.buf.hover, "Hover", opts)
     map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action", opts)
     map("n", "<leader>cr", vim.lsp.buf.rename, "Rename", opts)
     map("n", "<leader>cs", picker("lsp_symbols"), "Document symbols", opts)
@@ -476,22 +481,24 @@ end
 function M.show()
   local buf = vim.api.nvim_get_current_buf()
   local active = {}
+  -- Ctrl keys are stored as lhsraw "<80><fc>..." but expand to the
+  -- single-byte lhsrawalt, so registered lhs values are looked up through it.
+  local aliases = {}
   local modes = { "n", "x", "s", "o", "i", "c", "t" }
+  local function add(mode, item, buffer)
+    local key = registry_key(mode, item.lhsraw or expand_lhs(item.lhs))
+    active[key] = { mode = mode, mapping = item, buffer = buffer }
+    if item.lhsrawalt then
+      aliases[registry_key(mode, item.lhsrawalt)] = key
+    end
+  end
   for _, mode in ipairs(modes) do
     for _, item in ipairs(vim.api.nvim_get_keymap(mode)) do
-      active[registry_key(mode, item.lhsraw or expand_lhs(item.lhs))] = {
-        mode = mode,
-        mapping = item,
-        buffer = false,
-      }
+      add(mode, item, false)
     end
     -- A buffer-local mapping shadows a global one, even without a description.
     for _, item in ipairs(vim.api.nvim_buf_get_keymap(buf, mode)) do
-      active[registry_key(mode, item.lhsraw or expand_lhs(item.lhs))] = {
-        mode = mode,
-        mapping = item,
-        buffer = true,
-      }
+      add(mode, item, true)
     end
   end
 
@@ -509,7 +516,8 @@ function M.show()
   end)
   for _, item in ipairs(entries) do
     local key = registry_key(item.mode, expand_lhs(item.lhs))
-    local current = active[key]
+    key = active[key] and key or aliases[key]
+    local current = key and active[key]
     if current and current.mapping.desc == item.desc then
       table.insert(lines, string.format("%-5s %-18s %s", item.mode, item.lhs, item.desc))
       active[key] = nil

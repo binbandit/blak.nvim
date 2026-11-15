@@ -3,8 +3,12 @@ title: Diffview Extra
 description: Configure git.diffview for richer Git diffs and file history.
 ---
 
-`git.diffview` adds `diffview.nvim` for reviewing file changes, branch diffs,
-and file history in a dedicated interface.
+`git.diffview` adds [diffview-plus.nvim](https://github.com/dlyongemallo/diffview-plus.nvim)
+for reviewing file changes, branch diffs, and file history in a dedicated
+interface. It is the maintained fork of `sindrets/diffview.nvim`, which has had
+no commits since June 2024; commands and the `diffview` module are unchanged,
+so Neogit's diffview integration keeps working. Blak follows its tagged
+releases.
 
 ## Enable it
 
@@ -29,9 +33,10 @@ Because this extra adds a plugin, run:
 
 | Surface | Contribution |
 | --- | --- |
-| Plugin | `sindrets/diffview.nvim` |
-| Command | `:DiffviewOpen` |
-| Command | `:DiffviewFileHistory` |
+| Plugin | `dlyongemallo/diffview-plus.nvim` (tagged releases) |
+| Dependency | `mini.icons` for file icons |
+| Command | `:DiffviewOpen`, `:DiffviewClose`, `:DiffviewToggle` |
+| Command | `:DiffviewFileHistory`, `:DiffviewDiffFiles`, `:DiffviewLog` |
 | Keymap | `<leader>gD` opens Diffview |
 | Keymap | `<leader>gH` opens file history for the current file |
 
@@ -70,9 +75,19 @@ return {
 }
 ```
 
-For a custom Diffview setup, make a local extra that adds your preferred
-`diffview.nvim` lazy.nvim spec. That keeps the preference reversible and avoids
-hiding a workflow change in core config.
+To change Diffview options, add a matching lazy.nvim spec in `plugins.specs`;
+lazy.nvim merges it with the extra's spec:
+
+```lua
+return {
+  extras = { enabled = { "git.diffview" } },
+  plugins = {
+    specs = {
+      { "dlyongemallo/diffview-plus.nvim", opts = { enhanced_diff_hl = true } },
+    },
+  },
+}
+```
 
 ## Disable it
 

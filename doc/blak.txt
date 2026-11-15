@@ -66,7 +66,8 @@ COMMANDS                                                 *blak-commands*
     Toggle format-on-save for the current buffer. Use bang for global.
 
 :BlakSplash
-    Preview the black-hole splash animation.
+    Preview the black-hole splash animation in a centered float. Press q or
+    <Esc> to close it; it also closes when focus leaves it.
 
 See |blak-keymaps| for the matching <Leader>l shortcuts.
 
@@ -136,9 +137,10 @@ config.lsp.servers.lua_ls = nil. Enabled extras apply afterward; disable the
 corresponding extra as well when removing its tooling.
 
 Saving lua/blak/user.lua while Blak is running reloads the merged config and
-refreshes the current session. Run :BlakExtras sync or :Lazy sync after adding
-or removing plugin-backed extras; restart to unload runtime hooks that already
-ran.
+refreshes the current session. Run :BlakExtras sync after adding or removing
+plugin-backed extras; it installs missing plugins at their pinned commits and
+removes unused ones, but never updates. Restart (:restart) to unload runtime
+hooks that already ran.
 
 Syntax and validation errors leave the accepted config active. Fix the file
 and save again; external editors replacing user.lua are supported too. Keymap
@@ -161,7 +163,8 @@ checkout. Restart and run :BlakUpgrade for pending migrations. Snapshots do not
 include the distribution revision, Mason tools, or Treesitter parsers. Lazy
 restore may need network access for missing commits or build artifacts.
 
-Only language servers in lsp.servers are automatically enabled. Disabling an
+Only language servers in lsp.servers are automatically enabled, including
+servers installed outside Mason (for example on PATH or from Nix). Disabling an
 extra and restarting stops its LSP wiring, but installed Mason tools remain.
 mason.automatic_install=false disables automatic tool and server installs;
 :BlakToolsInstall explicitly requests both.
@@ -207,11 +210,13 @@ Stable Neovim 0.12 also bundles optional undo-tree and directory-diff tools:
   :packadd nvim.undotree | Undotree
   :packadd nvim.difftool
   :DiffTool path/to/old path/to/new
-Use :lsp restart to restart clients attached to the current buffer. See
+Use :checkhealth vim.lsp to inspect clients and find the LSP log, and
+:lsp restart to restart clients attached to the current buffer (:LspInfo and
+the other nvim-lspconfig commands do not exist on Neovim 0.12). See
 https://getblak.dev/guide/native-neovim/ for recipes and native completion.
 
 Reload preserves Conform and Blink options from plugins.specs. Removed formatter
 filetypes and LSP settings no longer linger in the rebuilt configuration;
-restart Neovim to apply LSP settings to clients that are already running.
+run :restart to apply LSP settings to clients that are already running.
 
 vim:tw=78:ts=8:ft=help:norl:

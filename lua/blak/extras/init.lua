@@ -38,7 +38,6 @@ local modules = {
   "blak.extras.ai.claudecode",
   "blak.extras.ai.copilot",
   "blak.extras.ai.sidekick",
-  "blak.extras.ai.supermaven",
   "blak.extras.editor.aerial",
   "blak.extras.editor.harpoon",
   "blak.extras.editor.mini",
@@ -60,6 +59,16 @@ local modules = {
 }
 
 local registry_cache
+
+-- Extras that no longer exist, and what to tell anyone who still enables one.
+local removed = {
+  ["ai.supermaven"] = "ai.supermaven was removed because the Supermaven service shut down. "
+    .. "Use ai.copilot for inline suggestions.",
+}
+
+function M.removed(id)
+  return removed[id]
+end
 
 local function registry()
   if registry_cache then
@@ -153,7 +162,7 @@ local function refresh_snacks(extra, config)
   end
 end
 
-local function refresh_runtime(config, extra)
+local function refresh_runtime(config, extra, integrations)
   require("blak.lazy").refresh(config)
 
   if extra.lsp and extra.lsp.servers then
@@ -164,8 +173,12 @@ local function refresh_runtime(config, extra)
     require("blak.core.formatting").refresh(config)
   end
 
-  if extra.keys then
-    require("blak.core.keymaps").apply_extra(extra.keys)
+  local needs_tools = extra.mason ~= nil
+  for _, part in ipairs({ extra, unpack(integrations or {}) }) do
+    if part.keys then
+      require("blak.core.keymaps").apply_extra(part.keys)
+    end
+    needs_tools = needs_tools or part.mason ~= nil
   end
 
   refresh_snacks(extra, config)
@@ -173,7 +186,7 @@ local function refresh_runtime(config, extra)
   if extra.treesitter then
     require("blak.core.treesitter").install(config)
   end
-  if extra.mason and config.mason.automatic_install then
+  if needs_tools and config.mason.automatic_install then
     require("blak.core.tools").ensure(config)
   end
 end
@@ -186,6 +199,45 @@ end
 
 function M.is_known(id)
   return registry()[id] ~= nil
+end
+
+local function merge_parts(config, part)
+  local util = require("blak.util")
+  config.mason.ensure_installed = util.extend_list(config.mason.ensure_installed, part.mason)
+  if part.keys then
+    vim.list_extend(config._extra_keymaps, vim.deepcopy(part.keys))
+  end
+  if part.plugins then
+    vim.list_extend(config._extra_plugin_specs, vim.deepcopy(part.plugins))
+  end
+end
+
+-- An extra's `integrations` table holds what it adds only when another extra
+-- is enabled too, such as Delve and neotest-golang for lang.go with debug.dap
+-- or test.neotest. Apply every pair that `id` completes, in either direction.
+local function apply_integrations(config, id)
+  config._extra_integrations = config._extra_integrations or {}
+  local applied = {}
+  local function apply_pair(owner, target)
+    local part = vim.tbl_get(registry(), owner, "integrations", target)
+    local key = owner .. ">" .. target
+    if part and not config._extra_integrations[key] then
+      config._extra_integrations[key] = true
+      merge_parts(config, part)
+      table.insert(applied, part)
+    end
+  end
+  for target in pairs(registry()[id].integrations or {}) do
+    if config._extra_applied[target] then
+      apply_pair(id, target)
+    end
+  end
+  for owner in pairs(config._extra_applied) do
+    if owner ~= id then
+      apply_pair(owner, id)
+    end
+  end
+  return applied
 end
 
 function M.apply_one(config, id)
@@ -201,7 +253,12 @@ function M.apply_one(config, id)
 
   local extra = registry()[id]
   if not extra then
-    util.warn("Unknown Blak extra: " .. id)
+    util.warn(
+      (removed[id] or ("Unknown Blak extra: " .. id))
+        .. " Run :BlakExtras disable "
+        .. id
+        .. " or remove it from extras.enabled in user.lua."
+    )
     return nil
   end
 
@@ -257,6 +314,7 @@ function M.apply_one(config, id)
   end
 
   config._extra_applied[id] = true
+  config._extra_new_integrations = apply_integrations(config, id)
   return extra
 end
 
@@ -274,7 +332,7 @@ function M.activate(id, config)
   config = config or require("blak.config").get()
   local extra = M.apply_one(config, id)
   if extra then
-    refresh_runtime(config, extra)
+    refresh_runtime(config, extra, config._extra_new_integrations)
   end
   return extra ~= nil
 end
@@ -362,11 +420,16 @@ function M.set_enabled(action, id, config, opts)
         util.notify(
           "Removed stale extra "
             .. id
-            .. " from state. Restart Blak, then run :Lazy sync if plugins changed."
+            .. " from state. Run :restart, then :BlakExtras sync if plugins changed."
         )
       elseif action == "enable" then
         local suffix = active and " Applied to this session." or " Already active in this session."
-        if registry()[id].plugins then
+        -- Integrations completed by this extra can add plugins of their own.
+        local adds_plugins = registry()[id].plugins ~= nil
+          or vim.iter(active and config._extra_new_integrations or {}):any(function(part)
+            return part.plugins ~= nil
+          end)
+        if adds_plugins then
           suffix = suffix .. " Run :BlakExtras sync if plugins need installing."
         end
         util.notify("Enabled " .. id .. "." .. suffix)
@@ -374,7 +437,7 @@ function M.set_enabled(action, id, config, opts)
         util.notify(
           "Disabled "
             .. id
-            .. ". Restart Blak to unload anything already active, then run :Lazy sync if plugins changed."
+            .. ". Run :restart to unload it, then :BlakExtras sync to remove unused plugins."
         )
       end
     end
@@ -391,6 +454,18 @@ function M.toggle(id, config, opts)
   config = config or require("blak.config").get()
   local enabled = contains(M.enabled(config), id)
   return M.set_enabled(enabled and "disable" or "enable", id, config, opts)
+end
+
+-- Install missing plugins at their pinned commits and remove plugins no spec
+-- uses. Unlike :Lazy sync this never moves an installed plugin; updates stay
+-- behind :BlakUpdate and its channel and migration checks.
+function M.sync()
+  local lazy = require("lazy")
+  lazy.clean({ show = false, wait = true })
+  -- Every lazy.nvim lockfile write, including the clean above, drops entries
+  -- for plugins that are not installed yet; restore their shipped pins.
+  require("blak.lazy").seed_lockfile()
+  lazy.install({ clear = false, lockfile = true })
 end
 
 function M.command(opts)
@@ -410,7 +485,7 @@ function M.command(opts)
   end
 
   if action == "sync" then
-    vim.cmd("Lazy sync")
+    M.sync()
     return
   end
 

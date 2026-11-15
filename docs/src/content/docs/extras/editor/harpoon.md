@@ -47,8 +47,10 @@ The keymaps appear in `:BlakKeys`.
 <leader>h1
 ```
 
-The quick menu is Harpoon's editable list UI. Change lines there to reorder,
-remove, or add targets, then close it normally.
+The quick menu is Harpoon's editable list UI. Press `<CR>` on a line to open
+that file. Reorder or delete lines, then `:w` to apply the edits. With Harpoon's
+defaults, closing the menu with `q`, `<Esc>`, or `<leader>hh` discards unsaved
+edits; set `settings.save_on_toggle = true` (below) to apply them on close.
 
 ## Configure Harpoon
 

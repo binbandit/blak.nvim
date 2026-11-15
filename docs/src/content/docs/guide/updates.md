@@ -11,7 +11,7 @@ The contract: **stable updates must not silently swap a major workflow component
 
 1. Checks that `package.channel` has not changed since the last accepted update or upgrade.
 2. Checks for pending breaking migrations.
-3. Snapshots `lazy-lock.json`, `lua/blak/user.lua`, `extras.json`, migration state, and update state to `stdpath('state')/blak/rollbacks/`.
+3. Snapshots your lockfile, `lua/blak/user.lua`, `extras.json`, migration state, and update state to `stdpath('state')/blak/rollbacks/`.
 4. Runs `:Lazy update`.
 
 The snapshot happens *before* the update, so if `:Lazy update` itself fails, you still have the original lockfile and config state.
@@ -23,6 +23,23 @@ The snapshot happens *before* the update, so if `:Lazy update` itself fails, you
 3. Reloads Blak config and runs `:Lazy restore`.
 
 The lockfile pins and tracked config state are restored. Lazy then checks out the pinned plugin commits. Network access may be needed for missing repositories, commits, or build artifacts; external tools and plugin-managed data are not included.
+
+## Pins and your lockfile
+
+The checkout's `lazy-lock.json` holds Blak's shipped pins: a tested commit for
+every plugin that core or any extra can install. Blak never writes to it.
+
+Your own lockfile lives at `stdpath('state')/blak/lazy-lock.json`. On startup,
+and before `:BlakExtras sync` installs anything, Blak copies in the shipped pin
+for every plugin your lockfile does not list yet. A plugin is therefore first
+installed at the commit Blak was tested with, whether it comes from core or
+from an extra you enable later. Entries already in your lockfile, from
+`:BlakUpdate`, `:Lazy update`, or a rollback, always win.
+
+Because updates write only to the state directory, the checkout stays clean
+and `git pull --ff-only` keeps working. `editor.mini` modules are the one
+exception to pinning: you choose them, so they install from their default
+branch.
 
 ## The convention
 
@@ -82,6 +99,12 @@ git -C ~/.config/blak pull --ff-only
 ```
 
 Use your actual XDG config path if different. If Git reports local changes or divergent history, resolve those before proceeding. Restart Blak and run `:BlakUpgrade` for pending migrations. Rollback snapshots do not include the distribution's Git revision.
+
+Upgrading from v0.3 or earlier: your lockfile used to be the checkout's
+`lazy-lock.json`, so `git pull --ff-only` may refuse because of local changes
+to it. Discard them with `git -C ~/.config/blak checkout lazy-lock.json`, then
+pull. On the next start Blak records the commits you have installed in the new
+state lockfile, so no plugin moves.
 
 Checkout changes take effect on the next startup; `:BlakUpgrade` is not a gate
 on loading manually updated source. For the native TypeScript transition,

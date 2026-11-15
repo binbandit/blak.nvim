@@ -79,7 +79,6 @@ return {
     sidekick = {
       nes = { enabled = false },
     },
-    supermaven = {},
   },
 
   mini = {
@@ -120,7 +119,7 @@ return {
       underline = true,
       update_in_insert = false,
       severity_sort = true,
-      float = { border = "rounded", source = "if_many" },
+      float = { source = "if_many" },
     },
   },
 

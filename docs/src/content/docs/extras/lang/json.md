@@ -35,7 +35,7 @@ Because this extra adds a plugin (SchemaStore.nvim), run:
 
 | Surface | Contribution |
 | --- | --- |
-| Treesitter | `json`, `jsonc` |
+| Treesitter | `json` (also highlights JSONC) |
 | Mason | `prettier`, `prettierd` |
 | LSP | `jsonls` with SchemaStore schemas |
 | Formatting | `prettierd` (fallback `prettier`) for `json`, `jsonc` |
@@ -59,4 +59,4 @@ enabled by default.
 ```
 
 Open a `package.json` and confirm completion and validation against its schema,
-and check `:LspInfo` for `json-lsp`.
+and check `:checkhealth vim.lsp` for `jsonls`.

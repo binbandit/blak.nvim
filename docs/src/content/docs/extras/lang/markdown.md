@@ -112,4 +112,4 @@ return {
 :BlakDoctor
 ```
 
-Open a Markdown file and check `:LspInfo` for `marksman`.
+Open a Markdown file and check `:checkhealth vim.lsp` for `marksman`.

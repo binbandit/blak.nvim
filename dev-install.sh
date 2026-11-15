@@ -203,9 +203,9 @@ uninstall() {
   cat <<NOTE
 
 Plugin data and state were left in place. Remove them manually if you no longer need them:
-  rm -rf "$HOME/.local/share/$APPNAME"
-  rm -rf "$HOME/.local/state/$APPNAME"
-  rm -rf "$HOME/.cache/$APPNAME"
+  rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}/$APPNAME"
+  rm -rf "${XDG_STATE_HOME:-$HOME/.local/state}/$APPNAME"
+  rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}/$APPNAME"
 NOTE
 }
 

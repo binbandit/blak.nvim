@@ -93,7 +93,8 @@ If you see "Could not find a valid TypeScript installation":
 1. Run `:BlakToolsInstall`. Blak refreshes the registry and repairs an installed
    Mason package if its TypeScript SDK is missing `tsserver.js` or package metadata.
 2. Wait for the installation to finish in `:Mason`, then restart Neovim.
-3. Run `:BlakDoctor` to check Mason's fallback and `:LspInfo` to check the client.
+3. Run `:BlakDoctor` to check Mason's fallback and `:checkhealth vim.lsp` to
+   check the client.
 
 Automatic installation performs the same repair when
 `mason.automatic_install = true`. Set it to `false` for manual tool management.
@@ -150,4 +151,4 @@ After enabling the extra, run:
 :BlakDoctor
 ```
 
-Open a TypeScript file and check `:LspInfo` for `ts_ls` and `eslint`.
+Open a TypeScript file and check `:checkhealth vim.lsp` for `ts_ls` and `eslint`.

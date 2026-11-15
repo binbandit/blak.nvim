@@ -366,7 +366,6 @@ function M.validate(config)
   if has_ai then
     expect(errors, "ai.claudecode", config.ai.claudecode, "table")
     expect(errors, "ai.sidekick", config.ai.sidekick, "table")
-    expect(errors, "ai.supermaven", config.ai.supermaven, "table")
   end
 
   if has_mini then

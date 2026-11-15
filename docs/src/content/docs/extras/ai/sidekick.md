@@ -41,8 +41,11 @@ Because this extra adds a plugin, run:
 | Keymap | `<leader>at` sends current context |
 | Keymap | `<leader>av` sends the visual selection |
 | Keymap | `<leader>ap` opens Sidekick prompts |
+| Keymap | `<leader>an` jumps to or applies the next edit suggestion |
 
-The keymaps appear in `:BlakKeys`.
+The keymaps appear in `:BlakKeys`. `<C-.>` needs a terminal that reports
+modified keys (Ghostty, Kitty, WezTerm, or tmux with `extended-keys`).
+Sending focuses the CLI window; press `<C-.>` to jump back.
 
 ## Configure Sidekick
 
@@ -87,7 +90,9 @@ return {
 ## Enable Next Edit Suggestions
 
 Blak defaults `nes.enabled` to `false` so the extra stays a terminal-based AI
-workflow until you ask for inline edit suggestions:
+workflow until you ask for inline edit suggestions. NES needs the Copilot
+language server, so enable [`ai.copilot`](/extras/ai/copilot/) too and sign in
+with `:LspCopilotSignIn`:
 
 ```lua
 return {
@@ -103,6 +108,9 @@ return {
   },
 }
 ```
+
+With NES enabled, Sidekick loads at startup instead of on first use. Press
+`<leader>an` to jump to a suggestion, then again to apply it. `<Esc>` clears it.
 
 ## Add a picker send key
 
@@ -131,11 +139,15 @@ return {
 
 ## Verify it
 
-Install at least one Sidekick-supported AI CLI, then run:
+Install at least one Sidekick-supported AI CLI. Use `<leader>as` to select a CLI
+and `<leader>aa` to open it, then run:
 
 ```vim
 :checkhealth sidekick
 :BlakDoctor
 ```
 
-Use `<leader>as` to select a CLI and `<leader>aa` to open it.
+Sidekick loads on first use, so `:checkhealth sidekick` reports "No healthcheck
+found" until you press a Sidekick key or run `:Sidekick`. Its
+`No Copilot LSP server is enabled` error only matters for NES; the CLI features
+work without Copilot.

@@ -62,4 +62,4 @@ return {
 :BlakDoctor
 ```
 
-Open a `.zig` file and check `:LspInfo` for `zls`.
+Open a `.zig` file and check `:checkhealth vim.lsp` for `zls`.

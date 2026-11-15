@@ -6,11 +6,12 @@ return {
     {
       "stevearc/overseer.nvim",
       cmd = {
-        "OverseerBuild",
-        "OverseerRun",
-        "OverseerQuickAction",
-        "OverseerTaskAction",
+        "OverseerOpen",
+        "OverseerClose",
         "OverseerToggle",
+        "OverseerRun",
+        "OverseerShell",
+        "OverseerTaskAction",
       },
       opts = {},
     },
@@ -18,6 +19,6 @@ return {
   keys = {
     { lhs = "<leader>oo", rhs = "<cmd>OverseerToggle<cr>", desc = "Tasks" },
     { lhs = "<leader>or", rhs = "<cmd>OverseerRun<cr>", desc = "Run task" },
-    { lhs = "<leader>oq", rhs = "<cmd>OverseerQuickAction<cr>", desc = "Task action" },
+    { lhs = "<leader>oq", rhs = "<cmd>OverseerTaskAction<cr>", desc = "Task action" },
   },
 }

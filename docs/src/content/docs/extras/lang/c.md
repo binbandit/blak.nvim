@@ -66,6 +66,6 @@ separate linter for C/C++.
 :BlakDoctor
 ```
 
-Open a C or C++ file and check `:LspInfo` for `clangd`. clangd works best with
-a `compile_commands.json` (generate it with CMake's
+Open a C or C++ file and check `:checkhealth vim.lsp` for `clangd`. clangd
+works best with a `compile_commands.json` (generate it with CMake's
 `CMAKE_EXPORT_COMPILE_COMMANDS` or with Bear).

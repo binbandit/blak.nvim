@@ -12,7 +12,12 @@ end
 local function toggle_menu()
   local module = harpoon()
   if module then
-    module.ui:toggle_quick_menu(module:list())
+    -- Harpoon hardcodes a single border; match the rest of Blak's floats.
+    module.ui:toggle_quick_menu(module:list(), {
+      border = vim.o.winborder ~= "" and vim.o.winborder or nil,
+      title = " Harpoon ",
+      title_pos = "center",
+    })
   end
 end
 

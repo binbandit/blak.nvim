@@ -95,4 +95,4 @@ After enabling the extra, run:
 :BlakDoctor
 ```
 
-Open a Lua file and check `:LspInfo` to confirm `lua_ls` attached.
+Open a Lua file and run `:checkhealth vim.lsp` to confirm `lua_ls` attached.

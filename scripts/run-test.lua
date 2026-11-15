@@ -4,7 +4,7 @@ return function(path)
     dofile(path)
   end, debug.traceback)
   if not ok then
-    vim.api.nvim_err_writeln(err)
+    vim.api.nvim_echo({ { err } }, true, { err = true })
     vim.cmd("cquit 1")
   end
 end

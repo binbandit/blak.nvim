@@ -270,7 +270,6 @@ export default defineConfig({
             { label: "Claude Code", slug: "extras/ai/claudecode" },
             { label: "Copilot", slug: "extras/ai/copilot" },
             { label: "Sidekick", slug: "extras/ai/sidekick" },
-            { label: "Supermaven", slug: "extras/ai/supermaven" },
             { label: "Aerial", slug: "extras/editor/aerial" },
             { label: "Emmet", slug: "extras/editor/emmet" },
             { label: "Flash", slug: "extras/editor/flash" },

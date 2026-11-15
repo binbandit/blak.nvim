@@ -7,7 +7,7 @@ description: Configure editor.flash for label-based jump motions and Treesitter 
 label-based jump motions and Treesitter node selection.
 
 This extra deliberately shadows native `s` and `S`. That is an explicit,
-opt-in trade and every mapping is visible in `:BlakKeys` — it is never enabled
+opt-in trade and every mapping is visible in `:BlakKeys`. It is never enabled
 by default. Flash's `char` mode, which would silently overlay `f`/`t`/`F`/`T`
 with jump labels, is **disabled** so the only behavior this extra changes is the
 mappings listed below. Nothing happens behind your back.
@@ -48,9 +48,14 @@ Because this extra adds a plugin, run:
   mode become Flash motions. Use `cl` and `cc` for the native substitutes.
 - `r` and `R` are remapped only in operator-pending/visual contexts, so
   normal-mode replace (`r<char>`) and Replace mode (`R`) are untouched.
-- `f`, `t`, `F`, `T` stay native — Flash's `char` mode is disabled by default.
+- `f`, `t`, `F`, `T` stay native: Flash's `char` mode is disabled by default.
 - `<C-s>` is mapped only in command-line mode, so it does not clash with Blak's
   core `<C-s>` save mapping. It opts Flash labels into the current `/` search.
+
+Without this extra, Neovim 0.12 already selects Treesitter nodes natively: in
+visual mode `an` grows the selection to the parent node, `in` shrinks it to a
+child, and `]n`/`[n` select the next or previous node (`:help v_an`). Flash's
+`S` labels nodes instead, so you jump straight to the one you want.
 
 ## Configure it
 

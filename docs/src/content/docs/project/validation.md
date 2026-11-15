@@ -13,13 +13,14 @@ make docs-build
 ```
 
 `make validate` uses Python for structural Lua checks, local require paths,
-extra IDs, plugin loading rules, documented defaults, required files, and docs
-links. It syntax-checks the installers and smoke runners. The Python checks
+extra IDs, plugin loading rules, shipped pins for every plugin, documented
+defaults, required files, and docs links. It syntax-checks the installers and smoke runners. The Python checks
 are heuristics, not a Lua parser or proof of runtime correctness.
 
 `make smoke` requires Neovim 0.12+ and network access for plugin installation.
 It creates temporary XDG config, data, state, and cache directories, copies the
-committed lockfile, and tests this working tree against those pins. It does not
+committed lockfile (the shipped pins), and tests this working tree against
+those pins. It does not
 modify the checkout's lockfile or existing user/test state. `NVIM_BIN` can
 select a particular Neovim executable.
 

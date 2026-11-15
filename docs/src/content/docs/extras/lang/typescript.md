@@ -128,7 +128,7 @@ enabling one stack so your selection is clear.
 :BlakDoctor
 ```
 
-Wait for installation, restart, then open a TypeScript file and check `:LspInfo`
-for `tsc` and `eslint`. To disable this stack, remove it from `user.lua` or run
-`:BlakExtras disable lang.typescript`, then restart. Disable the compatibility
-alias too if it is enabled.
+Wait for installation, restart, then open a TypeScript file and check
+`:checkhealth vim.lsp` for `tsc` and `eslint`. To disable this stack, remove it
+from `user.lua` or run `:BlakExtras disable lang.typescript`, then restart.
+Disable the compatibility alias too if it is enabled.

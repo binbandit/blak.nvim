@@ -48,7 +48,8 @@ end
 
 local config_dir = vim.fn.stdpath("config")
 local state_dir = join(vim.fn.stdpath("state"), "blak")
-local lockfile = join(config_dir, "lazy-lock.json")
+-- Rollback snapshots cover the user's lockfile, not the shipped pins.
+local lockfile = join(state_dir, "lazy-lock.json")
 local user_file = join(config_dir, "lua", "blak", "user.lua")
 local extras_state = join(state_dir, "extras.json")
 local migrations_state = join(state_dir, "migrations.json")
@@ -97,7 +98,12 @@ local ok, err = xpcall(function()
   local function assert_default(label, actual, expected)
     assert(
       actual == expected,
-      string.format("contract default changed: %s = %s, expected %s", label, vim.inspect(actual), vim.inspect(expected))
+      string.format(
+        "contract default changed: %s = %s, expected %s",
+        label,
+        vim.inspect(actual),
+        vim.inspect(expected)
+      )
     )
   end
   assert_default("leader", defaults.leader, " ")
@@ -140,7 +146,11 @@ local ok, err = xpcall(function()
   assert_contains("snapshot lockfile", read_file(join(first, "lazy-lock.json")) or "", '"before"')
   assert_contains("snapshot user.lua", read_file(join(first, "user.lua")) or "", 'provider = "fff"')
   assert_contains("snapshot extras", read_file(join(first, "extras.json")) or "", "lang.lua")
-  assert_contains("snapshot migrations", read_file(join(first, "migrations.json")) or "", "old.migration")
+  assert_contains(
+    "snapshot migrations",
+    read_file(join(first, "migrations.json")) or "",
+    "old.migration"
+  )
   assert_contains("snapshot update state", read_file(join(first, "update.json")) or "", '"stable"')
 
   config.package.channel = "edge"
@@ -199,7 +209,10 @@ local ok, err = xpcall(function()
   local legacy = legacy_paths()
   assert(#legacy == 1, "manual backup should create a legacy lockfile backup")
   local snapshot = newest_snapshot()
-  assert(snapshot and read_file(join(snapshot, "manifest.json")), "manual backup should create a manifest snapshot")
+  assert(
+    snapshot and read_file(join(snapshot, "manifest.json")),
+    "manual backup should create a manifest snapshot"
+  )
   vim.fn.delete(snapshot_dir, "rf")
   write_file(lockfile, '{"plugins":{"current":true}}')
   update.rollback()

@@ -178,7 +178,7 @@ assert(custom.snacks.dim.enabled == false, "extra overwrote explicit Snacks sett
 
 -- Missing snapshot data must abort before restoring any live file.
 local update = require("blak.core.update")
-local lock = util.join(vim.fn.stdpath("config"), "lazy-lock.json")
+local lock = require("blak.lazy").lockfile()
 local user = util.join(vim.fn.stdpath("config"), "lua", "blak", "user.lua")
 local original_lock = util.read_file(lock)
 local original_user = util.read_file(user)
@@ -251,5 +251,53 @@ vim.api.nvim_win_close(float, true)
 vim.api.nvim_buf_delete(float_buf, { force = true })
 vim.api.nvim_buf_delete(terminal_buf, { force = true })
 vim.cmd("tabclose")
+
+-- Shipped pins fill only plugins missing from the user's lockfile, on disk and
+-- in lazy.nvim's per-session cache; the user's own pins always win.
+do
+  local blak_lazy = require("blak.lazy")
+  local shipped_path, user_path = blak_lazy.shipped_lockfile(), blak_lazy.lockfile()
+  local original_shipped, original_user_lock =
+    util.read_file(shipped_path), util.read_file(user_path)
+  local original_cache = package.loaded["lazy.manage.lock"]
+  local cache = { _loaded = true, lock = { ["core.nvim"] = { branch = "main", commit = "user" } } }
+  package.loaded["lazy.manage.lock"] = cache
+  util.write_file(
+    shipped_path,
+    vim.json.encode({
+      ["core.nvim"] = { branch = "main", commit = "aaa" },
+      ["extra.nvim"] = { branch = "main", commit = "bbb" },
+    })
+  )
+  util.write_file(
+    user_path,
+    vim.json.encode({ ["core.nvim"] = { branch = "main", commit = "user" } })
+  )
+  assert(blak_lazy.seed_lockfile() == false, "an existing user lockfile is not newly created")
+  local seeded = vim.json.decode(util.read_file(user_path))
+  assert(seeded["core.nvim"].commit == "user", "shipped pins must not override the user's lockfile")
+  assert(seeded["extra.nvim"].commit == "bbb", "shipped pins should fill missing plugins")
+  assert(
+    cache.lock["extra.nvim"].commit == "bbb",
+    "shipped pins should fill lazy.nvim's session cache"
+  )
+  assert(
+    cache.lock["core.nvim"].commit == "user",
+    "seeding must not override lazy.nvim's session cache"
+  )
+  vim.fn.delete(user_path)
+  assert(
+    blak_lazy.seed_lockfile() == true,
+    "a missing user lockfile should be created from shipped pins"
+  )
+  assert(vim.json.decode(util.read_file(user_path))["core.nvim"].commit == "aaa")
+  package.loaded["lazy.manage.lock"] = original_cache
+  util.write_file(shipped_path, original_shipped or "{}")
+  if original_user_lock then
+    util.write_file(user_path, original_user_lock)
+  else
+    vim.fn.delete(user_path)
+  end
+end
 
 print("Regression checks passed")

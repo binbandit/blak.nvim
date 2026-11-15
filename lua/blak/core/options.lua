@@ -1,11 +1,5 @@
 local M = {}
 
-local function set_if_exists(name, value)
-  pcall(function()
-    vim.opt[name] = value
-  end)
-end
-
 function M.setup(config)
   vim.opt.termguicolors = true
   vim.opt.number = true
@@ -26,16 +20,17 @@ function M.setup(config)
   vim.opt.shiftwidth = config.editor.shiftwidth
   vim.opt.softtabstop = config.editor.shiftwidth
   vim.opt.expandtab = config.editor.expandtab
-  vim.opt.autoindent = true
-  vim.opt.smartindent = true
-  vim.opt.completeopt = { "menu", "menuone", "noselect" }
+  vim.opt.completeopt = { "menu", "menuone", "noselect", "popup" }
   vim.opt.pumheight = 12
   vim.opt.wrap = false
   vim.opt.linebreak = true
   vim.opt.breakindent = true
   vim.opt.inccommand = "split"
-  vim.opt.grepprg = "rg --vimgrep --smart-case --hidden"
-  vim.opt.grepformat = "%f:%l:%c:%m"
+  -- Respect ignore files, unlike Neovim's `rg --vimgrep -uu`. Without rg,
+  -- keep Neovim's grep fallback. Neovim sets the matching 'grepformat'.
+  if vim.fn.executable("rg") == 1 then
+    vim.opt.grepprg = "rg --vimgrep --smart-case --hidden"
+  end
 
   if config.editor.clipboard then
     vim.opt.clipboard = "unnamedplus"
@@ -43,9 +38,9 @@ function M.setup(config)
     vim.opt.clipboard:remove({ "unnamed", "unnamedplus" })
   end
 
-  set_if_exists("winborder", config.ui.winborder)
-  set_if_exists("smoothscroll", true)
-  set_if_exists("jumpoptions", "view")
+  vim.opt.winborder = config.ui.winborder
+  vim.opt.smoothscroll = true
+  vim.opt.jumpoptions = { "clean", "view" }
 
   if config.ui.colorscheme then
     pcall(vim.cmd.colorscheme, config.ui.colorscheme)

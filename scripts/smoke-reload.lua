@@ -129,7 +129,11 @@ opts.default_format_opts.quiet = true
   -- Native helpers must remain available when Blak has no replacement.
   assert(vim.g.loaded_gzip == 1, "native compressed-file support disabled")
   assert(vim.g.loaded_tarPlugin ~= nil, "native tar support disabled")
-  assert(vim.g.loaded_zipPlugin ~= nil, "native zip support disabled")
+  -- Neovim 0.13 replaces zipPlugin.vim with zip.lua and a new loaded flag.
+  assert(
+    vim.g.loaded_zipPlugin ~= nil or vim.g.loaded_nvim_zip_plugin ~= nil,
+    "native zip support disabled"
+  )
   assert(vim.fn.exists(":Tutor") == 2, "native Tutor disabled")
   if vim.fn.executable("gzip") == 1 then
     vim.fn.writefile({ "native compressed file" }, compressed)

@@ -40,7 +40,14 @@ The keymap appears in `:BlakKeys`.
 :AerialToggle
 :AerialOpen
 :AerialNavToggle
+:AerialNext
+:AerialPrev
+:AerialInfo
 ```
+
+`:AerialNavToggle` opens a floating navigator; close it with `<C-c>`.
+Aerial has no `:checkhealth` entry; `:AerialInfo` shows which backend
+(Treesitter or LSP) is attached to the current buffer.
 
 Aerial uses its own defaults. For deep customization, add an overriding lazy.nvim
 spec in `plugins.specs`.

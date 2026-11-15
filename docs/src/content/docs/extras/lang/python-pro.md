@@ -1,6 +1,6 @@
 ---
 title: Python Pro Extra
-description: Configure lang.python-pro for BasedPyright, Ruff, VenvSelect, debugpy, and Python Treesitter support.
+description: Configure lang.python-pro for BasedPyright, Ruff, VenvSelect, Python Treesitter, and debugpy and neotest-python with the debug and test extras.
 ---
 
 `lang.python-pro` is the explicit power-user Python stack. It keeps project
@@ -48,7 +48,7 @@ Because this extra adds a plugin, run:
 | Surface | Contribution |
 | --- | --- |
 | Treesitter | `python`, `requirements` |
-| Mason | `ruff`, `debugpy` (`basedpyright` is installed through the LSP server list) |
+| Mason | `ruff` (`basedpyright` is installed through the LSP server list) |
 | LSP | `basedpyright`, `ruff` |
 | Formatting | `ruff_organize_imports`, then `ruff_format`, for `python` |
 | Plugin | `linux-cultist/venv-selector.nvim` |
@@ -141,34 +141,65 @@ return {
 }
 ```
 
-## Debug and test adapters
+## Debugging and tests
 
-`debugpy` is installed for Python debugging, but Blak keeps the DAP UI and test
-runner as separate explicit extras. Enable `debug.dap` when you want debug
-keymaps and add `nvim-dap-python` in `plugins.specs`:
+Enable [`debug.dap`](/extras/debug/dap/) or
+[`test.neotest`](/extras/test/neotest/) as well and `lang.python-pro` wires
+them up for Python. Nothing is added unless both extras are on, and the enable order does
+not matter.
+
+| With | Contribution |
+| --- | --- |
+| `debug.dap` | Mason `debugpy`; plugin `mfussenegger/nvim-dap-python`, set up with Mason's `debugpy-adapter` |
+| `test.neotest` | Plugin `nvim-neotest/neotest-python`, registered as a neotest adapter |
 
 ```lua
 return {
   extras = {
-    enabled = { "lang.python-pro", "debug.dap" },
+    enabled = { "lang.python-pro", "debug.dap", "test.neotest" },
   },
+}
+```
+
+These are the same adapters `lang.python` adds, so enabling both Python extras
+still sets each one up once.
+
+Run `:BlakExtras sync` after enabling them. If you already started a debug
+session or ran a test in the current session, `:restart` so nvim-dap and
+neotest load the new adapters.
+
+- `<leader>dc` offers nvim-dap-python's `file`, `file:args`, `attach`, and
+  `file:doctest` configurations.
+- debugpy runs from Mason's own virtualenv, so the project does not need it.
+  The program runs with `$VIRTUAL_ENV` or `$CONDA_PREFIX` (`<leader>cv`
+  sets them), or a `venv`/`.venv` folder in the project. Without one it
+  falls back to debugpy's interpreter, which has none of your packages.
+- `<leader>Tn`, `<leader>Tf`, and `<leader>Td` run, or debug, tests with pytest
+  when the project's Python has it, otherwise with Django's runner or
+  `unittest`.
+
+Pass [neotest-python options](https://github.com/nvim-neotest/neotest-python)
+under its adapter name:
+
+```lua
+return {
   plugins = {
     specs = {
       {
-        "mfussenegger/nvim-dap-python",
-        ft = "python",
-        dependencies = { "mfussenegger/nvim-dap" },
-        config = function()
-          require("dap-python").setup("debugpy-adapter")
-        end,
+        "nvim-neotest/neotest",
+        opts = {
+          adapters = {
+            ["neotest-python"] = { dap = { justMyCode = false } },
+          },
+        },
       },
     },
   },
 }
 ```
 
-Use `test.neotest` plus `neotest-python` when you want an in-editor Python test
-runner.
+Disabling either extra removes the adapter after `:restart`; Mason keeps
+`debugpy` installed until you run `:MasonUninstall debugpy`.
 
 ## Install and verify
 
@@ -178,4 +209,4 @@ runner.
 :BlakDoctor
 ```
 
-Open a Python file and check `:LspInfo` for `basedpyright` and `ruff`.
+Open a Python file and check `:checkhealth vim.lsp` for `basedpyright` and `ruff`.

@@ -1,4 +1,4 @@
-.PHONY: validate smoke smoke-install zip docs docs-dev docs-build docs-install
+.PHONY: validate smoke smoke-install pins zip docs docs-dev docs-build docs-install
 
 validate:
 	python3 scripts/validate.py
@@ -6,12 +6,17 @@ validate:
 	sh -n dev-install.sh
 	sh -n scripts/smoke.sh
 	sh -n scripts/smoke-install.sh
+	sh -n scripts/update-pins.sh
 
 smoke:
 	sh scripts/smoke.sh
 
 smoke-install:
 	sh scripts/smoke-install.sh
+
+# Refresh lazy-lock.json (shipped pins for core and every extra) before a release.
+pins:
+	sh scripts/update-pins.sh
 
 # Documentation site (Astro Starlight)
 docs: docs-dev

@@ -24,7 +24,7 @@ function M.install(config, opts)
   if not ts then
     if opts.notify then
       require("blak.util").warn(
-        "nvim-treesitter is not installed yet. Run :Lazy sync, restart, then retry."
+        "nvim-treesitter is not installed yet. Run :BlakExtras sync, then :restart and retry."
       )
     end
     return

@@ -32,7 +32,7 @@ Because this extra adds a plugin, run:
 | Plugin | `stevearc/overseer.nvim` |
 | Keymap | `<leader>oo` toggles the task list |
 | Keymap | `<leader>or` runs a task |
-| Keymap | `<leader>oq` opens task quick actions |
+| Keymap | `<leader>oq` picks a task, then an action to run on it |
 
 The keymaps appear in `:BlakKeys`.
 
@@ -40,9 +40,14 @@ The keymaps appear in `:BlakKeys`.
 
 ```vim
 :OverseerRun
+:OverseerShell make test
 :OverseerToggle
-:OverseerQuickAction
+:OverseerTaskAction
+:checkhealth overseer
 ```
 
-Overseer keeps task discovery and templates in its own configuration. Add a
-local lazy.nvim spec if you want project-specific templates.
+`:OverseerRun` lists templates Overseer discovers in the project, such as
+`make`, `npm`, `cargo`, `just`, and VS Code tasks. `:checkhealth overseer`
+reports which template providers are available. Overseer keeps task discovery
+and templates in its own configuration. Add a local lazy.nvim spec if you want
+project-specific templates.

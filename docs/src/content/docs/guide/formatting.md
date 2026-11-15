@@ -34,13 +34,29 @@ Language extras add to `formatters_by_ft`:
 
 | Extra | Adds |
 | --- | --- |
-| `lang.typescript` | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
-| `lang.typescript-tsgo` | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json |
+| `lang.typescript`, `lang.typescript-legacy` | `prettierd` (fallback `prettier`) for js/ts/jsx/tsx/json/jsonc |
+| `lang.typescript-tsgo` | Alias of `lang.typescript` |
 | `lang.python` | `isort` then `black` for python |
 | `lang.python-pro` | `ruff_organize_imports` then `ruff_format` for python |
 | `lang.markdown` | `prettierd` (fallback `prettier`) for markdown |
+| `lang.web` | `prettierd` (fallback `prettier`) for html, css, scss, less |
+| `lang.yaml` | `prettierd` (fallback `prettier`) for yaml |
+| `lang.json` | `prettierd` (fallback `prettier`) for json, jsonc |
 | `lang.go` | `goimports`, `gofumpt` for go |
 | `lang.rust` | `rustfmt`, `taplo` with `lsp_format = "fallback"` |
+| `lang.c` | `clang_format` for c, cpp, objc, objcpp, cuda |
+| `lang.terraform` | `terraform_fmt` for terraform, terraform-vars |
+| `lang.nix` | `nixfmt` for nix |
+
+## Indentation
+
+StyLua indents with tabs unless a config tells it otherwise. When no
+`.stylua.toml`, `stylua.toml`, or `.editorconfig` exists in the file's directory
+or above it, and there is no global StyLua config (for example
+`~/.config/stylua/stylua.toml`), Blak passes `--indent-type` and
+`--indent-width` from the buffer's `expandtab` and `shiftwidth`. With Blak's
+defaults that is 2 spaces. A project config always wins. Conform's `shfmt`
+already follows the same buffer settings.
 
 ## Toggling format-on-save
 

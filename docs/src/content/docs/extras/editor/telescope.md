@@ -71,8 +71,8 @@ Telescope handles:
 | `lsp_symbols` | `lsp_document_symbols` |
 | `workspace_symbols` | `lsp_dynamic_workspace_symbols` |
 
-Blak does not expose a Telescope options table in `user.lua`. For deep Telescope
-customization, create a local extra with your own Telescope spec.
+To change Telescope options, add a matching `nvim-telescope/telescope.nvim`
+spec in `plugins.specs`; lazy.nvim merges its `opts` with the extra's.
 
 ## Switch back
 

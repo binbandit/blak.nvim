@@ -15,6 +15,13 @@ jobs:
           python-version: '3.x'
       - name: Static validation
         run: make validate
+      - name: Install StyLua
+        run: |
+          curl -fsSL -o stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/download/v2.6.0/stylua-linux-x86_64.zip
+          unzip -q stylua.zip -d "$RUNNER_TEMP/stylua"
+          echo "$RUNNER_TEMP/stylua" >> "$GITHUB_PATH"
+      - name: Lua formatting
+        run: stylua --check .
 
   smoke:
     name: Smoke (${{ matrix.neovim }})

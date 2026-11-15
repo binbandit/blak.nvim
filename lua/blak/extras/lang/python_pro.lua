@@ -1,10 +1,10 @@
 return {
   id = "lang.python-pro",
   label = "Python Pro",
-  description = "BasedPyright, Ruff format/code actions, venv selector, debugpy",
+  description = "BasedPyright, Ruff format/code actions, venv selector",
   supersedes = { "lang.python" },
   treesitter = { "python", "requirements" },
-  mason = { "debugpy", "ruff" },
+  mason = { "ruff" },
   lsp = {
     servers = {
       basedpyright = {},
@@ -31,4 +31,6 @@ return {
   keys = {
     { lhs = "<leader>cv", rhs = "<cmd>VenvSelect<cr>", desc = "Python virtualenv" },
   },
+  -- debugpy with debug.dap and neotest-python with test.neotest, as in lang.python.
+  integrations = require("blak.extras.lang.python").integrations,
 }

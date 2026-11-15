@@ -32,7 +32,24 @@ Or enable it interactively:
 | --- | --- |
 | Snacks | `image.enabled = true` |
 | Terminal support | Kitty, Ghostty, WezTerm, and tmux passthrough where available |
-| External tools | ImageMagick for conversion of non-PNG formats |
+| External tools | ImageMagick (`magick` or `identify`), required for every image |
+
+## Requirements
+
+Install ImageMagick before enabling the extra:
+
+```sh
+brew install imagemagick        # macOS
+sudo apt install imagemagick    # Debian/Ubuntu
+```
+
+Snacks reads every image's size with ImageMagick's `identify`, PNG included.
+Without it, opening any image shows `Image Conversion Failed: identify` even
+though `:checkhealth snacks` says PNG files still work. PDFs need Ghostscript
+(`gs`), LaTeX math needs `tectonic` or `pdflatex`, and Mermaid needs `mmdc`.
+
+The terminal must speak the Kitty graphics protocol. Other terminals get a
+placeholder buffer instead of the image.
 
 ## Configure image rendering
 
@@ -97,4 +114,8 @@ Run:
 :BlakDoctor
 ```
 
-Then open a PNG or a Markdown file with an image reference.
+`Snacks.image` should report `setup {enabled}`, a detected terminal, and a
+non-zero cell size. Then open a PNG or a Markdown file with an image reference.
+
+Image buffers are read-only. If `:q` asks to save one, answering yes does not
+write the file; Snacks intercepts writes for image paths.

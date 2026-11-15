@@ -142,7 +142,7 @@ local function main()
   vim.opt.rtp:prepend(vim.fn.getcwd())
 
   local util = require("blak.util")
-  lockfile = util.join(vim.fn.stdpath("config"), "lazy-lock.json")
+  lockfile = require("blak.lazy").lockfile()
   original_lock = util.read_file(lockfile)
   user_file = util.join(vim.fn.stdpath("config"), "lua", "blak", "user.lua")
   original_user_file = util.read_file(user_file)
@@ -183,7 +183,10 @@ local function main()
   end
   run("BlakDocs", "BlakDocs")
   vim.ui.open = original_ui_open
-  assert(vim.g.blak_command_test_docs_url == "https://getblak.dev/start/why/", "BlakDocs did not open the docs URL")
+  assert(
+    vim.g.blak_command_test_docs_url == "https://getblak.dev/start/why/",
+    "BlakDocs did not open the docs URL"
+  )
 
   vim.fn.delete(user_file)
   run("BlakConfig", "BlakConfig")
@@ -202,10 +205,16 @@ local function main()
   end
   vim.g.blak_command_test_picker_kind = nil
   run("BlakPick default", "BlakPick")
-  assert(vim.g.blak_command_test_picker_kind == "files", "BlakPick without args should dispatch files")
+  assert(
+    vim.g.blak_command_test_picker_kind == "files",
+    "BlakPick without args should dispatch files"
+  )
   vim.g.blak_command_test_picker_kind = nil
   run("BlakPick smart alias", "BlakPick smart")
-  assert(vim.g.blak_command_test_picker_kind == "files", "BlakPick smart should remain a files alias")
+  assert(
+    vim.g.blak_command_test_picker_kind == "files",
+    "BlakPick smart should remain a files alias"
+  )
 
   run("BlakExtras", "BlakExtras")
   assert(vim.bo.filetype == "blak-extras", "BlakExtras did not open the extras UI")
@@ -226,28 +235,52 @@ local function main()
   wipe_current()
 
   run("BlackExtras enable", "BlackExtras enable editor.telescope")
-  assert(has_value(require("blak.extras.state").read(), "editor.telescope"), "BlackExtras enable did not persist state")
+  assert(
+    has_value(require("blak.extras.state").read(), "editor.telescope"),
+    "BlackExtras enable did not persist state"
+  )
   local config = require("blak.config").get()
   assert(config.picker.provider == "telescope", "BlakExtras enable did not apply config in-session")
 
   run("BlakExtras disable", "BlakExtras disable editor.telescope")
-  assert(not has_value(require("blak.extras.state").read(), "editor.telescope"), "BlakExtras disable did not persist state")
+  assert(
+    not has_value(require("blak.extras.state").read(), "editor.telescope"),
+    "BlakExtras disable did not persist state"
+  )
   config.mason.ensure_installed = {}
   config.treesitter.ensure_installed = {}
 
   run("BlakExtras enable rust", "BlakExtras enable lang.rust")
-  assert(has_value(require("blak.extras.state").read(), "lang.rust"), "BlakExtras enable did not persist lang.rust")
-  assert(require("lazy.core.config").plugins["crates.nvim"], "lang.rust did not register crates.nvim")
+  assert(
+    has_value(require("blak.extras.state").read(), "lang.rust"),
+    "BlakExtras enable did not persist lang.rust"
+  )
+  assert(
+    require("lazy.core.config").plugins["crates.nvim"],
+    "lang.rust did not register crates.nvim"
+  )
 
   run("BlakExtras disable rust", "BlakExtras disable lang.rust")
-  assert(not has_value(require("blak.extras.state").read(), "lang.rust"), "BlakExtras disable did not persist lang.rust")
+  assert(
+    not has_value(require("blak.extras.state").read(), "lang.rust"),
+    "BlakExtras disable did not persist lang.rust"
+  )
   config.mason.ensure_installed = {}
   config.treesitter.ensure_installed = {}
 
   local extras = require("blak.extras")
-  assert(has_value(extras.complete("en", "BlakExtras en"), "enable"), "BlakExtras action completion missed enable")
-  assert(has_value(extras.complete("en", "BlackExtras en"), "enable"), "BlackExtras action completion missed enable")
-  assert(has_value(extras.complete("lang.r", "BlakExtras enable lang.r"), "lang.rust"), "BlakExtras id completion missed lang.rust")
+  assert(
+    has_value(extras.complete("en", "BlakExtras en"), "enable"),
+    "BlakExtras action completion missed enable"
+  )
+  assert(
+    has_value(extras.complete("en", "BlackExtras en"), "enable"),
+    "BlackExtras action completion missed enable"
+  )
+  assert(
+    has_value(extras.complete("lang.r", "BlakExtras enable lang.r"), "lang.rust"),
+    "BlakExtras id completion missed lang.rust"
+  )
 
   local lazy_calls = {}
   pcall(vim.api.nvim_del_user_command, "Lazy")
@@ -263,7 +296,7 @@ local function main()
   vim.fn.delete(backup_dir, "rf")
   vim.fn.delete(snapshot_dir, "rf")
   util.write_file(lockfile, '{"plugins":{"before":true}}')
-  util.write_file(user_file, 'return { ui = { notify = false } }\n')
+  util.write_file(user_file, "return { ui = { notify = false } }\n")
   util.write_file(extras_state, vim.json.encode({ enabled = { "lang.lua" } }))
   util.write_file(update_state, vim.json.encode({ channel = "stable" }))
 
@@ -273,9 +306,21 @@ local function main()
   local snapshots = vim.fn.glob(util.join(snapshot_dir, "rollback-*"), false, true)
   assert(#backups == 1, "BlakUpdate should create exactly one legacy lockfile backup")
   assert(#snapshots == 1, "BlakUpdate should create exactly one rollback snapshot")
-  assert_contains(":BlakUpdate snapshot lockfile", util.read_file(util.join(snapshots[1], "lazy-lock.json")) or "", '"before"')
-  assert_contains(":BlakUpdate snapshot user.lua", util.read_file(util.join(snapshots[1], "user.lua")) or "", "notify = false")
-  assert_contains(":BlakUpdate snapshot extras", util.read_file(util.join(snapshots[1], "extras.json")) or "", "lang.lua")
+  assert_contains(
+    ":BlakUpdate snapshot lockfile",
+    util.read_file(util.join(snapshots[1], "lazy-lock.json")) or "",
+    '"before"'
+  )
+  assert_contains(
+    ":BlakUpdate snapshot user.lua",
+    util.read_file(util.join(snapshots[1], "user.lua")) or "",
+    "notify = false"
+  )
+  assert_contains(
+    ":BlakUpdate snapshot extras",
+    util.read_file(util.join(snapshots[1], "extras.json")) or "",
+    "lang.lua"
+  )
 
   config.package.channel = "edge"
   local lazy_count = #lazy_calls
@@ -293,7 +338,10 @@ local function main()
   }
   lazy_count = #lazy_calls
   run("BlakUpdate blocked by migration", "BlakUpdate")
-  assert(#lazy_calls == lazy_count, "BlakUpdate should not run Lazy update with pending breaking migrations")
+  assert(
+    #lazy_calls == lazy_count,
+    "BlakUpdate should not run Lazy update with pending breaking migrations"
+  )
 
   local migration_ran = false
   package.loaded["blak.core.migrations"] = {
@@ -302,7 +350,10 @@ local function main()
     end,
     run = function()
       migration_ran = true
-      util.write_file(user_file, 'return { ui = { notify = false }, picker = { provider = "snacks" } }\n')
+      util.write_file(
+        user_file,
+        'return { ui = { notify = false }, picker = { provider = "snacks" } }\n'
+      )
       return 1
     end,
   }
@@ -316,16 +367,49 @@ local function main()
   package.loaded["blak.core.migrations"] = real_migrations
 
   util.write_file(lockfile, '{"plugins":{"after":true}}')
+  -- An update earlier in the session leaves lazy.nvim's lockfile cache loaded.
+  local lazy_lock = require("lazy.manage.lock")
+  lazy_lock.load()
   run("BlakRollback", "BlakRollback")
+  assert(
+    lazy_lock._loaded == false,
+    "BlakRollback should make lazy.nvim re-read the restored lockfile"
+  )
   assert(lazy_calls[#lazy_calls] == "restore", "BlakRollback did not run Lazy restore")
   assert_contains(":BlakRollback lockfile", util.read_file(lockfile) or "", '"before"')
   assert_contains(":BlakRollback user.lua", util.read_file(user_file) or "", "notify = false")
-  assert(not (util.read_file(user_file) or ""):find('provider = "snacks"', 1, true), "BlakRollback did not restore user.lua")
+  assert(
+    not (util.read_file(user_file) or ""):find('provider = "snacks"', 1, true),
+    "BlakRollback did not restore user.lua"
+  )
   assert_contains(":BlakRollback extras", util.read_file(extras_state) or "", "lang.lua")
   assert_contains(":BlakRollback update state", util.read_file(update_state) or "", '"stable"')
 
+  -- Installing an extra must not update core plugins past lazy-lock.json.
+  local real_lazy = package.loaded.lazy
+  local sync_calls = {}
+  package.loaded.lazy = setmetatable({}, {
+    __index = function(_, action)
+      return function(opts)
+        table.insert(sync_calls, { action = action, opts = opts or {} })
+      end
+    end,
+  })
+  lazy_count = #lazy_calls
   run("BlakExtras sync", "BlakExtras sync")
-  assert(lazy_calls[#lazy_calls] == "sync", "BlakExtras sync did not run Lazy sync")
+  package.loaded.lazy = real_lazy
+  local sync_actions = vim.tbl_map(function(call)
+    return call.action
+  end, sync_calls)
+  assert(
+    vim.deep_equal(sync_actions, { "clean", "install" }),
+    "BlakExtras sync should only clean and install, got: " .. table.concat(sync_actions, ", ")
+  )
+  assert(
+    sync_calls[2].opts.lockfile == true,
+    "BlakExtras sync should install at lazy-lock.json commits"
+  )
+  assert(#lazy_calls == lazy_count, "BlakExtras sync should not run a :Lazy command")
 
   local real_tools = package.loaded["blak.core.tools"]
   local tools_install_seen = false
@@ -340,7 +424,10 @@ local function main()
 
   treesitter_install_seen = false
   run("BlakTreesitterInstall", "BlakTreesitterInstall")
-  assert(treesitter_install_seen, "BlakTreesitterInstall did not call treesitter.install with notify")
+  assert(
+    treesitter_install_seen,
+    "BlakTreesitterInstall did not call treesitter.install with notify"
+  )
   package.loaded["blak.core.treesitter"] = real_treesitter
 
   local formatted = false
@@ -367,6 +454,10 @@ local function main()
 
   run("BlakSplash", "BlakSplash")
   assert(vim.bo.filetype == "blak-splash", "BlakSplash did not open a splash buffer")
+  assert(
+    vim.api.nvim_win_get_config(0).relative == "editor" and not vim.wo.number,
+    "BlakSplash should open a minimal float"
+  )
   wipe_current()
 end
 

@@ -196,6 +196,19 @@ function M.setup(config)
       if not vim.api.nvim_buf_is_valid(event.buf) or not vim.api.nvim_buf_is_loaded(event.buf) then
         return
       end
+      -- lazy.nvim loads nvim-lint from the first BufReadPost and replays it
+      -- before filetype detection runs; lint that buffer once its type is set.
+      if event.event == "BufReadPost" and vim.bo[event.buf].filetype == "" then
+        vim.api.nvim_create_autocmd("FileType", {
+          group = group,
+          buffer = event.buf,
+          once = true,
+          callback = function()
+            vim.api.nvim_exec_autocmds(event.event, { group = group, buffer = event.buf })
+          end,
+        })
+        return
+      end
       -- Autocmds can target a background buffer; factories and nvim-lint use
       -- the current buffer to resolve commands, stdin, and diagnostics.
       vim.api.nvim_buf_call(event.buf, function()

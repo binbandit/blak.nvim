@@ -41,6 +41,9 @@ This repair follows `automatic_install`; `:BlakToolsInstall` requests it manuall
 
 Missing packages don't error — they warn so a typo or a Mason-renamed tool doesn't block startup.
 
+A failed install warns too: `Could not install Mason package <name>: <reason>. See :MasonLog.`
+`:MasonLog` has the installer output. Common causes are a missing runtime such as Python, Node.js, or Go, or a package Mason does not ship for your platform. `:checkhealth blak` lists every configured tool that is still not installed.
+
 ## Manual install
 
 ```vim
@@ -94,4 +97,4 @@ $XDG_DATA_HOME/<appname>/mason/        " for Blak, usually ~/.local/share/blak/m
   └── bin/                             " shims added to runtime $PATH
 ```
 
-`mason-lspconfig` bridges between Mason package names (`lua-language-server`) and lspconfig server names (`lua_ls`). The `ensure_installed` list it sends to Mason is derived from `lsp.servers` keys. Only configured servers are automatically enabled. `mason.automatic_install = false` disables automatic installation of both tools and language servers; `:BlakToolsInstall` explicitly requests both.
+`mason-lspconfig` bridges between Mason package names (`lua-language-server`) and lspconfig server names (`lua_ls`). The `ensure_installed` list it sends to Mason is derived from `lsp.servers` keys. Only configured servers are automatically enabled; Blak enables them whether or not Mason installed them, so servers on `$PATH` work too. `mason.automatic_install = false` disables automatic installation of both tools and language servers; `:BlakToolsInstall` explicitly requests both.
